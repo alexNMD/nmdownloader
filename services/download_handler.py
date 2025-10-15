@@ -72,9 +72,7 @@ class DownloadHandler:
                     self.total_size = int(response.headers.get("Content-Length", 0))
                     self.download_start_time = time.time()
                     with open(self.file_path, "wb") as file:
-                        with io.BufferedWriter(
-                            file, buffer_size=CHUNK_SIZE
-                        ) as file_buffer:
+                        with io.BufferedWriter(file, buffer_size=CHUNK_SIZE) as file_buffer:
                             self._update_status(DownloadStatus.STARTED)
                             self._handle_chunks(file_buffer, response)
                     self._finish()
@@ -139,18 +137,38 @@ class DownloadHandler:
     def _finish(self) -> None:
         _files = [self.file_path]
         _files_handler = FilesHandlerService(self.file_path)
-        if _files_handler.is_compressed:
-            self._update_status(
-                DownloadStatus.RUNNING, additionnal="Extraction in progress..."
-            )
-            _files = _files_handler.handle_archive() or []
 
-        if self.type_dl in ["series"]:
-            for _file in _files:
-                self.file_path = organize_episode(_file)
+        try:
+            if _files_handler.is_compressed:
+                self._update_status(
+                    DownloadStatus.RUNNING, additionnal="Extraction in progress..."
+                )
 
-        self._update_status(DownloadStatus.DONE)
-        self.finished = True
+                _files = _files_handler.handle_archive() or []
+                logger.info(f"Files extracted: {_files}")
+
+                if not _files:
+                    logger.warning(f"No files extracted from archive: {self.file_path}")
+                
+                if _files:
+                    self.file_path = _files[0]
+                else:
+                    self.file_path = None
+
+            if self.type_dl in ["series"] and _files:
+                for _file in _files:
+                    try:
+                        organized_path = organize_episode(_file)
+                        logger.info(f"Organized file: {_file} → {organized_path}")
+                    except Exception as e:
+                        logger.error(f"Failed to organize file {_file}: {e}")
+
+            self._update_status(DownloadStatus.DONE)
+            self.finished = True
+
+        except Exception as error:
+            logger.error(f"Error during finish stage: {error}")
+            raise DownloadException(self, error) from error
 
     def _compute_url(self, url) -> str:
         download_providers = {"1fichier.com": compute_url_from_1fichier}
