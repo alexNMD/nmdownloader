@@ -93,9 +93,7 @@ class DownloadHandler:
             if is_json_serializable(value)
         }
 
-    def _update_status(
-        self, status: DownloadStatus, additionnal: str = str(), meta_data=None
-    ) -> None:
+    def _update_status(self, status: DownloadStatus, additionnal: str = str(), meta_data=None) -> None:
         title = f"Download {status.name}"
         _base_content = (
             f"[{self.type_dl}] {self.file_name} \n"

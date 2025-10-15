@@ -41,10 +41,12 @@ class FilesHandlerService:
             raise
         logger.info(f"Unpacked Archive: {self.path}")
 
+        extracted_files = list_files_method() or []
+
         os.remove(self.path)
         logger.info(f"{self.path} deleted")
 
-        return [os.path.join(_parent_directory, _file) for _file in list_files_method()]
+        return [os.path.join(_parent_directory, _file) for _file in extracted_files]
 
     def _list_zip_contents(self) -> list:
         with zipfile.ZipFile(self.path, "r") as archive:
