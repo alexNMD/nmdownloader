@@ -72,7 +72,9 @@ class DownloadHandler:
                     self.total_size = int(response.headers.get("Content-Length", 0))
                     self.download_start_time = time.time()
                     with open(self.file_path, "wb") as file:
-                        with io.BufferedWriter(file, buffer_size=CHUNK_SIZE) as file_buffer:
+                        with io.BufferedWriter(
+                            file, buffer_size=CHUNK_SIZE
+                        ) as file_buffer:
                             self._update_status(DownloadStatus.STARTED)
                             self._handle_chunks(file_buffer, response)
                     self._finish()
@@ -93,7 +95,9 @@ class DownloadHandler:
             if is_json_serializable(value)
         }
 
-    def _update_status(self, status: DownloadStatus, additionnal: str = str(), meta_data=None) -> None:
+    def _update_status(
+        self, status: DownloadStatus, additionnal: str = str(), meta_data=None
+    ) -> None:
         title = f"Download {status.name}"
         _base_content = (
             f"[{self.type_dl}] {self.file_name} \n"
@@ -147,17 +151,13 @@ class DownloadHandler:
 
                 if not _files:
                     logger.warning(f"No files extracted from archive: {self.file_path}")
-                
-                if _files:
-                    self.file_path = _files[0]
-                else:
-                    self.file_path = None
+
+                self.file_path = _files[0] if _files else None
 
             if self.type_dl in ["series"] and _files:
                 for _file in _files:
                     try:
-                        organized_path = organize_episode(_file)
-                        logger.info(f"Organized file: {_file} → {organized_path}")
+                        organize_episode(_file)
                     except Exception as e:
                         logger.error(f"Failed to organize file {_file}: {e}")
 
