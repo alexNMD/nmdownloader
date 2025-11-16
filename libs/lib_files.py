@@ -8,7 +8,20 @@ from typing import LiteralString
 
 logger = logging.getLogger("celery")
 
-SERIE_REGEX = r"^(?P<series_name>[^ ._-]+(?:[ ._-]+[^ ._-]+)*)[ ._-]*S(?P<season>\d{1,2})[ ._-]*E(?P<episode>\d+)[ ._-]+.*\.(?P<extension>mkv|mp4|avi)$"
+SERIE_REGEX = r"""
+^
+(?P<series_name>.+?)
+[ ._-]*
+(?:
+    S(?P<season>\d{1,2})[ ._-]*E(?P<episode>\d{1,3})
+  |
+    (?P<season>\d{1,2})[xX](?P<episode>\d{1,3})
+  |
+    E(?P<episode>\d{1,3})
+)
+[ ._-].*
+\.(?P<extension>mkv|mp4|avi)$
+"""
 
 
 def organize_series(base_directory: str) -> None:
@@ -21,7 +34,7 @@ def organize_series(base_directory: str) -> None:
             _move_file(base_directory, _dest_directory, filename)
 
 
-def organize_episode(file_path: str) -> LiteralString | str | bytes:
+def organize_episode(file_path: str) -> LiteralString | str | bytes | None:
     _filename = os.path.basename(file_path)
     _base_directory = os.path.dirname(file_path)
 
@@ -30,6 +43,7 @@ def organize_episode(file_path: str) -> LiteralString | str | bytes:
 
         os.makedirs(_dest_directory, exist_ok=True)
         return _move_file(_base_directory, _dest_directory, _filename)
+    return None
 
 
 def dest_file_exists(src_file_path: str) -> bool:
@@ -67,7 +81,7 @@ def _move_file(src_directory, dest_directory, filename) -> LiteralString | str |
 
 def _get_sub_directory(match: dict) -> str:
     _series_name_formatted = match["series_name"].replace(" ", ".")
-    _season_formatted = f"Saison.{match['season']}"
+    _season_formatted = f"Saison.{match['season'] if match['season'] else '1'}"
 
     return os.path.join(_series_name_formatted, _season_formatted)
 
