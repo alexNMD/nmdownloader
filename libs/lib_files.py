@@ -8,20 +8,7 @@ from typing import LiteralString
 
 logger = logging.getLogger("celery")
 
-SERIE_REGEX = r"""
-^
-(?P<series_name>.+?)
-[ ._-]*
-(?:
-    S(?P<season>\d{1,2})[ ._-]*E(?P<episode>\d{1,3})
-  |
-    (?P<season>\d{1,2})[xX](?P<episode>\d{1,3})
-  |
-    E(?P<episode>\d{1,3})
-)
-[ ._-].*
-\.(?P<extension>mkv|mp4|avi)$
-"""
+SERIE_REGEX = r"^(?P<series_name>.+?)[ ._-]*(?:S(?P<season_s>\d{1,2})(?:[ ._-]*E(?P<episode_s>\d{1,3}))?|(?P<season_x>\d{1,2})[xX](?P<episode_x>\d{1,3})|E(?P<episode_e>\d{1,3}))(?:[ ._-].*)?\.(?P<extension>mkv|mp4|avi|zip)$"
 
 
 def organize_series(base_directory: str) -> None:
@@ -80,8 +67,10 @@ def _move_file(src_directory, dest_directory, filename) -> LiteralString | str |
 
 
 def _get_sub_directory(match: dict) -> str:
-    _series_name_formatted = match["series_name"].replace(" ", ".")
-    _season_formatted = f"Saison.{match['season'] if match['season'] else '1'}"
+    _series_name = match["series_name"]
+    _season = match["season_s"] or match["season_x"] or None
+    _series_name_formatted = _series_name.replace(" ", ".")
+    _season_formatted = f"Saison.{_season if _season else '1'}"
 
     return os.path.join(_series_name_formatted, _season_formatted)
 
