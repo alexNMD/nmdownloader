@@ -13,18 +13,21 @@ class Download(commands.Cog):
         """USAGE: send link to download file (separate w/ ',')"""
 
         message = ctx.message
-        _message_content = message.content.split()
-        if len(_message_content) <= 1:
-            await message.reply("USAGE: send link to download file (separate w/ ',')")
-            return
 
-        link = _message_content[1]
-        _links = link.split(",")
+        _message_content = message.content.split()
+        match len(_message_content):
+            case 2:
+                _, _links = _message_content
+            case 3:
+                _, type_dl, _links = _message_content
+            case _:
+                await message.reply("USAGE: send link to download file (separate w/ ',')")
+                return
 
         try:
-            for url in _links:
+            for url in _links.split(","):
                 task = download_task.delay(
-                    url=url, message_id=message.id, channel_id=message.channel.id
+                    url=url, message_id=message.id, channel_id=message.channel.id, type_dl=type_dl
                 )
                 logger.info(f"Task sent: {task.id}")
         except Exception as download_error:

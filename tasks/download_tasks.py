@@ -5,10 +5,8 @@ from services.download_handler import DownloadHandler
 
 
 @celery_app.task(bind=True)
-def download_task(self, url, message_id=None, channel_id=None) -> dict:
-    download = DownloadHandler(
-        url=url, task=self, message_id=message_id, channel_id=channel_id
-    )
+def download_task(self, **kwargs) -> dict:
+    download = DownloadHandler(task=self, **kwargs)
 
     download.check()
 

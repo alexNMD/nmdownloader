@@ -13,8 +13,9 @@ def launch() -> dict[str, object]:
     data = request.get_json()
     if not (url := data.get("url")):
         return jsonify(dict(message="URL is mandatory")), 400
+    type_dl = data.get("type_dl")
 
-    task = download_task.delay(url=url)
+    task = download_task.delay(url=url, type_dl=type_dl)
     gunicorn_logger.info(f"Task sent: {task.id}")
 
     return jsonify(dict(uuid=task.id))

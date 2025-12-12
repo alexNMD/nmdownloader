@@ -35,7 +35,7 @@ discord_api = DiscordAPI(DISCORD_TOKEN)
 
 
 class DownloadHandler:
-    def __init__(self, url, task, message_id=None, channel_id=None):
+    def __init__(self, url, task, message_id=None, channel_id=None, type_dl=None):
         self.task = task
         self.status_message_id = None
         self.message_id = message_id
@@ -49,7 +49,7 @@ class DownloadHandler:
             "series"
             if re.search(r"[Ss]\d{1,2}([Ee]\d{1,2})?", self.file_name)
             else "films"
-        )
+        ) if not type_dl else type_dl
         self.base_download_path = f"{NAS_PATH}/{self.type_dl}"
         self.file_path = os.path.join(self.base_download_path, self.file_name)
         self.download_start_time = None
