@@ -6,8 +6,18 @@ services:
     restart: unless-stopped
     volumes:
       - redis-data:/data
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   discord:
+    depends_on:
+      celery:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     image: ghcr.io/alexnmd/nmd_downloader:latest
     volumes:
       - .env:/NMDownloader/.env
@@ -17,6 +27,9 @@ services:
 
 
   celery:
+    depends_on:
+      redis:
+        condition: service_healthy
     image: ghcr.io/alexnmd/nmd_downloader:latest
     container_name: celery
     restart: unless-stopped
@@ -36,6 +49,8 @@ services:
     depends_on:
       celery:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     image: ghcr.io/alexnmd/nmd_downloader:latest
     volumes:
       - .env:/NMDownloader/.env
@@ -51,6 +66,8 @@ services:
   flask:
     depends_on:
       celery:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     image: ghcr.io/alexnmd/nmd_downloader:latest
     volumes:
