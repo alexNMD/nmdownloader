@@ -7,23 +7,18 @@ from urllib.parse import urlparse
 
 import requests
 
-from apps.celery_app import logger
-from config import (
-    NAS_PATH,
-    DISCORD_TOKEN,
-    REFRESH_RATE,
-    BOT_MESSAGES_CHANNEL_ID,
-    CHUNK_SIZE,
-)
-from services.discord_api import DiscordAPI
-from services.files import FilesHandlerService
-from libs.lib_files import (
+from loguru import logger
+
+from nmdownloader.config import app_settings
+from nmdownloader.services.discord_api import DiscordAPI
+from nmdownloader.services.files import FilesHandlerService
+from nmdownloader.libs.lib_files import (
     organize_episode,
     dest_file_exists,
     is_json_serializable,
 )
-from libs.lib_progressbar import get_progress_bar
-from libs.lib_download import (
+from nmdownloader.libs.lib_progressbar import get_progress_bar
+from nmdownloader.libs.lib_download import (
     compute_url_from_1fichier,
     extract_filename,
     DownloadException,
@@ -31,7 +26,7 @@ from libs.lib_download import (
     DownloadStatus,
 )
 
-discord_api = DiscordAPI(DISCORD_TOKEN)
+discord_api = DiscordAPI()
 
 
 class DownloadHandler:
@@ -39,18 +34,22 @@ class DownloadHandler:
         self.task = task
         self.status_message_id = None
         self.message_id = message_id
-        self.channel_id = channel_id or BOT_MESSAGES_CHANNEL_ID
+        self.channel_id = channel_id or app_settings.discord.default_channel_id
         self.url = self._compute_url(url)
         try:
             self.file_name = extract_filename(self.url)
         except Exception as error:
             raise DownloadException(self, "Unable to retrieve filename") from error
         self.type_dl = (
-            "series"
-            if re.search(r"[Ss]\d{1,2}([Ee]\d{1,2})?", self.file_name)
-            else "films"
-        ) if not type_dl else type_dl
-        self.base_download_path = f"{NAS_PATH}/{self.type_dl}"
+            (
+                "series"
+                if re.search(r"[Ss]\d{1,2}([Ee]\d{1,2})?", self.file_name)
+                else "films"
+            )
+            if not type_dl
+            else type_dl
+        )
+        self.base_download_path = f"{app_settings.media_path}/{self.type_dl}"
         self.file_path = os.path.join(self.base_download_path, self.file_name)
         self.download_start_time = None
         self.total_size = None
@@ -73,7 +72,8 @@ class DownloadHandler:
                     self.download_start_time = time.time()
                     with open(self.file_path, "wb") as file:
                         with io.BufferedWriter(
-                            file, buffer_size=CHUNK_SIZE
+                            file,
+                            buffer_size=(1024 * 64),  # 64 KB
                         ) as file_buffer:
                             self._update_status(DownloadStatus.STARTED)
                             self._handle_chunks(file_buffer, response)
@@ -181,7 +181,7 @@ class DownloadHandler:
         downloaded_size = 0
         _count_refresh = 0
 
-        for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
+        for chunk in response.iter_content(chunk_size=1024 * 64):
             if not chunk:
                 break
 
@@ -189,7 +189,9 @@ class DownloadHandler:
 
             downloaded_size += len(chunk)
             _elapsed_time = time.time() - self.download_start_time
-            _refresh_interval_count = int(_elapsed_time / REFRESH_RATE)
+            _refresh_interval_count = int(
+                _elapsed_time / app_settings.discord.refresh_rate
+            )
 
             if _refresh_interval_count > _count_refresh:
                 _count_refresh += 1

@@ -5,8 +5,9 @@ from urllib.parse import unquote
 import requests
 
 from celery.exceptions import Ignore
+from loguru import logger
 
-from config import logger, DOWNLOAD_TOKEN, BASE_URL_1FICHIER
+from nmdownloader.config import app_settings
 
 
 class DownloadStatus(Enum):
@@ -34,10 +35,10 @@ class DownloadRevokeException(Ignore):
 def compute_url_from_1fichier(link):
     _url = link.split("&")[0]
     token_response = requests.post(
-        f"{BASE_URL_1FICHIER}/download/get_token.cgi",
+        f"{app_settings.download.un_fichier_api_url}/download/get_token.cgi",
         json={"url": _url},
         headers={
-            "Authorization": f"Bearer {DOWNLOAD_TOKEN}",
+            "Authorization": f"Bearer {app_settings.download.un_fichier_token}",
             "Content-Type": "application/json",
         },
         timeout=10,

@@ -1,40 +1,41 @@
-from flask import request, Blueprint, jsonify
+from flask import request, Blueprint, jsonify, Response, abort
 
-from libs.lib_task import get_download_task
-from services.download_handler import DownloadHandler
-from tasks.download_tasks import download_task
-from config import gunicorn_logger
+from loguru import logger
+
+from nmdownloader.libs.lib_task import get_download_task
+from nmdownloader.services.download_handler import DownloadHandler
+from nmdownloader.tasks.download_tasks import download_task
 
 download_bp = Blueprint("download", __name__, url_prefix="/download")
 
 
 @download_bp.post("/")
-def launch() -> dict[str, object]:
+def launch() -> Response:
     data = request.get_json()
     if not (url := data.get("url")):
-        return jsonify(dict(message="URL is mandatory")), 400
+        abort(code=400, description="URL cannot be empty")
     type_dl = data.get("type_dl")
 
     task = download_task.delay(url=url, type_dl=type_dl)
-    gunicorn_logger.info(f"Task sent: {task.id}")
+    logger.info(f"Task sent: {task.id}")
 
     return jsonify(dict(uuid=task.id))
 
 
 @download_bp.get("/<uuid>")
-def status(uuid) -> dict[str, object]:
+def status(uuid) -> Response:
     download_meta = get_download_task(uuid, json_readable=True)
 
     return jsonify(download_meta)
 
 
 @download_bp.delete("/<uuid>")
-def stop(uuid) -> dict[str, object]:
+def stop(uuid) -> Response:
     download_meta = get_download_task(uuid)
     if not isinstance(download_meta.get("download"), DownloadHandler):
-        return jsonify(dict(message="Unable to retrieve download")), 400
+        abort(code=400, description="Unable to retrieve download")
 
     download_meta["download"].cancel()
-    gunicorn_logger.info(f"Task: {uuid} Revoked")
+    logger.info(f"Task: {uuid} Revoked")
 
     return jsonify(dict(message="Download stopped"))

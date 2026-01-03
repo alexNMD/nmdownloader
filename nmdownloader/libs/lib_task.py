@@ -1,8 +1,8 @@
 import pickle
 from celery.result import AsyncResult
 
-from apps.celery_app import celery_app
-from services.download_handler import DownloadHandler
+from nmdownloader.apps.celery_app import celery_app
+from nmdownloader.services.download_handler import DownloadHandler
 
 
 def get_task_result(task_id: str) -> dict:

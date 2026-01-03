@@ -1,12 +1,12 @@
 import requests
 
-from config import BASE_URL_DISCORD
+from nmdownloader.config import app_settings
 
 
 class DiscordAPI:
-    def __init__(self, token):
-        self.token = token
-        self.base_url = BASE_URL_DISCORD
+    def __init__(self):
+        self.token = app_settings.discord.token
+        self.base_url = app_settings.discord.api_url
         self.headers = {
             "Authorization": f"Bot {self.token}",
             "Content-Type": "application/json",

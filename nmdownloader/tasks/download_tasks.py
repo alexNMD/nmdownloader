@@ -1,7 +1,7 @@
 import pickle
 
-from apps.celery_app import celery_app
-from services.download_handler import DownloadHandler
+from nmdownloader.apps.celery_app import celery_app
+from nmdownloader.services.download_handler import DownloadHandler
 
 
 @celery_app.task(bind=True)

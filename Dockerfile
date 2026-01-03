@@ -1,12 +1,18 @@
-FROM python:3.11-slim
+# syntax=docker/dockerfile:1
+FROM python:3.14-slim
 
-WORKDIR /NMDownloader
+# hadolint ignore=DL3008
+RUN apt-get update --no-install-recommends \
+    && apt-get install -y unar \
+    && rm -rf /var/lib/apt/lists/ \
+    && pip install --no-cache-dir "uv[rust]==0.7.19"
 
-COPY requirements.txt .
+WORKDIR /nmdownloader
 
-# additionals packages
-RUN apt-get update && apt-get install -y gcc g++ unar
+ENV UV_PROJECT_ENVIRONMENT=/usr/local
 
-RUN pip install --no-cache-dir -r requirements.txt
+COPY pyproject.toml uv.lock ./
+
+RUN uv sync --frozen
 
 COPY . .

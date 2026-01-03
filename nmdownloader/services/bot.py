@@ -1,6 +1,5 @@
 from discord.ext import commands
-
-from config import logger, ENV
+from loguru import logger
 
 
 class NMDownloader(commands.Bot):
@@ -12,7 +11,4 @@ class NMDownloader(commands.Bot):
         await self.load_extension("commands.download")
 
     async def on_ready(self):
-        bot_messages_channel = self.get_channel(self.bot_channel)
-        if ENV != "DEV":
-            await bot_messages_channel.send(f"{self.user} connected")
         logger.info(f"Logged in as {self.user}")
