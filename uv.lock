@@ -773,7 +773,6 @@ dependencies = [
     { name = "mypy" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
-    { name = "rarfile" },
     { name = "requests" },
     { name = "unzipall" },
 ]
@@ -796,7 +795,6 @@ requires-dist = [
     { name = "mypy", specifier = ">=1.19.1" },
     { name = "pydantic", specifier = ">=2.12.5" },
     { name = "pydantic-settings", specifier = ">=2.12.0" },
-    { name = "rarfile", specifier = ">=4.2" },
     { name = "requests", specifier = ">=2.32.5" },
     { name = "unzipall", specifier = ">=1.0.1" },
 ]
