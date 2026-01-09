@@ -1,41 +1,39 @@
-from flask import request, Blueprint, jsonify, Response, abort
-
+from flask import request, Blueprint, jsonify, render_template
 from loguru import logger
 
-from nmdownloader.libs.task import get_download_task
-from nmdownloader.services.download import Download
+from nmdownloader.libs.task import get_task_result
 from nmdownloader.tasks.download import download_task
 
-download_bp = Blueprint("download", __name__, url_prefix="/download")
+download_bp = Blueprint(
+    "download", __name__, url_prefix="/download", template_folder="templates"
+)
+
+
+@download_bp.get("/")
+def home():
+    return render_template("download.html")
 
 
 @download_bp.post("/")
-def launch() -> Response:
+def launch():
     data = request.get_json()
-    if not (url := data.get("url")):
-        abort(code=400, description="URL cannot be empty")
+    if not (urls := data.get("urls")):
+        return {"message": "URLs cannot be empty"}, 400
+    if not isinstance(urls, list):
+        return {"message": "URLs must be a list"}, 400
+
     type_dl = data.get("type_dl")
+    tasks_uuids = []
+    for url in urls:
+        task = download_task.delay(url=url, type_dl=type_dl)
+        tasks_uuids.append(task.id)
+        logger.info(f"Task sent: {task.id}")
 
-    task = download_task.delay(url=url, type_dl=type_dl)
-    logger.info(f"Task sent: {task.id}")
-
-    return jsonify(dict(uuid=task.id))
+    return jsonify({"uuids": tasks_uuids})
 
 
 @download_bp.get("/<uuid>")
-def status(uuid) -> Response:
-    download_meta = get_download_task(uuid, json_readable=True)
+def status(uuid):
+    download = get_task_result(task_id=uuid)
 
-    return jsonify(download_meta)
-
-
-@download_bp.delete("/<uuid>")
-def stop(uuid) -> Response:
-    download_meta = get_download_task(uuid)
-    if not isinstance(download_meta.get("download"), Download):
-        abort(code=400, description="Unable to retrieve download")
-
-    download_meta["download"].cancel()
-    logger.info(f"Task: {uuid} Revoked")
-
-    return jsonify(dict(message="Download stopped"))
+    return jsonify(download)

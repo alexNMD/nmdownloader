@@ -5,7 +5,7 @@
 
 ## ✅ Prerequisites
 
-- Python 3.14
+- Python >=3.11
 - [uv](https://github.com/astral-sh/uv)
 
 ## Friendly reminder...

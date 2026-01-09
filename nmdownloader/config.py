@@ -73,7 +73,7 @@ class DownloadConfig(BaseSettings):
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file="../.env", env_file_encoding="utf-8", extra="ignore"
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
 
     discord: DiscordConfig = Field(default_factory=DiscordConfig)
@@ -81,6 +81,7 @@ class Settings(BaseSettings):
     download: DownloadConfig = Field(default_factory=DownloadConfig)
 
     media_path: Path = Field(default=Path("/media"))
+    nmd_log_level: str = Field(default="INFO")
 
 
 @lru_cache

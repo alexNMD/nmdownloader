@@ -1,5 +1,6 @@
-from flask import Blueprint, jsonify, Response
+import platform
 
+from flask import Blueprint, jsonify, Response
 
 from nmdownloader.config import app_settings
 
@@ -11,6 +12,7 @@ def hello() -> Response:
     return jsonify(
         {
             "Hello": "World",
+            "system": platform.system(),
             "MEDIA_PATH": str(app_settings.media_path),
             "commande_prefix": app_settings.discord.command_prefix,
             "refresh_rate": app_settings.discord.refresh_rate,

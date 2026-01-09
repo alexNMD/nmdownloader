@@ -7,7 +7,8 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
-import unzipall
+
+import unzipall  # type: ignore
 from loguru import logger
 
 from nmdownloader.config import app_settings
