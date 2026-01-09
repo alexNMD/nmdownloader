@@ -3,7 +3,10 @@ FROM python:3.14-slim
 
 # hadolint ignore=DL3008
 RUN apt-get update --no-install-recommends \
-    && apt-get install -y unar \
+    && apt-get install -y \
+      p7zip-full \
+      unrar-free \
+      cabextract \
     && rm -rf /var/lib/apt/lists/ \
     && pip install --no-cache-dir "uv[rust]==0.7.19"
 
