@@ -1,11 +1,7 @@
 x-environment: &default-environment
+  DISCORD_ADMINS: '["alexnmd","NMD#0000"]'
   DISCORD_TOKEN: $DISCORD_TOKEN
   DISCORD_DEFAULT_CHANNEL_ID: $DISCORD_DEFAULT_CHANNEL_ID
-  DISCORD_ADMINS: '["alexnmd","NMD#0000"]'
-
-  CELERY_BROKER_URL: redis://redis:6379/0
-  CELERY_BACKEND_URL: redis://redis:6379/0
-
   DOWNLOAD_UN_FICHIER_TOKEN: $DOWNLOAD_UN_FICHIER_TOKEN
 
 services:
@@ -44,8 +40,6 @@ services:
     command: ["celery", "--app", "nmdownloader.apps.celery_app", "worker", "--loglevel=${NMD_LOG_LEVEL:-INFO}", "--events"]
     volumes:
       - /mnt/Armoire/Plex:/media
-    env_file:
-      - .env
     environment:
       <<: *default-environment
       C_FORCE_ROOT: "true"
