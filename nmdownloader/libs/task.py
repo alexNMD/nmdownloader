@@ -2,7 +2,7 @@ import pickle
 from celery.result import AsyncResult
 
 from nmdownloader.apps.celery_app import celery_app
-from nmdownloader.services.download_handler import DownloadHandler
+from nmdownloader.services.download import Download
 
 
 def get_task_result(task_id: str) -> dict:
@@ -23,6 +23,6 @@ def get_download_task(task_id: str, json_readable=False):
             download=download.to_dict() if json_readable else download,
             stats=result.info.get("stats", {}),
         )
-        if isinstance(download, DownloadHandler)
+        if isinstance(download, Download)
         else get_task_result(task_id)
     )

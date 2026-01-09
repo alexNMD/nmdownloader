@@ -80,7 +80,6 @@ class Settings(BaseSettings):
     celery: CeleryConfig = Field(default_factory=CeleryConfig)
     download: DownloadConfig = Field(default_factory=DownloadConfig)
 
-    log_level: str = Field(default="INFO")
     media_path: Path = Field(default=Path("/media"))
 
 

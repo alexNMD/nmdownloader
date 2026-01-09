@@ -2,9 +2,9 @@ from flask import request, Blueprint, jsonify, Response, abort
 
 from loguru import logger
 
-from nmdownloader.libs.lib_task import get_download_task
-from nmdownloader.services.download_handler import DownloadHandler
-from nmdownloader.tasks.download_tasks import download_task
+from nmdownloader.libs.task import get_download_task
+from nmdownloader.services.download import Download
+from nmdownloader.tasks.download import download_task
 
 download_bp = Blueprint("download", __name__, url_prefix="/download")
 
@@ -32,7 +32,7 @@ def status(uuid) -> Response:
 @download_bp.delete("/<uuid>")
 def stop(uuid) -> Response:
     download_meta = get_download_task(uuid)
-    if not isinstance(download_meta.get("download"), DownloadHandler):
+    if not isinstance(download_meta.get("download"), Download):
         abort(code=400, description="Unable to retrieve download")
 
     download_meta["download"].cancel()

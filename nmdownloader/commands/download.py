@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 from loguru import logger
-from nmdownloader.tasks.download_tasks import download_task
+from nmdownloader.tasks.download import download_task
 
 
 class Download(commands.Cog):

@@ -1,9 +1,9 @@
 import io
-import os
-import pickle
+import json
 import re
 import time
 from enum import Enum
+from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
@@ -11,21 +11,16 @@ import unzipall
 from loguru import logger
 
 from nmdownloader.config import app_settings
-from nmdownloader.libs.lib_download import (
+from nmdownloader.libs.download import (
     compute_url_from_1fichier,
     extract_filename,
     DownloadException,
     DownloadRevokeException,
     DownloadStatus,
 )
-from nmdownloader.libs.lib_files import (
-    organize_episode,
-    dest_file_exists,
-    is_json_serializable,
-)
-from nmdownloader.libs.lib_progressbar import get_progress_bar
+from nmdownloader.libs.files import get_relative_directory
+from nmdownloader.libs.progressbar import get_progress_bar
 from nmdownloader.services.discord_api import DiscordAPI
-from nmdownloader.services.files import ListCompressArchiveService
 
 discord_api = DiscordAPI()
 
@@ -36,7 +31,7 @@ class ShowType(Enum):
     ANIMES = "animes"
 
 
-class DownloadHandler:
+class Download:
     def __init__(self, url, task, message_id=None, channel_id=None, type_dl=None):
         self.task = task
         self.status_message_id = None
@@ -44,52 +39,59 @@ class DownloadHandler:
         self.channel_id = channel_id or app_settings.discord.default_channel_id
         self.url = self._compute_url(url)
         try:
-            self.file_name = extract_filename(self.url)
-            self.extension = os.path.splitext(self.file_name)[1]
+            self.filename = extract_filename(self.url)
         except Exception as error:
             raise DownloadException(self, "Unable to retrieve filename") from error
         self.type_dl = (
             (
                 ShowType.SERIES.value
-                if re.search(r"[Ss]\d{1,2}([Ee]\d{1,2})?", self.file_name)
+                if re.search(r"[Ss]\d{1,2}([Ee]\d{1,2})?", str(self.filename))
                 else ShowType.FILMS.value
             )
             if not type_dl
             else type_dl
         )
-        self.episodes = self.type_dl in [ShowType.SERIES.value, ShowType.ANIMES.value]
         self.is_compressed = (
-            True if self.extension in unzipall.list_supported_formats() else False
+            True if self.filename.suffix in unzipall.list_supported_formats() else False
         )
-        self.base_download_path = f"{app_settings.media_path}/{self.type_dl}"
-        self.file_path = os.path.join(self.base_download_path, self.file_name)
+        self.base_download_path: Path = app_settings.media_path / self.type_dl
+        self.destination_directory: Path = (
+            self.base_download_path / get_relative_directory(str(self.filename))
+            if self.type_dl in [ShowType.SERIES.value, ShowType.ANIMES.value]
+            else self.base_download_path
+        )
+        self.filepath = self.destination_directory / self.filename
+        self.downloaded_size = 0
         self.download_start_time = None
+        self.download_speed = None
         self.total_size = None
         self.finished = False
 
     def check(self):
-        if not os.path.exists(self.base_download_path):
-            raise DownloadException(self, f"{self.base_download_path} doesn't exists")
+        if not self.base_download_path.exists():
+            raise DownloadException(self, f"{self.base_download_path} doesn't exist")
 
-        if dest_file_exists(self.file_path):
-            raise DownloadException(self, "Already exists")
+        # TODO: refacto. find a better way
+        # if dest_file_exists(self.file_path):
+        #     raise DownloadException(self, "Already exist")
 
         return True
 
     def start(self):
         try:
+            self.destination_directory.mkdir(parents=True, exist_ok=True)
             with requests.get(self.url, stream=True, timeout=3600) as response:
                 if response.ok:
+                    self.update_status(DownloadStatus.STARTED)
                     self.total_size = int(response.headers.get("Content-Length", 0))
                     self.download_start_time = time.time()
 
                     ### Start reading file
-                    with open(self.file_path, "wb") as file:
+                    with open(self.filepath, "wb") as file:
                         with io.BufferedWriter(
                             file,
                             buffer_size=(1024 * 64),  # 64 KB
                         ) as file_buffer:
-                            self.update_status(DownloadStatus.STARTED)
                             self._handle_chunks(file_buffer, response)
                     ### Close file
 
@@ -97,10 +99,11 @@ class DownloadHandler:
                         self._decompress()
 
                     ### Finish
-                    self.update_status(DownloadStatus.DONE)
                     self.finished = True
+                    self.update_status(DownloadStatus.DONE)
         except (
             FileNotFoundError,
+            NotImplementedError,
             ValueError,
             unzipall.ArchiveExtractionError,
         ) as error:
@@ -113,29 +116,36 @@ class DownloadHandler:
         self._remove()
         raise DownloadRevokeException(self)
 
-    def to_dict(self):
-        return {
-            key: value
-            for key, value in self.__dict__.items()
-            if is_json_serializable(value)
-        }
+    def to_dict(self) -> dict:
+        download_dict = {}
+        for key, value in self.__dict__.items():
+            match value:
+                case Path():
+                    download_dict[key] = str(value)
+                case _:
+                    try:
+                        json.dumps(value)
+                        download_dict[key] = value
+                    except (TypeError, OverflowError):
+                        pass
+        return download_dict
 
     def update_status(
-        self, status: DownloadStatus, additionnal: str = str(), meta_data=None
+        self, status: DownloadStatus, additional: str = str(), meta_data=None
     ) -> None:
         title = f"Download {status.name}"
         _base_content = (
-            f"[{self.type_dl}] {self.file_name} \n"
-            if (hasattr(self, "type_dl") and hasattr(self, "file_name"))
-            else ""
+            ""
+            if not (hasattr(self, "type_dl") and hasattr(self, "filename"))
+            else f"[{self.type_dl}] {self.filename}\n"
         )
-        content = _base_content + additionnal
+        content = f"{_base_content}{additional}" if additional else _base_content
 
-        self._update_task_meta(meta_data)
+        self.task.update_state(meta=self.to_dict())
         self._do_notification(status, title, content)
 
     def _do_notification(self, status: DownloadStatus, title, content) -> None:
-        logger.debug(title, content)
+        logger.info(f"{title} => {content}")
 
         if self.status_message_id:
             discord_api.edit_embed(
@@ -151,49 +161,28 @@ class DownloadHandler:
             else discord_api.send_embed(self.channel_id, title, content, status.value)
         )
 
-    def _update_task_meta(self, additionnal_meta=None) -> None:
-        _additionnal_meta = (
-            additionnal_meta if isinstance(additionnal_meta, dict) else {}
-        )
-        meta = dict(
-            download=pickle.dumps(self),
-        ) | dict(stats=_additionnal_meta)
-
-        self.task.update_state(meta=meta)
-
     def _decompress(self) -> None:
         self.update_status(
-            DownloadStatus.RUNNING, additionnal="Extraction in progress..."
+            DownloadStatus.RUNNING, additional="Extraction in progress..."
         )
-        if not (
-            compressed_files := ListCompressArchiveService().list_archive(
-                extension=self.extension, path=self.file_path
-            )
-        ):
-            raise ValueError("Unable to open archive")
 
-        logger.info(f"{self.file_name} extraction in progress...")
-        unzipall.extract(archive_path=self.file_path, verbose=True)
-        logger.info(f"{self.file_name} extraction done")
-
-        if self.episodes:
-            for _file in compressed_files:
-                try:
-                    organize_episode(_file)
-                except Exception as e:
-                    logger.error(f"Failed to organize file {_file}: {e}")
+        logger.info(f"{self.filename} extraction in progress...")
+        unzipall.extract(
+            archive_path=self.filepath, extract_to=self.destination_directory
+        )
+        self._remove()
+        logger.info(f"{self.filename} extraction done")
 
     def _compute_url(self, url) -> str:
         download_providers = {"1fichier.com": compute_url_from_1fichier}
         _netloc = urlparse(url).netloc
 
         try:
-            return download_providers.get(_netloc, lambda url: url)(url)
+            return download_providers.get(_netloc, lambda _url: url)(url)
         except Exception as error:
             raise DownloadException(self, str(error))
 
     def _handle_chunks(self, file_buffer, response) -> None:
-        downloaded_size = 0
         _count_refresh = 0
 
         for chunk in response.iter_content(chunk_size=1024 * 64):
@@ -202,7 +191,7 @@ class DownloadHandler:
 
             file_buffer.write(chunk)
 
-            downloaded_size += len(chunk)
+            self.downloaded_size += len(chunk)
             _elapsed_time = time.time() - self.download_start_time
             _refresh_interval_count = int(
                 _elapsed_time / app_settings.discord.refresh_rate
@@ -210,36 +199,29 @@ class DownloadHandler:
 
             if _refresh_interval_count > _count_refresh:
                 _count_refresh += 1
-                download_speed = downloaded_size / _elapsed_time
+                self.download_speed = self.downloaded_size / _elapsed_time
                 self.update_status(
-                    DownloadStatus.RUNNING,
-                    additionnal=self._compute_progress(
-                        downloaded_size, self.total_size, download_speed
-                    ),
-                    meta_data=dict(
-                        progress=downloaded_size,
-                        total=self.total_size,
-                        speed=download_speed,
-                    ),
+                    DownloadStatus.RUNNING, additional=self._compute_progress()
                 )
 
-    def _remove(self):
-        if os.path.exists(self.file_path):
-            os.remove(self.file_path)
-            logger.info(f"file removed: {self.file_path}")
+    def _remove(self) -> None:
+        if self.filepath.exists():
+            self.filename.unlink(missing_ok=True)
+            logger.info(f"file removed: {self.filepath}")
 
-    @classmethod
-    def _compute_progress(cls, progress, total, speed) -> str:
-        _remaining_time_seconds = (total - progress) / speed
+    def _compute_progress(self) -> str:
+        _remaining_time_seconds = (
+            self.total_size - self.downloaded_size
+        ) / self.download_speed
         _less_than_one_minute = _remaining_time_seconds < 60
 
-        progress_bar = get_progress_bar(progress, total)
+        progress_bar = get_progress_bar(self.downloaded_size, self.total_size)
         remaining_time = (
             _remaining_time_seconds
             if _less_than_one_minute
             else _remaining_time_seconds / 60
         )
         time_unit = "sec" if _less_than_one_minute else "min"
-        speed_in_mb = speed / (1024 * 1024)
+        speed_in_mb = self.download_speed / (1024 * 1024)
 
         return f"{progress_bar} [ETA {remaining_time:.0f} {time_unit} @ {speed_in_mb:.2f} MB/s]"

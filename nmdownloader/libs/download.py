@@ -1,6 +1,6 @@
 import re
 from enum import Enum
-from urllib.parse import unquote
+from pathlib import Path
 
 import requests
 
@@ -54,12 +54,13 @@ def compute_url_from_1fichier(link):
     return ready_url
 
 
-def extract_filename(url):
+def extract_filename(url) -> Path:
     _content_disposition = requests.head(url, timeout=10).headers.get(
         "Content-Disposition", str()
     )
     _filename_regex = r'filename\*?=(?:UTF-8\'\')?"?([^;\n"]+)"?'
 
-    if _match := re.search(_filename_regex, _content_disposition):
-        return _match.group(1)
-    return unquote(url.split("/")[-1])
+    if not (_match := re.search(_filename_regex, _content_disposition)):
+        raise ValueError
+
+    return Path(_match.group(1))

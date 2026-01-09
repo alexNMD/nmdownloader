@@ -68,7 +68,7 @@ services:
       - "--log-level ${LOG_LEVEL:-INFO}"
 
       # APP MODULE
-      - "nmdownloader.apps.flask_app:flask_app",
+      - "nmdownloader.apps.flask_app:flask_app"
     network_mode: "host"
 
 volumes:

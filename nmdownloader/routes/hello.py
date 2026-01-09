@@ -11,7 +11,9 @@ def hello() -> Response:
     return jsonify(
         {
             "Hello": "World",
-            "LOG_LEVEL": app_settings.log_level,
             "MEDIA_PATH": str(app_settings.media_path),
+            "commande_prefix": app_settings.discord.command_prefix,
+            "refresh_rate": app_settings.discord.refresh_rate,
+            "concurrency": app_settings.celery.concurrency,
         }
     )

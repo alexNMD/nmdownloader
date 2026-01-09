@@ -1,3 +1,3 @@
 """Tasks"""
 
-__import__("nmdownloader.tasks.download_tasks")
+__import__("nmdownloader.tasks.download")
