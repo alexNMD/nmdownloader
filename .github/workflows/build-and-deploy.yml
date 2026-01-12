@@ -13,8 +13,12 @@ env:
   IMAGE_NAME: nmdownloader
 
 jobs:
+  lint:
+    uses: ./.github/workflows/lint.yml
+
   build:
     runs-on: ubuntu-latest
+    needs: lint
 
     steps:
       - name: Checkout source
@@ -40,4 +44,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/alexnmd/nmd_downloader:latest
+            ghcr.io/alexnmd/${{ env.IMAGE_NAME }}:latest
