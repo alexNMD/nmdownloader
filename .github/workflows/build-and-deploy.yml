@@ -2,15 +2,15 @@ name: Build & Push Multi-Arch Docker Image
 
 on:
   push:
-    branches: [main]
+    tags:
+      - '*'
 
 permissions:
   contents: read
   packages: write
 
 env:
-  IMAGE_NAME: nmd_downloader
-
+  IMAGE_NAME: nmdownloader
 
 jobs:
   build:
@@ -39,4 +39,6 @@ jobs:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ghcr.io/alexnmd/nmd_downloader:latest
+          tags: |
+            ghcr.io/alexnmd/nmd_downloader:$GITHUB_REF_NAME
+            ghcr.io/alexnmd/nmd_downloader:latest
