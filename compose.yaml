@@ -7,7 +7,7 @@ x-environment: &default-environment
 services:
   redis:
     image: redis:latest
-    container_name: redis-container
+    container_name: nmdredis
     restart: unless-stopped
     volumes:
       - redis-data:/data
@@ -23,9 +23,9 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    image: nmdownloader:latest
+    image: ghcr.io/alexnmd/nmdownloader:latest
     environment: *default-environment
-    container_name: discord
+    container_name: nmdiscord
     restart: unless-stopped
     command: ["python", "-m", "nmdownloader.apps.discord_app"]
 
@@ -34,8 +34,8 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-    image: nmdownloader:latest
-    container_name: celery
+    image: ghcr.io/alexnmd/nmdownloader:latest
+    container_name: nmdcelery
     restart: unless-stopped
     command: ["celery", "--app", "nmdownloader.apps.celery_app", "worker", "--loglevel=${NMD_LOG_LEVEL:-INFO}", "--events"]
     volumes:
@@ -55,11 +55,11 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    image: nmdownloader:latest
+    image: ghcr.io/alexnmd/nmdownloader:latest
     environment:
       <<: *default-environment
       FLOWER_UNAUTHENTICATED_API: "true"
-    container_name: flower
+    container_name: nmdflower
     restart: unless-stopped
     ports:
       - "5555:5555"
@@ -71,9 +71,9 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    image: nmdownloader:latest
+    image: ghcr.io/alexnmd/nmdownloader:latest
     environment: *default-environment
-    container_name: flask
+    container_name: nmdflask
     restart: unless-stopped
     ports:
       - "8000:8000"
