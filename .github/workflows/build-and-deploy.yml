@@ -40,5 +40,4 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/alexnmd/nmd_downloader:$GITHUB_REF_NAME
             ghcr.io/alexnmd/nmd_downloader:latest
