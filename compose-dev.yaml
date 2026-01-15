@@ -36,9 +36,6 @@ services:
     network_mode: "host"
 
   flower:
-    depends_on:
-      celery:
-        condition: service_healthy
     image: nmdownloader_v1
     build:
       context: .
@@ -51,24 +48,12 @@ services:
     network_mode: "host"
 
   flask:
-    # depends_on:
-    #   celery:
-    #     condition: service_healthy
     image: nmdownloader_v1
     container_name: flask
     build:
       context: .
     restart: unless-stopped
-    command:
-      - "gunicorn"
-      - "--workers ${CONCURRENCY:-2}"
-      - "--bind 0.0.0.0"
-      - "--access-logfile -"
-      - "--error-logfile -"
-      - "--log-level ${LOG_LEVEL:-INFO}"
-
-      # APP MODULE
-      - "nmdownloader.apps.flask_app:flask_app"
+    command: ["gunicorn", "nmdownloader.apps.flask_app:flask_app"]
     network_mode: "host"
 
 volumes:
