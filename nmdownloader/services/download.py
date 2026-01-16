@@ -207,7 +207,7 @@ class Download:
 
     def _remove(self) -> None:
         if self.filepath.exists():
-            self.filename.unlink(missing_ok=True)
+            self.filepath.unlink(missing_ok=True)
             logger.info(f"file removed: {self.filepath}")
 
     def _compute_progress(self) -> str:
