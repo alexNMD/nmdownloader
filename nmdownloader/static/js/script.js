@@ -62,13 +62,3 @@ class MagicFocus {
 
 // Initialize
 window.magicFocus = new MagicFocus(document.querySelector('.form'));
-
-// jQuery replacement for customSelect
-// document.addEventListener('DOMContentLoaded', () => {
-//     // Si vous utilisez jQuery et le plugin customSelect, gardez cette ligne :
-//     // $('.select').customSelect();
-//
-//     // Sinon, vous devrez implémenter ou trouver une alternative à customSelect
-//     const selects = document.querySelectorAll('.select');
-//     // ... votre code pour styliser les selects
-// });
