@@ -47,7 +47,9 @@ uv run mypy .
 ```
 
 ## Dotenv Example
-- DISCORD_TOKEN
-- DISCORD_ADMINS
-- DISCORD_DEFAULT_CHANNEL_ID
-- DOWNLOAD_UN_FICHIER_TOKEN
+| Variable                   | Explanation                                                                                                                            |
+|----------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| DISCORD_TOKEN              | The bot authentication token from Discord Developer Portal. Required to connect and authenticate your bot with Discord's API.          |
+| DISCORD_ADMINS             | JSON style list of Discord user IDs who have administrator privileges for bot commands and settings. Example: '["user1","user2#0000"]' |
+| DISCORD_DEFAULT_CHANNEL_ID | The default Discord channel ID where the bot will send messages or notifications if no specific channel is specified.                  |
+| DOWNLOAD_UN_FICHIER_TOKEN  | Authentication token for the file download service API. Used to authorize and authenticate requests to download files.                 |
