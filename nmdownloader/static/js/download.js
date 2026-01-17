@@ -60,7 +60,7 @@ document.getElementById('downloadForm').addEventListener('submit', async (e) => 
 
         const data = await response.json();
 
-        notification(`✅ ${data["uuids"].length} download(s) started`);
+        notification(`${data["uuids"].length} download(s) started`);
 
         urlsField.value = '';
         if (typeDlField) typeDlField.checked = false
