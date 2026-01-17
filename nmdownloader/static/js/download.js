@@ -31,7 +31,7 @@ document.getElementById('downloadForm').addEventListener('submit', async (e) => 
     const typeDlField = document.querySelector('input[name="option"]:checked');
 
     const urlsText = urlsField.value.trim();
-    const typeDl = typeDlField ? typeDlField : null
+    const typeDl = typeDlField ? typeDlField.value : null
 
     if (!urlsText) {
         notification('Send one url at least', false)
