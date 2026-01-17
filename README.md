@@ -30,6 +30,11 @@ uv run -- flask --app nmdownloader.apps.flask_app run --debug
 uv run -- celery --app nmdownloader.apps.celery_app worker
 ```
 
+### Start the discord app
+```
+uv run -- python -m nmdownloader.apps.discord_app
+```
+
 ### Code Quality
 ```
 uv run ruff check .
