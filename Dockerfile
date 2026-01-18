@@ -1,8 +1,8 @@
 FROM python:3.14-slim
 
 # hadolint ignore=DL3008
-RUN apt-get update --no-install-recommends \
-    && apt-get install -y \
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
       p7zip-full \
       unrar-free \
       cabextract \
