@@ -1,12 +1,12 @@
-const urlsField = document.getElementById('urls');
-const typeDlField = document.querySelector('input[name="option"]:checked');
+const urlsTexArea = document.getElementById('urls-textarea');
 const alert = document.getElementById('urls-invalid');
 
 
 document.getElementById('downloadForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const urlsText = urlsField.value.trim();
+    const typeDlField = document.querySelector('input[name="option"]:checked');
+    const urlsText = urlsTexArea.value.trim();
     const typeDl = typeDlField ? typeDlField.value : null
 
     if (!urlsText) {
@@ -17,9 +17,11 @@ document.getElementById('downloadForm').addEventListener('submit', async (e) => 
     const urls = urlsText.split('\n').filter(url => url.trim());
     const hasValidUrls = urls.every(url => isValidHttpUrl(url));
     if (!hasValidUrls) {
+        urlsTexArea.classList.add('error');
         alert.style.display = 'block';
         return;
     } else {
+        urlsTexArea.classList.remove('error');
         alert.style.display = 'none';
     }
 
@@ -44,7 +46,7 @@ document.getElementById('downloadForm').addEventListener('submit', async (e) => 
         const data = await response.json();
 
         notification(`${data["uuids"].length} download(s) started`);
-        urlsField.value = '';
+        urlsTexArea.value = '';
         if (typeDlField) typeDlField.checked = false
 
     } catch (error) {
@@ -77,7 +79,7 @@ function notification(text, success= true) {
     toast.style.animationTimingFunction = easing;
     toast.style.animationFillMode = "both";
 
-    setTimeout(() => toast.remove(), 2000);
+    setTimeout(() => toast.remove(), 5000);
 }
 
 function isValidHttpUrl(string) {

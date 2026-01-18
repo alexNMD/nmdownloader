@@ -62,3 +62,18 @@ class MagicFocus {
 
 // Initialize
 window.magicFocus = new MagicFocus(document.querySelector('.form'));
+
+let lastChecked = null;
+const radioInputs = document.querySelectorAll('input[name="option"]');
+
+radioInputs.forEach(input => {
+    input.addEventListener('click', function(e) {
+        if (this === lastChecked) {
+            this.checked = false;
+            lastChecked = null;
+            window.magicFocus.focus.removeAttribute('style');
+        } else {
+            lastChecked = this;
+        }
+    });
+});
