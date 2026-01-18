@@ -1,8 +1,13 @@
-services:
+x-environment: &default-environment
+  DISCORD_ADMINS: $DISCORD_ADMINS
+  DISCORD_TOKEN: $DISCORD_TOKEN
+  DISCORD_DEFAULT_CHANNEL_ID: $DISCORD_DEFAULT_CHANNEL_ID
+  DOWNLOAD_UN_FICHIER_TOKEN: $DOWNLOAD_UN_FICHIER_TOKEN
 
+services:
   redis:
     image: redis:latest
-    container_name: redis-container
+    container_name: nmdredis
     restart: unless-stopped
     volumes:
       - redis-data:/data
@@ -18,29 +23,28 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    image: ghcr.io/alexnmd/nmd_downloader:latest
-    volumes:
-      - .env:/NMDownloader/.env
-    container_name: discord
+    image: ghcr.io/alexnmd/nmdownloader:latest
+    environment: *default-environment
+    container_name: nmdiscord
     restart: unless-stopped
-    command: ["python", "-m", "apps.discord_app"]
+    command: ["python", "-m", "nmdownloader.apps.discord_app"]
 
 
   celery:
     depends_on:
       redis:
         condition: service_healthy
-    image: ghcr.io/alexnmd/nmd_downloader:latest
-    container_name: celery
+    image: ghcr.io/alexnmd/nmdownloader:latest
+    container_name: nmdcelery
     restart: unless-stopped
-    command: ["celery", "--app", "apps.celery_app", "worker"]
+    command: ["celery", "--app", "nmdownloader.apps.celery_app", "worker", "--loglevel=${NMD_LOG_LEVEL:-INFO}", "--events"]
     volumes:
-      - ${DOWNLOAD_PATH}:${DOWNLOAD_PATH}
-      - .env:/NMDownloader/.env
+      - /mnt/Armoire/Plex:/media
     environment:
-      - C_FORCE_ROOT="true"
+      <<: *default-environment
+      C_FORCE_ROOT: "true"
     healthcheck:
-      test: celery --app apps.celery_app status
+      test: celery --app nmdownloader.apps.celery_app status
       interval: 10s
       timeout: 10s
       retries: 10
@@ -51,17 +55,15 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    image: ghcr.io/alexnmd/nmd_downloader:latest
-    volumes:
-      - .env:/NMDownloader/.env
-    container_name: flower
+    image: ghcr.io/alexnmd/nmdownloader:latest
+    environment:
+      <<: *default-environment
+      FLOWER_UNAUTHENTICATED_API: "true"
+    container_name: nmdflower
     restart: unless-stopped
     ports:
       - "5555:5555"
-    command: ["celery", "--app", "apps.celery_app", "flower"]
-    environment:
-      - FLOWER_UNAUTHENTICATED_API=true
-      - FLOWER_URL_PREFIX=flower
+    command: ["celery", "--app", "nmdownloader.apps.celery_app", "flower"]
 
   flask:
     depends_on:
@@ -69,21 +71,15 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    image: ghcr.io/alexnmd/nmd_downloader:latest
-    volumes:
-      - .env:/NMDownloader/.env
-    container_name: flask
+    image: ghcr.io/alexnmd/nmdownloader:latest
+    environment: *default-environment
+    container_name: nmdflask
     restart: unless-stopped
     ports:
       - "8000:8000"
-    command: [
-      "gunicorn",
-      "--workers", "${CONCURRENCY:-2}",
-      "--bind", "0.0.0.0",
-      "apps.flask_app:flask_app",
-      "--access-logfile", "-",
-      "--error-logfile", "-",
-      "--log-level", "${LOG_LEVEL:-INFO}"]
+    command: ["gunicorn", "nmdownloader.apps.flask_app:flask_app"]
+
+
 
 volumes:
   redis-data:

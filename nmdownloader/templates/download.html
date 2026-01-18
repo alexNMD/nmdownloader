@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>NMDownloader</title>
+
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <form class="form" id="downloadForm">
+        <p class="field required" id="urls-field">
+            <label class="label" for="urls">URLs</label>
+            <textarea class="textarea" id="urls" placeholder="one by line..." cols="50" name="urls" rows="4" required></textarea>
+            <span style="color: indianred; display: none;" id="urls-invalid">URLs must be valid</span>
+        </p>
+
+        <div class="field">
+            <label class="label">Show Type</label>
+            <ul class="options">
+                <li class="option">
+                    <input class="option-input" name="option" type="radio" value="films" id="option-films">
+                    <label class="option-label" for="option-films">Films</label>
+                </li>
+                <li class="option">
+                    <input class="option-input" name="option" type="radio" value="series" id="option-series">
+                    <label class="option-label" for="option-series">Series</label>
+                </li>
+                <li class="option">
+                    <input class="option-input" name="option" type="radio" value="animes" id="option-animes">
+                    <label class="option-label" for="option-animes">Animes</label>
+                </li>
+            </ul>
+        </div>
+
+        <p class="field">
+            <input class="button" type="submit" value="Send">
+        </p>
+    </form>
+
+    <div id="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/download.js') }}"></script>
+</body>
+</html>
