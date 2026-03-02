@@ -11,38 +11,43 @@
 ## Friendly reminder...
 
 ### Install as dev
-```
+```shell
 uv sync --group dev
 ```
 
-### Pre Commit Hook
+### Dump dependencies version (uv.lock)
+```shell
+uv sync --upgrade
 ```
+
+### Pre Commit Hook
+```shell
 uv run pre-commit install
 ```
 
 ### Start the debug flask app
-```
+```shell
 uv run -- flask --app nmdownloader.apps.flask_app run --debug
 ```
 
 ### Start the celery app
-```
+```shell
 uv run -- celery --app nmdownloader.apps.celery_app worker
 ```
 
 ### Start the discord app
-```
+```shell
 uv run -- python -m nmdownloader.apps.discord_app
 ```
 
 ### Code Quality
-```
+```shell
 uv run ruff check .
 uv run ruff format .
 ```
 
 ### Typing Check
-```
+```shell
 uv run mypy .
 ```
 
