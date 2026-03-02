@@ -1,60 +1,77 @@
+x-environment: &default-environment
+  DISCORD_ADMINS: dummy_token
+  DISCORD_TOKEN: dummy_token
+  DISCORD_DEFAULT_CHANNEL_ID: dummy_channel_id
+  DOWNLOAD_UN_FICHIER_TOKEN: dummy_1fichier_token
+
 services:
   redis:
     image: redis:latest
-    container_name: redis-container
-    restart: unless-stopped
-    volumes:
-      - redis-data:/data
     network_mode: "host"
+    restart: unless-stopped
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   discord:
-    image: nmdownloader_v1
+    depends_on:
+      celery:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    image: nmdownloader
     build:
       context: .
-    container_name: discord
-    restart: unless-stopped
-    command: ["python", "-m", "apps.discord_app"]
-    network_mode: "host"
+    environment: *default-environment
+    command: ["python", "-m", "nmdownloader.apps.discord_app"]
 
 
   celery:
-    image: nmdownloader_v1
+    depends_on:
+      redis:
+        condition: service_healthy
+    image: nmdownloader
     build:
       context: .
-    container_name: celery
-    restart: unless-stopped
-    command: ["celery", "--app", "apps.celery_app", "worker"]
-    volumes:
-      - ${DOWNLOAD_PATH}:${DOWNLOAD_PATH}
+    command: ["celery", "--app", "nmdownloader.apps.celery_app", "worker", "--loglevel=${NMD_LOG_LEVEL:-INFO}", "--events"]
+    # have to be mounted (medias location)
+    # volumes:
+    # - /path/to/host:/media
     environment:
-      - C_FORCE_ROOT="true"
+      <<: *default-environment
+      C_FORCE_ROOT: "true"
     healthcheck:
-      test: celery --app apps.celery_app status
+      test: celery --app nmdownloader.apps.celery_app status
       interval: 10s
       timeout: 10s
       retries: 10
-    network_mode: "host"
 
   flower:
-    image: nmdownloader_v1
+    depends_on:
+      celery:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    image: nmdownloader
     build:
       context: .
-    container_name: flower
-    restart: unless-stopped
-    command: ["celery", "--app", "apps.celery_app", "flower"]
     environment:
-      - FLOWER_UNAUTHENTICATED_API=true
-      - FLOWER_URL_PREFIX=flower
+      <<: *default-environment
+      FLOWER_UNAUTHENTICATED_API: "true"
     network_mode: "host"
+    command: ["celery", "--app", "nmdownloader.apps.celery_app", "flower"]
 
   flask:
-    image: nmdownloader_v1
-    container_name: flask
+    depends_on:
+      celery:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    image: nmdownloader
     build:
       context: .
-    restart: unless-stopped
-    command: ["gunicorn", "nmdownloader.apps.flask_app:flask_app"]
+    environment: *default-environment
     network_mode: "host"
-
-volumes:
-  redis-data:
+    command: ["gunicorn", "nmdownloader.apps.flask_app:flask_app"]
