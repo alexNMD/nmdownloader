@@ -51,6 +51,15 @@ uv run ruff format .
 uv run mypy .
 ```
 
+### Docker
+```shell
+# Build
+docker compose -f compose-dev.yaml build
+
+# Start
+docker compose -f compose-dev.yaml up
+```
+
 ## Dotenv Example
 | Variable                   | Explanation                                                                                                                            |
 |----------------------------|----------------------------------------------------------------------------------------------------------------------------------------|

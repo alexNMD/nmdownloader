@@ -1,5 +1,5 @@
 x-environment: &default-environment
-  DISCORD_ADMINS: dummy_token
+  DISCORD_ADMINS: '["NMD#0000"]'
   DISCORD_TOKEN: dummy_token
   DISCORD_DEFAULT_CHANNEL_ID: dummy_channel_id
   DOWNLOAD_UN_FICHIER_TOKEN: dummy_1fichier_token
@@ -7,7 +7,6 @@ x-environment: &default-environment
 services:
   redis:
     image: redis:latest
-    network_mode: "host"
     restart: unless-stopped
     healthcheck:
       test: redis-cli ping
@@ -15,17 +14,18 @@ services:
       timeout: 5s
       retries: 3
 
-  discord:
-    depends_on:
-      celery:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    image: nmdownloader
-    build:
-      context: .
-    environment: *default-environment
-    command: ["python", "-m", "nmdownloader.apps.discord_app"]
+# Have to set a correct token to be started
+#  discord:
+#    depends_on:
+#      celery:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
+#    image: nmdownloader
+#    build:
+#      context: .
+#    environment: *default-environment
+#    command: ["python", "-m", "nmdownloader.apps.discord_app"]
 
 
   celery:
@@ -37,8 +37,8 @@ services:
       context: .
     command: ["celery", "--app", "nmdownloader.apps.celery_app", "worker", "--loglevel=${NMD_LOG_LEVEL:-INFO}", "--events"]
     # have to be mounted (medias location)
-    # volumes:
-    # - /path/to/host:/media
+    volumes:
+     - /tmp:/media
     environment:
       <<: *default-environment
       C_FORCE_ROOT: "true"
@@ -60,7 +60,8 @@ services:
     environment:
       <<: *default-environment
       FLOWER_UNAUTHENTICATED_API: "true"
-    network_mode: "host"
+    ports:
+      - "5555:5555"
     command: ["celery", "--app", "nmdownloader.apps.celery_app", "flower"]
 
   flask:
@@ -73,5 +74,6 @@ services:
     build:
       context: .
     environment: *default-environment
-    network_mode: "host"
+    ports:
+      - "8000:8000"
     command: ["gunicorn", "nmdownloader.apps.flask_app:flask_app"]
