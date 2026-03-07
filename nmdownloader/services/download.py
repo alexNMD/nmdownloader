@@ -57,9 +57,7 @@ class Download:
             else self.base_download_path
         )
         self.filepath = self.destination_directory / self.filename
-        self.is_compressed = (
-            True if self.filepath.suffix in unzipall.list_supported_formats() else False
-        )
+        self.is_compressed = self.filepath.suffix in unzipall.list_supported_formats()
         self.downloaded_size = 0
         self.download_start_time = None
         self.download_speed = None
