@@ -45,14 +45,10 @@ class Download:
             *_, self.filename = self.url.split("/")
         except Exception as error:
             raise DownloadException(self, "Unable to retrieve filename") from error
-        self.type_dl = (
-            (
-                ShowType.SERIES.value
-                if re.search(r"[Ss]\d{1,2}([Ee]\d{1,2})?", self.filename)
-                else ShowType.FILMS.value
-            )
-            if not type_dl
-            else type_dl
+        self.type_dl = type_dl or (
+            ShowType.SERIES.value
+            if re.search(r"[Ss]\d{1,2}([Ee]\d{1,2})?", self.filename)
+            else ShowType.FILMS.value
         )
         self.base_download_path: Path = app_settings.media_path / self.type_dl
         self.destination_directory: Path = (
