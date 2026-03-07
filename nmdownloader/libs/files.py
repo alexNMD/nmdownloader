@@ -5,17 +5,16 @@ SERIE_REGEX = r"^(?P<name>.+?)[\s._]*[Ss](?P<season>\d+)(?:[Ee](?P<episode>\d+))
 SERIE_REGEX_FALLBACK = r"^(?P<name>(?:[A-Z][a-z]*\.?)+[A-Z][a-z]*)"
 
 
-def _extract_serie_info(filename: Path) -> dict:
-    _filename_str = str(filename)
-    if match := re.search(SERIE_REGEX, _filename_str):
+def _extract_serie_info(filename: str) -> dict:
+    if match := re.search(SERIE_REGEX, filename):
         return match.groupdict()
-    if fallback_match := re.search(SERIE_REGEX_FALLBACK, _filename_str):
+    if fallback_match := re.search(SERIE_REGEX_FALLBACK, filename):
         return fallback_match.groupdict()
 
-    return {"name": filename.stem}
+    return {"name": Path(filename).stem}
 
 
-def get_relative_directory(filename: Path) -> Path:
+def get_relative_directory(filename: str) -> Path:
     serie_info = _extract_serie_info(filename)
     serie_name = Path(serie_info["name"])
 
