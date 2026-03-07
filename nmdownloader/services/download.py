@@ -45,25 +45,28 @@ class Download:
             *_, self.filename = self.url.split("/")
         except Exception as error:
             raise DownloadException(self, "Unable to retrieve filename") from error
+        self.filename_path = Path(self.filename)
         self.type_dl = (
             (
                 ShowType.SERIES.value
-                if re.search(r"[Ss]\d{1,2}([Ee]\d{1,2})?", str(self.filename))
+                if re.search(r"[Ss]\d{1,2}([Ee]\d{1,2})?", self.filename)
                 else ShowType.FILMS.value
             )
             if not type_dl
             else type_dl
         )
         self.is_compressed = (
-            True if self.filename.suffix in unzipall.list_supported_formats() else False
+            True
+            if self.filename_path.suffix in unzipall.list_supported_formats()
+            else False
         )
         self.base_download_path: Path = app_settings.media_path / self.type_dl
         self.destination_directory: Path = (
-            self.base_download_path / get_relative_directory(str(self.filename))
+            self.base_download_path / get_relative_directory(self.filename_path)
             if self.type_dl in [ShowType.SERIES.value, ShowType.ANIMES.value]
             else self.base_download_path
         )
-        self.filepath = self.destination_directory / self.filename
+        self.filepath = self.destination_directory / self.filename_path
         self.downloaded_size = 0
         self.download_start_time = None
         self.download_speed = None

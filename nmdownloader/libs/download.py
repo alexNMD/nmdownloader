@@ -1,9 +1,7 @@
 import re
 from enum import Enum
-from pathlib import Path
 
 import requests
-
 from celery.exceptions import Ignore
 from loguru import logger
 
@@ -54,7 +52,7 @@ def compute_url_from_1fichier(link):
     return ready_url
 
 
-def extract_filename(url) -> Path:
+def extract_filename(url) -> str:
     _content_disposition = requests.head(url, timeout=10).headers.get(
         "Content-Disposition", str()
     )
@@ -63,4 +61,4 @@ def extract_filename(url) -> Path:
     if not (_match := re.search(_filename_regex, _content_disposition)):
         raise ValueError
 
-    return Path(_match.group(1))
+    return _match.group(1)
