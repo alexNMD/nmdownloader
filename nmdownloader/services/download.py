@@ -133,36 +133,50 @@ class Download:
                         pass
         return download_dict
 
-    def update_status(
-        self, status: DownloadStatus, additional: str = str(), meta_data=None
-    ) -> None:
+    def update_status(self, status: DownloadStatus, additional: str = str()) -> None:
+        self.task.update_state(meta=self.to_dict())
+        self._do_notification(status=status, additional=additional)
+
+    def _do_notification(self, status: DownloadStatus, additional: str = str()) -> None:
         title = f"Download {status.name}"
         _base_content = (
-            ""
+            str()
             if not (hasattr(self, "type_dl") and hasattr(self, "filename"))
             else f"[{self.type_dl}] {self.filename}\n"
         )
         content = f"{_base_content}{additional}" if additional else _base_content
-
-        self.task.update_state(meta=self.to_dict())
-        self._do_notification(status, title, content)
-
-    def _do_notification(self, status: DownloadStatus, title, content) -> None:
         logger.info(f"{title} => {content}")
 
-        if self.status_message_id:
-            discord_api.edit_embed(
-                self.channel_id, self.status_message_id, title, content, status.value
-            )
-            return
+        try:
+            if self.status_message_id:
+                discord_api.edit_embed(
+                    self.channel_id,
+                    self.status_message_id,
+                    title,
+                    content,
+                    status.value,
+                )
+                return
 
-        self.status_message_id = (
-            discord_api.reply_with_embed(
-                self.channel_id, self.message_id, title, content, status.value
+            self.status_message_id = (
+                discord_api.reply_with_embed(
+                    self.channel_id, self.message_id, title, content, status.value
+                )
+                if self.message_id
+                else discord_api.send_embed(
+                    self.channel_id, title, content, status.value
+                )
             )
-            if self.message_id
-            else discord_api.send_embed(self.channel_id, title, content, status.value)
-        )
+        except requests.exceptions.HTTPError as http_error:
+            if http_error.response.status_code == 401:
+                if not app_settings.discord.token:
+                    logger.debug("DISCORD_TOKEN not set. Unable to send notification")
+                    return
+                logger.error("DISCORD_TOKEN invalid. Unable to send notification")
+                return
+            logger.error(
+                f"Unable to use discord api, got: {http_error.response.status_code}"
+            )
 
     def _decompress(self) -> None:
         self.update_status(

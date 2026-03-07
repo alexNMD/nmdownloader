@@ -12,7 +12,7 @@ class DiscordConfig(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
-    token: str
+    token: str | None = None
     default_channel_id: str
     command_prefix: str = "!"
     admins: list[str] = Field(default_factory=list)
