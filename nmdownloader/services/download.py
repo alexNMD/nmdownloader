@@ -41,6 +41,8 @@ class Download:
         self.url = self._compute_url(url)
         try:
             self.filename = extract_filename(self.url)
+        except ValueError:
+            *_, self.filename = self.url.split("/")
         except Exception as error:
             raise DownloadException(self, "Unable to retrieve filename") from error
         self.type_dl = (
