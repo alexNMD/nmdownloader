@@ -6,6 +6,7 @@ requires-python = ">=3.11"
 dependencies = [
     "celery[redis]>=5.6.2",
     "discord>=2.3.2",
+    "ffmpeg-python>=0.2.0",
     "flask>=3.1.2",
     "flower>=2.0.1",
     "gunicorn>=23.0.0",

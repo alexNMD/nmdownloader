@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import ffmpeg
 from pytubefix import YouTube  # type: ignore
 from loguru import logger
 from werkzeug.utils import secure_filename
@@ -23,7 +24,38 @@ class DownloadYoutube(Download):
         try:
             self.update_status(DownloadStatus.STARTED)
             self.base_download_path.mkdir(parents=True, exist_ok=True)
-            video_stream = self.youtube_obj.streams.get_highest_resolution()
+
+            video_stream = self.youtube_obj.streams.get_highest_resolution(
+                progressive=False
+            )
+            if not (audio_streams := self.youtube_obj.streams.get_audio_only()):
+                raise AttributeError("No suitable audio stream found.")
+
+            _video_path = video_stream.download(
+                output_path=str(self.base_download_path)
+            )
+            _audio_path = audio_streams.download(
+                output_path=str(self.base_download_path)
+            )
+
+            try:
+                inputs = [
+                    ffmpeg.input(filename=_video_path),
+                    ffmpeg.input(filename=_audio_path),
+                ]
+                output = ffmpeg.output(
+                    *inputs, filename=self.filepath, **app_settings.ffmpeg.to_dict()
+                )
+
+                output.run(capture_stdout=True, capture_stderr=True)
+            except ffmpeg.Error as error:
+                logger.error("stdout: %s", error.stdout.decode())
+                logger.error("stderr: %s", error.stderr.decode())
+                raise error
+            finally:
+                Path(_video_path).unlink(missing_ok=True)
+                Path(_audio_path).unlink(missing_ok=True)
+
             self.update_status(DownloadStatus.RUNNING)
             logger.info(f"Youtube Download: {self.filename}")
             video_stream.download(

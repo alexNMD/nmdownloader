@@ -6,6 +6,7 @@ RUN apt-get update \
       p7zip-full \
       unrar-free \
       cabextract \
+      ffmpeg \
     && rm -rf /var/lib/apt/lists/ \
     && pip install --no-cache-dir "uv[rust]==0.7.19"
 
