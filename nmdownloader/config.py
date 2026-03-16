@@ -13,7 +13,7 @@ class DiscordConfig(BaseSettings):
         extra="ignore",
     )
     token: str
-    default_channel_id: str
+    default_channel_id: int
     command_prefix: str = "!"
     admins: list[str] = Field(default_factory=list)
     refresh_rate: int = Field(default=10)

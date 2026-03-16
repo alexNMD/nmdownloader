@@ -2,7 +2,7 @@ from flask import request, Blueprint, jsonify, render_template
 from loguru import logger
 
 from nmdownloader.libs.task import get_task_result
-from nmdownloader.tasks.download_media import download_media_task
+from nmdownloader.tasks.download import download_task
 
 download_bp = Blueprint(
     "download", __name__, url_prefix="/download", template_folder="templates"
@@ -25,7 +25,7 @@ def launch():
     type_dl = data.get("type_dl")
     tasks_uuids = []
     for url in urls:
-        task = download_media_task.delay(url=url, type_dl=type_dl)
+        task = download_task.delay(url=url, type_dl=type_dl)
         tasks_uuids.append(task.id)
         logger.info(f"Task sent: {task.id}")
 

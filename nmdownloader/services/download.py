@@ -2,14 +2,12 @@ import json
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
 
+import unzipall  # type: ignore
 from loguru import logger
 
 from nmdownloader.config import app_settings
 from nmdownloader.libs.download import (
-    compute_url_from_1fichier,
-    DownloadException,
     DownloadRevokeException,
     DownloadStatus,
 )
@@ -22,22 +20,29 @@ class Download(ABC):
     def __init__(
         self,
         task: Any,  # Celery Task
-        type_dl: str,
         filepath: Path,
-        message_id=None,
-        channel_id=None,
+        message_id: int | None = None,
+        channel_id: int | None = None,
+        **kwargs,
     ):
         self.task = task
         self.filepath = filepath
-        self.filename = self.filepath.name
-        self.status_message_id = None
         self.message_id = message_id
         self.channel_id = channel_id or app_settings.discord.default_channel_id
-        self.type_dl = type_dl
+        self.options = kwargs
+        self.status_message_id = None
+
+    @property
+    def is_compressed(self) -> bool:
+        return self.filepath.suffix in unzipall.list_supported_formats()
 
     @abstractmethod
     def start(self):
         pass
+
+    def _remove(self) -> None:
+        self.filepath.unlink(missing_ok=True)
+        logger.info(f"file removed: {self.filepath}")
 
     def cancel(self):
         self._remove()
@@ -57,15 +62,10 @@ class Download(ABC):
                         pass
         return download_dict
 
-    def update_status(
-        self, status: DownloadStatus, additional: str = str(), meta_data=None
-    ) -> None:
+    def update_status(self, status: DownloadStatus, additional: str = str()) -> None:
+        _base_content = f"[{self.__class__.__name__}] {self.filepath.name}"
+
         title = f"Download {status.name}"
-        _base_content = (
-            ""
-            if not (hasattr(self, "type_dl") and hasattr(self, "filename"))
-            else f"[{self.type_dl}] {self.filename}\n"
-        )
         content = f"{_base_content}{additional}" if additional else _base_content
 
         self.task.update_state(meta=self.to_dict())
@@ -87,17 +87,3 @@ class Download(ABC):
             if self.message_id
             else discord_api.send_embed(self.channel_id, title, content, status.value)
         )
-
-    def _compute_url(self, url) -> str:
-        download_providers = {"1fichier.com": compute_url_from_1fichier}
-        _netloc = urlparse(url).netloc
-
-        try:
-            return download_providers.get(_netloc, lambda _url: url)(url)
-        except Exception as error:
-            raise DownloadException(self, str(error))
-
-    def _remove(self) -> None:
-        if self.filepath.exists():
-            self.filepath.unlink(missing_ok=True)
-            logger.info(f"file removed: {self.filepath}")

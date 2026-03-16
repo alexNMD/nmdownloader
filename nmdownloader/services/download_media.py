@@ -3,13 +3,14 @@ import re
 import time
 from enum import Enum
 from pathlib import Path
+from typing import Any
 
 import requests
 import unzipall  # type: ignore
 from loguru import logger
 
 from nmdownloader.config import app_settings
-from nmdownloader.libs.download import DownloadStatus, DownloadException
+from nmdownloader.libs.download import DownloadException, DownloadStatus
 from nmdownloader.libs.files import get_relative_directory
 from nmdownloader.libs.progressbar import get_progress_bar
 from nmdownloader.services.download import Download
@@ -22,17 +23,19 @@ class ShowType(Enum):
 
 
 class DownloadMedia(Download):
-    def __init__(self, url: str, type_dl: str, **kwargs) -> None:
-        self.url = self._compute_url(url)
+    REGEX_SEARCH_TYPE = r"[Ss]\d{1,2}([Ee]\d{1,2})?"
+
+    def __init__(self, url: str, **kwargs: Any):
+        self.url = url
         try:
             self.filename = self._extract_filename()
         except ValueError:
             *_, self.filename = self.url.split("/")
         except Exception as error:
             raise DownloadException(self, "Unable to retrieve filename") from error
-        self.type_dl = type_dl or (
+        self.type_dl = kwargs.get("type_dl") or (
             ShowType.SERIES.value
-            if re.search(r"[Ss]\d{1,2}([Ee]\d{1,2})?", self.filename)
+            if re.search(self.REGEX_SEARCH_TYPE, self.filename)
             else ShowType.FILMS.value
         )
         self.base_download_path: Path = app_settings.media_path / self.type_dl
@@ -41,15 +44,12 @@ class DownloadMedia(Download):
             if self.type_dl in [ShowType.SERIES.value, ShowType.ANIMES.value]
             else self.base_download_path
         )
-        self.filepath = self.destination_directory / self.filename
-        self.is_compressed = self.filepath.suffix in unzipall.list_supported_formats()
         self.downloaded_size: int = 0
         self.download_start_time: float = 0.0
         self.download_speed: float
         self.total_size: int = 0
-        self.finished = False
 
-        super().__init__(type_dl=self.type_dl, filepath=self.filepath, **kwargs)
+        super().__init__(filepath=self.destination_directory / self.filename, **kwargs)
 
     def start(self):
         try:
@@ -73,7 +73,6 @@ class DownloadMedia(Download):
                         self._decompress()
 
                     ### Finish
-                    self.finished = True
                     self.update_status(DownloadStatus.DONE)
         except (
             FileNotFoundError,

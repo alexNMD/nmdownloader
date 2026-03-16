@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 from loguru import logger
-from nmdownloader.tasks.download_media import download_media_task
+from nmdownloader.tasks.download import download_task
 
 
 class Download(commands.Cog):
@@ -29,7 +29,7 @@ class Download(commands.Cog):
 
         try:
             for url in links.split(","):
-                task = download_media_task.delay(
+                task = download_task.delay(
                     url=url,
                     message_id=message.id,
                     channel_id=message.channel.id,
