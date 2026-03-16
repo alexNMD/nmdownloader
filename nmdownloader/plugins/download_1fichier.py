@@ -11,14 +11,11 @@ class Download1fichier(DownloadMedia):
 
 
 def compute_url_from_1fichier(link: str):
-    _url = link.split("&")[0]
+    url, *_ = link.split("&")
     token_response = requests.post(
-        f"{app_settings.download.un_fichier_api_url}/download/get_token.cgi",
-        json={"url": _url},
-        headers={
-            "Authorization": f"Bearer {app_settings.download.un_fichier_token}",
-            "Content-Type": "application/json",
-        },
+        url=f"{app_settings.download.un_fichier_api_url}/download/get_token.cgi",
+        json={"url": url},
+        headers={"Authorization": f"Bearer {app_settings.download.un_fichier_token}"},
         timeout=10,
     )
     token_response.raise_for_status()
