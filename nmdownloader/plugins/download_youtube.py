@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import ffmpeg
+import ffmpeg  # type: ignore
 from pytubefix import YouTube  # type: ignore
 from loguru import logger
 from werkzeug.utils import secure_filename
