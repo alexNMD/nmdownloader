@@ -15,4 +15,4 @@ client = NMDownloader(
 )
 
 if __name__ == "__main__":
-    client.run(token=app_settings.discord.token, log_level=app_settings.nmd_log_level)
+    client.run(token=app_settings.discord.token)
