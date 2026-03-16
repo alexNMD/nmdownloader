@@ -51,6 +51,10 @@ class DownloadMedia(Download):
 
         super().__init__(filepath=self.destination_directory / self.filename, **kwargs)
 
+    @property
+    def is_compressed(self) -> bool:
+        return Path(self.filepath).suffix in unzipall.list_supported_formats()
+
     def start(self):
         try:
             self.destination_directory.mkdir(parents=True, exist_ok=True)

@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
-import unzipall  # type: ignore
 from loguru import logger
 
 from nmdownloader.config import app_settings
@@ -31,10 +30,6 @@ class Download(ABC):
         self.channel_id = channel_id or app_settings.discord.default_channel_id
         self.options = kwargs
         self.status_message_id = None
-
-    @property
-    def is_compressed(self) -> bool:
-        return self.filepath.suffix in unzipall.list_supported_formats()
 
     @abstractmethod
     def start(self):
