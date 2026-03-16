@@ -1,4 +1,3 @@
-import re
 from enum import Enum
 
 import requests
@@ -50,15 +49,3 @@ def compute_url_from_1fichier(link):
     logger.info(f"Ready to download: {ready_url}")
 
     return ready_url
-
-
-def extract_filename(url) -> str:
-    _content_disposition = requests.head(url, timeout=10).headers.get(
-        "Content-Disposition", str()
-    )
-    _filename_regex = r'filename\*?=(?:UTF-8\'\')?"?([^;\n"]+)"?'
-
-    if not (_match := re.search(_filename_regex, _content_disposition)):
-        raise ValueError
-
-    return _match.group(1)
