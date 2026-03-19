@@ -31,6 +31,9 @@ class DownloadYoutube(Download):
             if not (audio_streams := self.youtube_obj.streams.get_audio_only()):
                 raise AttributeError("No suitable audio stream found.")
 
+            logger.info(f"Youtube Download: {self.filename}")
+            self.update_status(DownloadStatus.RUNNING)
+
             _video_path = video_stream.download(
                 output_path=str(self.base_download_path)
             )
@@ -39,14 +42,12 @@ class DownloadYoutube(Download):
             )
 
             try:
-                inputs = [
+                output = ffmpeg.output(
                     ffmpeg.input(filename=_video_path),
                     ffmpeg.input(filename=_audio_path),
-                ]
-                output = ffmpeg.output(
-                    *inputs, filename=self.filepath, **app_settings.ffmpeg.to_dict()
+                    filename=self.filepath,
+                    **app_settings.ffmpeg.to_dict(),
                 )
-
                 output.run(capture_stdout=True, capture_stderr=True)
             except ffmpeg.Error as error:
                 logger.error("stdout: %s", error.stdout.decode())
@@ -55,12 +56,6 @@ class DownloadYoutube(Download):
             finally:
                 Path(_video_path).unlink(missing_ok=True)
                 Path(_audio_path).unlink(missing_ok=True)
-
-            self.update_status(DownloadStatus.RUNNING)
-            logger.info(f"Youtube Download: {self.filename}")
-            video_stream.download(
-                output_path=str(self.base_download_path), filename=str(self.filename)
-            )
 
             ### Finish
             self.update_status(DownloadStatus.DONE)
