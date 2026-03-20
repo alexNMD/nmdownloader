@@ -52,6 +52,5 @@ jobs:
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
           files: |
-            dist/*
             compose.yml
             example.env
