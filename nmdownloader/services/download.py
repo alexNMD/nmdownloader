@@ -58,27 +58,35 @@ class Download(ABC):
         return download_dict
 
     def update_status(self, status: DownloadStatus, additional: str = str()) -> None:
-        _base_content = f"[{self.__class__.__name__}] {self.filepath.name}"
+        if hasattr(self, "filepath"):
+            _base_content = f"[{self.__class__.__name__}] {self.filepath.name}"
+        else:
+            _base_content = f"[{self.__class__.__name__}] "
 
         title = f"Download {status.name}"
         content = f"{_base_content}{additional}" if additional else _base_content
 
-        self.task.update_state(meta=self.to_dict())
+        if hasattr(self, "task"):
+            self.task.update_state(meta=self.to_dict())
         self._do_notification(status, title, content)
 
     def _do_notification(self, status: DownloadStatus, title, content) -> None:
         logger.info(f"{title} => {content}")
 
-        if self.status_message_id:
+        status_message_id = getattr(self, "status_message_id", None)
+        channel_id = getattr(self, "channel_id", app_settings.discord.default_channel_id)
+        message_id = getattr(self, "message_id", None)
+
+        if status_message_id:
             discord_api.edit_embed(
-                self.channel_id, self.status_message_id, title, content, status.value
+                channel_id, status_message_id, title, content, status.value
             )
             return
 
         self.status_message_id = (
             discord_api.reply_with_embed(
-                self.channel_id, self.message_id, title, content, status.value
+                channel_id, message_id, title, content, status.value
             )
-            if self.message_id
-            else discord_api.send_embed(self.channel_id, title, content, status.value)
+            if message_id
+            else discord_api.send_embed(channel_id, title, content, status.value)
         )

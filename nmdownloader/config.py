@@ -36,7 +36,7 @@ class DownloadConfig(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
-    un_fichier_token: str
+    un_fichier_token: str | None = None
     un_fichier_api_url: str = "https://api.1fichier.com/v1"
 
 

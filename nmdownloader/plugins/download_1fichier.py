@@ -2,20 +2,29 @@ import requests
 from loguru import logger
 
 from nmdownloader.config import app_settings
+from nmdownloader.libs.download import DownloadException
 from nmdownloader.services.download_media import DownloadMedia
 
 
 class Download1fichier(DownloadMedia):
     def __init__(self, url: str, **kwargs) -> None:
-        super().__init__(url=compute_url_from_1fichier(link=url), **kwargs)
+        if not (bearer_token := app_settings.download.un_fichier_token):
+            raise DownloadException(self, "DOWNLOAD_UN_FICHIER_TOKEN not set")
+
+        try:
+            download_1fichier_url = compute_url_from_1fichier(link=url, token=bearer_token)
+        except Exception as error:
+            raise DownloadException(self, str(error)) from error
+
+        super().__init__(url=download_1fichier_url, **kwargs)
 
 
-def compute_url_from_1fichier(link: str):
+def compute_url_from_1fichier(link: str, token: str) -> str:
     url, *_ = link.split("&")
     token_response = requests.post(
         url=f"{app_settings.download.un_fichier_api_url}/download/get_token.cgi",
         json={"url": url},
-        headers={"Authorization": f"Bearer {app_settings.download.un_fichier_token}"},
+        headers={"Authorization": f"Bearer {token}"},
         timeout=10,
     )
     token_response.raise_for_status()
