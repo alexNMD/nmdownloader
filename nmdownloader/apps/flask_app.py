@@ -12,5 +12,5 @@ register_routes(flask_app)
 def handle_exception(error: Exception):
     if isinstance(error, HTTPException):
         return {"message": error.description}, error.code
-    else:
-        return {"message": str(error)}, 500
+
+    return {"message": str(error)}, 500
