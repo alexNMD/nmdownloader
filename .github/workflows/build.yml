@@ -21,6 +21,7 @@ jobs:
     needs: lint
 
     permissions:
+      packages: write   # for ghcr.io push
       contents: write   # for GitHub release
 
     steps:
