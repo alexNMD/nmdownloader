@@ -1,11 +1,7 @@
-import re
 from enum import Enum
 
-import requests
 from celery.exceptions import Ignore
 from loguru import logger
-
-from nmdownloader.config import app_settings
 
 
 class DownloadStatus(Enum):
@@ -28,37 +24,3 @@ class DownloadRevokeException(Ignore):
         super().__init__(message)
         logger.info("Download Canceled")
         download.update_status(DownloadStatus.CANCELED, str(message))
-
-
-def compute_url_from_1fichier(link):
-    _url = link.split("&")[0]
-    token_response = requests.post(
-        f"{app_settings.download.un_fichier_api_url}/download/get_token.cgi",
-        json={"url": _url},
-        headers={
-            "Authorization": f"Bearer {app_settings.download.un_fichier_token}",
-            "Content-Type": "application/json",
-        },
-        timeout=10,
-    )
-    if not token_response.ok:
-        logger.error(f"get_token failed: {link} - {token_response.content}.")
-        raise Exception(f"get_token failed: {link} - {token_response.content}.")
-
-    download_dct = token_response.json()
-    ready_url = download_dct.get("url")
-    logger.info(f"Ready to download: {ready_url}")
-
-    return ready_url
-
-
-def extract_filename(url) -> str:
-    _content_disposition = requests.head(url, timeout=10).headers.get(
-        "Content-Disposition", str()
-    )
-    _filename_regex = r'filename\*?=(?:UTF-8\'\')?"?([^;\n"]+)"?'
-
-    if not (_match := re.search(_filename_regex, _content_disposition)):
-        raise ValueError
-
-    return _match.group(1)

@@ -286,3 +286,17 @@ body {
         transform: translateY(0);
     }
 }
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    background-color: dimgray;
+    padding: 0.25em;
+}
+
+.footer a {
+    color: black;
+}

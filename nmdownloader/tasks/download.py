@@ -1,18 +1,15 @@
 from loguru import logger
 
 from nmdownloader.apps.celery_app import celery_app
-from nmdownloader.services.download import Download
+from nmdownloader.libs.task import get_downloader
 
 
 @celery_app.task(bind=True)
-def download_task(self, **kwargs) -> dict:
-    download = Download(task=self, **kwargs)
-    logger.info(f"Downloading {download.filename}")
+def download_task(self, url: str, **kwargs) -> dict:
+    download = get_downloader(url)(task=self, url=url, **kwargs)
 
-    download.check()
-    logger.info(f"Check passed for {download.filename}")
-
+    logger.info("Download started")
     download.start()
-    logger.info(f"Download completed for {download.filename}")
+    logger.info("Download completed")
 
     return download.to_dict()

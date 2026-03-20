@@ -62,7 +62,7 @@ services:
     container_name: nmdflower
     restart: unless-stopped
     ports:
-      - "5555:5555"
+      - "127.0.0.1:5555:5555"
     command: ["celery", "--app", "nmdownloader.apps.celery_app", "flower"]
 
   flask:
@@ -76,7 +76,7 @@ services:
     container_name: nmdflask
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     command: ["gunicorn", "nmdownloader.apps.flask_app:flask_app"]
 
 
