@@ -59,10 +59,9 @@ class Download(ABC):
         return download_dict
 
     def update_status(self, status: DownloadStatus, additional: str = str()) -> None:
+        _base_content = f"[{self.__class__.__name__}] "
         if hasattr(self, "filepath"):
-            _base_content = f"[{self.__class__.__name__}] {self.filepath.name}"
-        else:
-            _base_content = f"[{self.__class__.__name__}] "
+            _base_content += self.filepath.name
 
         title = f"Download {status.name}"
         content = f"{_base_content}{additional}" if additional else _base_content
@@ -75,14 +74,18 @@ class Download(ABC):
         logger.info(f"{title} => {content}")
 
         status_message_id = getattr(self, "status_message_id", None)
-        channel_id = getattr(self, "channel_id", app_settings.discord.default_channel_id)
+        channel_id = getattr(
+            self, "channel_id", app_settings.discord.default_channel_id
+        )
         message_id = getattr(self, "message_id", None)
 
         if not app_settings.discord.token:
             logger.debug("DISCORD_TOKEN not set. Unable to send notification")
             return
         if not channel_id:
-            logger.error("DISCORD_DEFAULT_CHANNEL_ID not set. Unable to send notification")
+            logger.error(
+                "DISCORD_DEFAULT_CHANNEL_ID not set. Unable to send notification"
+            )
             return
 
         try:
@@ -103,6 +106,8 @@ class Download(ABC):
             if http_error.response.status_code == 401:
                 logger.error("DISCORD_TOKEN invalid. Unable to send notification")
                 return
-            logger.error(f"Unable to use discord api, got: {http_error.response.status_code}")
+            logger.error(
+                f"Unable to use discord api, got: {http_error.response.status_code}"
+            )
         except requests.exceptions.RequestException as error:
             logger.error(f"Unable to reach Discord API: {error}")

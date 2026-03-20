@@ -28,11 +28,13 @@ class DownloadMedia(Download):
     def __init__(self, url: str, **kwargs: Any):
         self.url = url
         try:
-            self.filename = self._extract_filename()
+            self.filename = self._extract_filename(url=self.url)
         except ValueError:
-            *_, self.filename = self.url.split("/")
+            raise DownloadException(self, "Unable to retrieve filename")
         except Exception as error:
-            raise DownloadException(self, "Unable to retrieve filename") from error
+            raise DownloadException(
+                self, f"Unable to retrieve filename. Reason: {error}"
+            ) from error
         self.type_dl = kwargs.get("type_dl") or (
             ShowType.SERIES.value
             if re.search(self.REGEX_SEARCH_TYPE, self.filename)
@@ -54,6 +56,22 @@ class DownloadMedia(Download):
     @property
     def is_compressed(self) -> bool:
         return Path(self.filepath).suffix in unzipall.list_supported_formats()
+
+    @classmethod
+    def _extract_filename(cls, url: str) -> str:
+        _content_disposition = requests.head(url, timeout=10).headers.get(
+            "Content-Disposition", str()
+        )
+        _filename_regex = r'filename\*?=(?:UTF-8\'\')?"?([^;\n"]+)"?'
+
+        if _match := re.search(_filename_regex, _content_disposition):
+            return _match.group(1)
+
+        *_, filename = url.split("/")
+        if not filename:
+            raise ValueError
+
+        return filename
 
     def start(self):
         try:
@@ -88,17 +106,6 @@ class DownloadMedia(Download):
         except Exception as error:
             self._remove()
             raise DownloadException(self, error) from error
-
-    def _extract_filename(self) -> str:
-        _content_disposition = requests.head(self.url, timeout=10).headers.get(
-            "Content-Disposition", str()
-        )
-        _filename_regex = r'filename\*?=(?:UTF-8\'\')?"?([^;\n"]+)"?'
-
-        if not (_match := re.search(_filename_regex, _content_disposition)):
-            raise ValueError
-
-        return _match.group(1)
 
     def _handle_chunks(self, file_buffer, response) -> None:
         _count_refresh = 0
