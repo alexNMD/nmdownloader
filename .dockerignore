@@ -94,4 +94,4 @@ venv/
 .pre-commit-config.yaml
 
 # Github
-.github
+.github/
