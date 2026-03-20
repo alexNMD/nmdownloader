@@ -12,10 +12,10 @@ class DiscordConfig(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
-    token: str
-    default_channel_id: int
+    token: str | None = None
+    default_channel_id: int | None = None
     command_prefix: str = "!"
-    admins: list[str] = Field(default_factory=list)
+    admins: list[int] = Field(default_factory=list)
     refresh_rate: int = Field(default=10)
     api_url: str = "https://discord.com/api/v10"
 

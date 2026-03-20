@@ -33,6 +33,7 @@ class DiscordAPI:
         data = {"embeds": [embed], "message_reference": {"message_id": message_id}}
 
         response = requests.post(url, headers=self.headers, json=data, timeout=10)
+        response.raise_for_status()
         response_json = response.json()
         return response_json.get("id")
 
@@ -56,6 +57,7 @@ class DiscordAPI:
         data = {"embeds": [embed]}
 
         response = requests.post(url, headers=self.headers, json=data, timeout=10)
+        response.raise_for_status()
         response_json = response.json()
         return response_json.get("id")
 
@@ -84,6 +86,7 @@ class DiscordAPI:
         data = {"embeds": [embed]}
 
         response = requests.patch(url, headers=self.headers, json=data, timeout=10)
+        response.raise_for_status()
         return response.json()
 
     def send_message(self, channel_id, content):
@@ -96,6 +99,7 @@ class DiscordAPI:
         url = f"{self.base_url}/channels/{channel_id}/messages"
         data = {"content": content}
         response = requests.post(url, headers=self.headers, json=data, timeout=10)
+        response.raise_for_status()
         response_json = response.json()
         return response_json.get("id")
 
@@ -110,6 +114,7 @@ class DiscordAPI:
         url = f"{self.base_url}/channels/{channel_id}/messages/{message_id}"
         data = {"content": new_content}
         response = requests.patch(url, headers=self.headers, json=data, timeout=10)
+        response.raise_for_status()
         return response.json()
 
     def reply_to_message(self, channel_id, message_id, content):
@@ -123,5 +128,6 @@ class DiscordAPI:
         url = f"{self.base_url}/channels/{channel_id}/messages"
         data = {"content": content, "message_reference": {"message_id": message_id}}
         response = requests.post(url, headers=self.headers, json=data, timeout=10)
+        response.raise_for_status()
         response_json = response.json()
         return response_json.get("id")

@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
+import requests
 from loguru import logger
 
 from nmdownloader.config import app_settings
@@ -77,16 +78,31 @@ class Download(ABC):
         channel_id = getattr(self, "channel_id", app_settings.discord.default_channel_id)
         message_id = getattr(self, "message_id", None)
 
-        if status_message_id:
-            discord_api.edit_embed(
-                channel_id, status_message_id, title, content, status.value
-            )
+        if not app_settings.discord.token:
+            logger.debug("DISCORD_TOKEN not set. Unable to send notification")
+            return
+        if not channel_id:
+            logger.error("DISCORD_DEFAULT_CHANNEL_ID not set. Unable to send notification")
             return
 
-        self.status_message_id = (
-            discord_api.reply_with_embed(
-                channel_id, message_id, title, content, status.value
+        try:
+            if status_message_id:
+                discord_api.edit_embed(
+                    channel_id, status_message_id, title, content, status.value
+                )
+                return
+
+            self.status_message_id = (
+                discord_api.reply_with_embed(
+                    channel_id, message_id, title, content, status.value
+                )
+                if message_id
+                else discord_api.send_embed(channel_id, title, content, status.value)
             )
-            if message_id
-            else discord_api.send_embed(channel_id, title, content, status.value)
-        )
+        except requests.exceptions.HTTPError as http_error:
+            if http_error.response.status_code == 401:
+                logger.error("DISCORD_TOKEN invalid. Unable to send notification")
+                return
+            logger.error(f"Unable to use discord api, got: {http_error.response.status_code}")
+        except requests.exceptions.RequestException as error:
+            logger.error(f"Unable to reach Discord API: {error}")
