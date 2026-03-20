@@ -1,8 +1,8 @@
 x-environment: &default-environment
-  DISCORD_ADMINS: $DISCORD_ADMINS
-  DISCORD_TOKEN: $DISCORD_TOKEN
-  DISCORD_DEFAULT_CHANNEL_ID: $DISCORD_DEFAULT_CHANNEL_ID
-  DOWNLOAD_UN_FICHIER_TOKEN: $DOWNLOAD_UN_FICHIER_TOKEN
+  DISCORD_ADMINS: ${DISCORD_ADMINS-}
+  DISCORD_TOKEN: ${DISCORD_TOKEN:-}
+  DISCORD_DEFAULT_CHANNEL_ID: ${DISCORD_DEFAULT_CHANNEL_ID:-}
+  DOWNLOAD_UN_FICHIER_TOKEN: ${DOWNLOAD_UN_FICHIER_TOKEN-}
 
 services:
   redis:
@@ -17,17 +17,18 @@ services:
       timeout: 5s
       retries: 3
 
-  discord:
-    depends_on:
-      celery:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    image: ghcr.io/alexnmd/nmdownloader:latest
-    environment: *default-environment
-    container_name: nmdiscord
-    restart: unless-stopped
-    command: ["python", "-m", "nmdownloader.apps.discord_app"]
+# Uncomment to activate Discord Notification. You have to set these env variables: DISCORD_TOKEN, DISCORD_DEFAULT_CHANNEL_ID
+#  discord:
+#    depends_on:
+#      celery:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
+#    image: ghcr.io/alexnmd/nmdownloader:latest
+#    environment: *default-environment
+#    container_name: nmdiscord
+#    restart: unless-stopped
+#    command: ["python", "-m", "nmdownloader.apps.discord_app"]
 
 
   celery:

@@ -1,12 +1,25 @@
 from discord.ext import commands
 
 from loguru import logger
+
+from nmdownloader.config import app_settings
 from nmdownloader.tasks.download import download_task
 
 
 class Download(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+    async def cog_check(self, ctx):
+        if ctx.message.webhook_id:
+            return True
+
+        # Check admin
+        if ctx.author.id not in app_settings.discord.admins:
+            await ctx.message.reply("You are not allowed to use this command")
+            raise commands.CheckFailure("You are not allowed to use this command")
+
+        return True
 
     @commands.command(name="download", aliases=["d"])
     async def handle_download(self, ctx):
