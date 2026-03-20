@@ -1,7 +1,7 @@
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
-[![Build & Push Multi-Arch Docker Image](https://github.com/alexNMD/NMDownloader_bot/actions/workflows/build-and-deploy.yml/badge.svg?branch=main)](https://github.com/alexNMD/NMDownloader_bot/actions/workflows/build-and-deploy.yml)
+[![Build & Push Multi-Arch Docker Image](https://github.com/alexNMD/NMDownloader_bot/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/alexNMD/NMDownloader_bot/actions/workflows/build.yml)
 
 ## ✅ Prerequisites
 
