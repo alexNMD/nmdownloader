@@ -29,7 +29,7 @@ class CeleryConfig(BaseSettings):
     backend_url: str = Field(default="redis://redis:6379/0")
 
 
-class DownloadConfig(BaseSettings):
+class DownloaderConfig(BaseSettings):
     model_config = SettingsConfigDict(
         env_prefix="DOWNLOAD_",
         env_file=".env",
@@ -38,6 +38,7 @@ class DownloadConfig(BaseSettings):
     )
     un_fichier_token: str | None = None
     un_fichier_api_url: str = "https://api.1fichier.com/v1"
+    plugins: list[str] = ["un_fichier.Download1fichier", "youtube.DownloadYoutube"]
 
 
 class FFMPEGVideoConfig(BaseSettings):
@@ -81,7 +82,7 @@ class Settings(BaseSettings):
 
     discord: DiscordConfig = Field(default_factory=DiscordConfig)
     celery: CeleryConfig = Field(default_factory=CeleryConfig)
-    download: DownloadConfig = Field(default_factory=DownloadConfig)
+    downloader: DownloaderConfig = Field(default_factory=DownloaderConfig)
     ffmpeg: FFMPEGVideoConfig = Field(default_factory=FFMPEGVideoConfig)
 
     media_path: Path = Field(default=Path("/media"))
