@@ -13,9 +13,9 @@ class DiscordConfig(BaseSettings):
         extra="ignore",
     )
     token: str | None = None
-    default_channel_id: int | None = None
+    admins: list[int] | None = None
+    default_channel_id: int = Field(default=0)
     command_prefix: str = "!"
-    admins: list[int] = Field(default_factory=list)
     refresh_rate: int = Field(default=10)
     api_url: str = "https://discord.com/api/v10"
 

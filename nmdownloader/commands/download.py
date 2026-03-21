@@ -14,8 +14,12 @@ class Download(commands.Cog):
         if ctx.message.webhook_id:
             return True
 
+        if not (admins := app_settings.discord.admins):
+            logger.warning("DISCORD_ADMINS not set. Too broad authorization")
+            return True
+
         # Check admin
-        if ctx.author.id not in app_settings.discord.admins:
+        if ctx.author.id not in admins:
             _error_message = "You are not allowed to use this command"
             await ctx.message.reply(_error_message)
             raise commands.CheckFailure(_error_message)
