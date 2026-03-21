@@ -7,9 +7,11 @@ from werkzeug.utils import secure_filename
 
 from nmdownloader.config import app_settings
 from nmdownloader.libs.download import DownloadStatus, DownloadException
+from nmdownloader.libs.plugins import register_downloader
 from nmdownloader.services.download import Download
 
 
+@register_downloader("www.youtube.com", "youtube.com", "youtu.be")
 class DownloadYoutube(Download):
     def __init__(self, url: str, **kwargs) -> None:
         self.youtube_obj = YouTube(url=url)
