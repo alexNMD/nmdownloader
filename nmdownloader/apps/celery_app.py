@@ -1,6 +1,7 @@
 from celery import Celery
 
 from nmdownloader.config import app_settings
+from nmdownloader.plugins import load_downloader_plugins
 
 celery_app = Celery(
     "tasks",
@@ -10,3 +11,4 @@ celery_app = Celery(
     worker_concurrency=app_settings.celery.concurrency,
     broker_connection_retry_on_startup=False,
 )
+load_downloader_plugins()

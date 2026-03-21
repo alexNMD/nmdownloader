@@ -10,7 +10,7 @@ def get_progress_bar(progress: int, total: int) -> str:
     return f"\r|{bar}| {percent:.1f}%"
 
 
-# Exemple d'utilisation :
+# Usage example :
 if __name__ == "__main__":
     _total = 100
     for i in range(_total + 1):
