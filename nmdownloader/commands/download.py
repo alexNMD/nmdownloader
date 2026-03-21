@@ -16,8 +16,9 @@ class Download(commands.Cog):
 
         # Check admin
         if ctx.author.id not in app_settings.discord.admins:
-            await ctx.message.reply("You are not allowed to use this command")
-            raise commands.CheckFailure("You are not allowed to use this command")
+            _error_message = "You are not allowed to use this command"
+            await ctx.message.reply(_error_message)
+            raise commands.CheckFailure(_error_message)
 
         return True
 
