@@ -4,6 +4,8 @@ from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from nmdownloader.config.plugins.un_fichier import UnFichierDownloaderConfig
+
 
 class DiscordConfig(BaseSettings):
     model_config = SettingsConfigDict(
@@ -29,16 +31,17 @@ class CeleryConfig(BaseSettings):
     backend_url: str = Field(default="redis://redis:6379/0")
 
 
+class DownloaderPluginConfig(BaseSettings):
+    modules: list[str] = ["un_fichier.Download1fichier", "youtube.DownloadYoutube"]
+    registry: dict[str, type] = {}
+
+
 class DownloaderConfig(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_prefix="DOWNLOAD_",
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore",
+    plugin: DownloaderPluginConfig = Field(default_factory=DownloaderPluginConfig)
+
+    un_fichier: UnFichierDownloaderConfig = Field(
+        default_factory=UnFichierDownloaderConfig
     )
-    un_fichier_token: str | None = None
-    un_fichier_api_url: str = "https://api.1fichier.com/v1"
-    plugins: list[str] = ["un_fichier.Download1fichier", "youtube.DownloadYoutube"]
 
 
 class FFMPEGVideoConfig(BaseSettings):
