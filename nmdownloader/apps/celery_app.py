@@ -1,6 +1,6 @@
 from celery import Celery
 
-from nmdownloader.config import app_settings
+from nmdownloader.config.base import app_settings
 from nmdownloader.plugins import load_downloader_plugins
 
 celery_app = Celery(

@@ -9,7 +9,7 @@ import requests
 import unzipall  # type: ignore
 from loguru import logger
 
-from nmdownloader.config import app_settings
+from nmdownloader.config.base import app_settings
 from nmdownloader.libs.download import DownloadException, DownloadStatus
 from nmdownloader.libs.files import get_relative_directory
 from nmdownloader.libs.progressbar import get_progress_bar

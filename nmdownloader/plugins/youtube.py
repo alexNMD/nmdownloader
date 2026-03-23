@@ -5,7 +5,7 @@ from pytubefix import YouTube  # type: ignore
 from loguru import logger
 from werkzeug.utils import secure_filename
 
-from nmdownloader.config import app_settings
+from nmdownloader.config.base import app_settings
 from nmdownloader.libs.download import DownloadStatus, DownloadException
 from nmdownloader.libs.plugins import register_downloader
 from nmdownloader.services.download import Download

@@ -6,7 +6,7 @@ from typing import Any
 import requests
 from loguru import logger
 
-from nmdownloader.config import app_settings
+from nmdownloader.config.base import app_settings
 from nmdownloader.libs.download import (
     DownloadRevokeException,
     DownloadStatus,
