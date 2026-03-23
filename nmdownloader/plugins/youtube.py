@@ -48,7 +48,7 @@ class DownloadYoutube(Download):
                     ffmpeg.input(filename=_video_path),
                     ffmpeg.input(filename=_audio_path),
                     filename=self.filepath,
-                    **app_settings.ffmpeg.to_dict(),
+                    **app_settings.downloader.youtube.ffmpeg.to_dict(),
                 )
                 self.update_status(
                     DownloadStatus.RUNNING, additional="Multiplexage in progress..."
