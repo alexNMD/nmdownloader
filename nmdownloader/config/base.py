@@ -4,23 +4,9 @@ from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from nmdownloader.config.plugins.discord import DiscordConfig
 from nmdownloader.config.plugins.un_fichier import UnFichierDownloaderConfig
 from nmdownloader.config.plugins.youtube import YoutubeDownloaderConfig
-
-
-class DiscordConfig(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_prefix="DISCORD_",
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore",
-    )
-    token: str | None = None
-    admins: list[int] | None = None
-    default_channel_id: int = Field(default=0)
-    command_prefix: str = "!"
-    refresh_rate: int = Field(default=10)
-    api_url: str = "https://discord.com/api/v10"
 
 
 class CeleryConfig(BaseSettings):
