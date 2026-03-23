@@ -1,11 +1,10 @@
 from typing import Type
 from urllib.parse import urlparse
 
+from nmdownloader.config.base import app_settings
 from nmdownloader.services.download import Download
 from nmdownloader.services.download_default import DownloadDefault
 from nmdownloader.services.download_media import DownloadMedia
-
-_DOWNLOADER_PLUGIN_REGISTRY: dict[str, Type[Download | DownloadMedia]] = {}
 
 
 def register_downloader(*hosts: str):
@@ -13,7 +12,7 @@ def register_downloader(*hosts: str):
 
     def decorator(cls: Type[Download | DownloadMedia]):
         for host in hosts:
-            _DOWNLOADER_PLUGIN_REGISTRY[host] = cls
+            app_settings.downloader.plugin.registry[host] = cls
         return cls
 
     return decorator
@@ -21,4 +20,4 @@ def register_downloader(*hosts: str):
 
 def get_downloader(url: str) -> Type[Download | DownloadMedia]:
     _netloc = urlparse(url).netloc
-    return _DOWNLOADER_PLUGIN_REGISTRY.get(_netloc, DownloadDefault)
+    return app_settings.downloader.plugin.registry.get(_netloc, DownloadDefault)

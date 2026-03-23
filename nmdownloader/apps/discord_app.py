@@ -1,6 +1,6 @@
 import discord
 
-from nmdownloader.config import app_settings
+from nmdownloader.config.base import app_settings
 from nmdownloader.services.bot import NMDownloader
 
 custom_intents = discord.Intents.default()
@@ -14,11 +14,13 @@ client = NMDownloader(
     command_prefix=app_settings.discord.command_prefix,
 )
 
+
 def main():
     if not (token := app_settings.discord.token):
         raise AttributeError("DISCORD_TOKEN not set")
 
     client.run(token=token)
+
 
 if __name__ == "__main__":
     main()
