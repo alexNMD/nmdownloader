@@ -12,10 +12,18 @@ def hello() -> Response:
     return jsonify(
         {
             "Hello": "World",
-            "system": platform.system(),
-            "MEDIA_PATH": str(app_settings.media_path),
-            "commande_prefix": app_settings.discord.command_prefix,
-            "refresh_rate": app_settings.discord.refresh_rate,
-            "concurrency": app_settings.celery.concurrency,
+            "app": {
+                "version": app_settings.version,
+                "system": platform.system(),
+                "MEDIA_PATH": str(app_settings.media_path),
+            },
+            "discord": {
+                "commande_prefix": app_settings.discord.command_prefix,
+                "refresh_rate": app_settings.discord.refresh_rate,
+            },
+            "celery": {
+                "concurrency": app_settings.celery.concurrency,
+            },
+            "ffmpeg": app_settings.downloader.youtube.ffmpeg.to_dict(),
         }
     )
