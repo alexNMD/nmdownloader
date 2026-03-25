@@ -1,6 +1,6 @@
 from flask import request, Blueprint, jsonify, render_template
 from loguru import logger
-
+from nmdownloader.config.base import app_settings
 from nmdownloader.libs.task import get_task_result
 from nmdownloader.tasks.download import download_task
 
@@ -11,7 +11,7 @@ download_bp = Blueprint(
 
 @download_bp.get("/")
 def home():
-    return render_template("download.html")
+    return render_template("download.html", version=app_settings.version)
 
 
 @download_bp.post("/")
