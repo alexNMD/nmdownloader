@@ -16,6 +16,8 @@ ENV UV_PROJECT_ENVIRONMENT=/usr/local
 
 COPY pyproject.toml uv.lock ./
 
-RUN uv sync --frozen
+RUN uv sync --frozen --no-install-project
 
 COPY . .
+
+RUN uv sync --locked
