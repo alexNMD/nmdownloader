@@ -1,6 +1,6 @@
 from functools import lru_cache
 from pathlib import Path
-
+from importlib.metadata import version
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -43,6 +43,7 @@ class Settings(BaseSettings):
 
     media_path: Path = Field(default=Path("/media"))
     nmd_log_level: str = Field(default="INFO")
+    version: str = version("nmdownloader")
 
 
 @lru_cache
