@@ -27,5 +27,9 @@ dev = [
     "celery-types>=0.24.0",
 ]
 
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [tool.mypy]
 plugins = ['pydantic.mypy']
