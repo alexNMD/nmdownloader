@@ -1,6 +1,6 @@
 from discord import Intents
 
-from nmdownloader.config import app_settings
+from nmdownloader.config.base import app_settings
 from nmdownloader.services.bot import NMDownloader
 
 intents = Intents.default()
