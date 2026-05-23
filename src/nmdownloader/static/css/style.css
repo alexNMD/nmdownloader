@@ -298,15 +298,6 @@ body {
     font-size: 0.9em;
 }
 
-#version {
-    position: fixed;
-    top: 0;
-    left: 0;
-    font-size: 0.9em;
-    padding: 0.25em;
-    color: dimgray;
-}
-
 .footer a {
     color: black;
 }
