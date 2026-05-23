@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <span id="version">{{ version }}</span>
     <form class="form" id="downloadForm">
         <p class="field required" id="urls-field">
             <label class="label" for="urls-textarea">URLs</label>
@@ -42,7 +41,7 @@
 
     <div class="footer">
         <span>
-            NMDownloader is free & open source © <a href="https://www.alex-nmd.net" target="_blank">AlexNMD</a>.
+            NMDownloader (<span id="version">v{{ version }}</span>) is free & open source © <a href="https://www.alex-nmd.net" target="_blank">AlexNMD</a>.
             Get support on GitHub, at <a href="https://github.com/alexNMD/nmdownloader" target="_blank">alexNMD/nmdownloader</a>.
         </span>
     </div>
