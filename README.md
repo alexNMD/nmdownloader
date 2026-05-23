@@ -7,11 +7,13 @@
 
 - Python >=3.11
 - [uv](https://github.com/astral-sh/uv)
+- [direnv](https://direnv.net)
 
 ## Friendly reminder...
 
 ### Install as dev
 ```shell
+direnv allow
 uv sync --group dev
 ```
 
