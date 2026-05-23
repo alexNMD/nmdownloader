@@ -10,7 +10,7 @@ services:
     build:
       context: ..
     command: ["python", "-m", "nmdownloader.apps.discord_app"]
-    env_file:
+    env_file: !override
       - ../.env
 
   celery:
@@ -19,9 +19,9 @@ services:
     container_name: !reset null
     build:
       context: ..
-    volumes: !override
-     - /tmp:/media
-    env_file:
+    volumes:
+      - /tmp:/media
+    env_file: !override
       - ../.env
 
   flower:
@@ -30,13 +30,14 @@ services:
     image: nmdownloader
     build:
       context: ..
-    env_file:
+    env_file: !override
       - ../.env
 
   flask:
     depends_on: !reset null
+    container_name: !reset null
     image: nmdownloader
     build:
       context: ..
-    env_file:
+    env_file: !override
       - ../.env
