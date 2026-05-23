@@ -11,11 +11,10 @@
 
 # Docker
 docker-compose.yml
-docker/compose.dev.yaml
-docker/compose.yaml
 Dockerfile
 .docker
 .dockerignore
+docker/
 
 # Byte-compiled / optimized / DLL files
 **/__pycache__/

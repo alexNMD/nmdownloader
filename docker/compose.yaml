@@ -35,7 +35,7 @@ services:
     restart: unless-stopped
     command: ["celery", "--app", "nmdownloader.apps.celery_app", "worker", "--loglevel=${NMD_LOG_LEVEL:-INFO}", "--events"]
     volumes:
-      - ${DOWNLOAD_PATH}:/media
+      - ${DOWNLOAD_PATH:-./data/download}:/media
     environment:
       C_FORCE_ROOT: "true"
     healthcheck:
