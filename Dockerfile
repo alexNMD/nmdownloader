@@ -10,7 +10,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/ \
     && pip install --no-cache-dir "uv[rust]==0.7.19"
 
-WORKDIR /nmdownloader
+WORKDIR /app
 
 ENV UV_PROJECT_ENVIRONMENT=/usr/local
 
@@ -18,6 +18,7 @@ COPY pyproject.toml uv.lock ./
 
 RUN uv sync --frozen --no-install-project
 
-COPY . .
+COPY src/ src/
+COPY src/gunicorn.conf.py .
 
 RUN uv sync --locked
