@@ -65,13 +65,13 @@ class DownloadMedia(Download):
         _filename_regex = r'filename\*?=(?:UTF-8\'\')?"?([^;\n"]+)"?'
 
         if _match := re.search(_filename_regex, _content_disposition):
-            return _match.group(1)
+            return _match.group(1).replace(" ", ".")
 
         *_, filename = url.split("/")
         if not filename:
             raise ValueError
 
-        return filename
+        return filename.replace(" ", ".")
 
     def start(self):
         try:

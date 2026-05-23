@@ -11,8 +11,8 @@
 
 # Docker
 docker-compose.yml
-compose-dev.yaml
-compose.yaml
+docker/compose.dev.yaml
+docker/compose.yaml
 Dockerfile
 .docker
 .dockerignore
