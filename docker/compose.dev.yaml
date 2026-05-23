@@ -1,0 +1,42 @@
+services:
+  redis:
+    container_name: !reset null
+    volumes: !reset []
+
+# Have to set a correct token to be started
+  discord:
+    depends_on: !reset null
+    image: nmdownloader
+    build:
+      context: ..
+    command: ["python", "-m", "nmdownloader.apps.discord_app"]
+    env_file:
+      - ../.env
+
+  celery:
+    depends_on: !reset null
+    image: nmdownloader
+    container_name: !reset null
+    build:
+      context: ..
+    volumes: !override
+     - /tmp:/media
+    env_file:
+      - ../.env
+
+  flower:
+    depends_on: !reset null
+    container_name: !reset null
+    image: nmdownloader
+    build:
+      context: ..
+    env_file:
+      - ../.env
+
+  flask:
+    depends_on: !reset null
+    image: nmdownloader
+    build:
+      context: ..
+    env_file:
+      - ../.env

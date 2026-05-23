@@ -62,5 +62,5 @@ jobs:
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
           files: |
-            compose.yaml
+            docker/compose.yaml
             example.env
