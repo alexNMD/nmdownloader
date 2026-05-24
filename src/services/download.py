@@ -6,12 +6,12 @@ from typing import Any
 import requests
 from loguru import logger
 
-from nmdownloader.config.base import app_settings
-from nmdownloader.libs.download import (
+from src.config.base import app_settings
+from src.libs.download import (
     DownloadRevokeException,
     DownloadStatus,
 )
-from nmdownloader.services.discord_api import DiscordAPI
+from src.services.discord_api import DiscordAPI
 
 discord_api = DiscordAPI()
 

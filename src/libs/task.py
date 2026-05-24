@@ -1,6 +1,6 @@
 from celery.result import AsyncResult
 
-from nmdownloader.apps.celery_app import celery_app
+from src.apps.celery_app import celery_app
 
 
 def get_task_result(task_id: str) -> dict:

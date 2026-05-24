@@ -1,7 +1,7 @@
 from flask import Flask
 from werkzeug.exceptions import HTTPException
 
-from nmdownloader.routes import register_routes
+from src.routes import register_routes
 
 flask_app = Flask(__name__, template_folder="../templates", static_folder="../static")
 

@@ -1,12 +1,13 @@
 from functools import lru_cache
-from pathlib import Path
 from importlib.metadata import version
+from pathlib import Path
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from nmdownloader.config.plugins.discord import DiscordConfig
-from nmdownloader.config.plugins.un_fichier import UnFichierDownloaderConfig
-from nmdownloader.config.plugins.youtube import YoutubeDownloaderConfig
+from src.config.plugins.discord import DiscordConfig
+from src.config.plugins.un_fichier import UnFichierDownloaderConfig
+from src.config.plugins.youtube import YoutubeDownloaderConfig
 
 
 class CeleryConfig(BaseSettings):

@@ -1,6 +1,6 @@
 import requests
 
-from nmdownloader.config.base import app_settings
+from src.config.base import app_settings
 
 
 class DiscordAPI:
