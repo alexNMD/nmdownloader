@@ -1,7 +1,7 @@
 from discord import Intents
 
-from src.config.base import app_settings
-from src.services.bot import NMDownloader
+from config.base import app_settings
+from services.bot import NMDownloader
 
 intents = Intents.default()
 intents.typing = False

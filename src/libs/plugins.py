@@ -1,10 +1,10 @@
 from typing import Type
 from urllib.parse import urlparse
 
-from src.config.base import app_settings
-from src.services.download import Download
-from src.services.download_default import DownloadDefault
-from src.services.download_media import DownloadMedia
+from config.base import app_settings
+from services.download import Download
+from services.download_default import DownloadDefault
+from services.download_media import DownloadMedia
 
 
 def register_downloader(*hosts: str):

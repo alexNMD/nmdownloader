@@ -2,8 +2,8 @@ from discord.ext import commands
 
 from loguru import logger
 
-from src.config.base import app_settings
-from src.tasks.download import download_task
+from config.base import app_settings
+from tasks.download import download_task
 
 
 class Download(commands.Cog):

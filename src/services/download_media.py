@@ -9,11 +9,11 @@ import requests
 import unzipall  # type: ignore
 from loguru import logger
 
-from src.config.base import app_settings
-from src.libs.download import DownloadException, DownloadStatus
-from src.libs.files import get_relative_directory
-from src.libs.progressbar import get_progress_bar
-from src.services.download import Download
+from config.base import app_settings
+from libs.download import DownloadException, DownloadStatus
+from libs.files import get_relative_directory
+from libs.progressbar import get_progress_bar
+from services.download import Download
 
 
 class ShowType(Enum):

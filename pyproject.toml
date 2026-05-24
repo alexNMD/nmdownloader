@@ -33,3 +33,4 @@ build-backend = "setuptools.build_meta"
 
 [tool.mypy]
 plugins = ['pydantic.mypy']
+explicit_package_bases = true

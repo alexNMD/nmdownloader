@@ -5,10 +5,10 @@ from pytubefix import YouTube  # type: ignore
 from loguru import logger
 from werkzeug.utils import secure_filename
 
-from src.config.base import app_settings
-from src.libs.download import DownloadStatus, DownloadException
-from src.libs.plugins import register_downloader
-from src.services.download import Download
+from config.base import app_settings
+from libs.download import DownloadStatus, DownloadException
+from libs.plugins import register_downloader
+from services.download import Download
 
 
 @register_downloader("www.youtube.com", "youtube.com", "youtu.be")
