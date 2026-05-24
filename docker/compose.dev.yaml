@@ -7,9 +7,10 @@ services:
   discord:
     depends_on: !reset null
     image: nmdownloader
+    container_name: !reset null
     build:
       context: ..
-    command: ["python", "-m", "nmdownloader.apps.discord_app"]
+    command: ["python", "-m", "apps.discord_app"]
     env_file: !override
       - ../.env
 

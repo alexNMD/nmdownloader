@@ -8,7 +8,7 @@ class NMDownloader(commands.Bot):
         self.bot_channel = bot_channel
 
     async def setup_hook(self):
-        await self.load_extension("nmdownloader.commands.download")
+        await self.load_extension("commands.download")
 
     async def on_ready(self):
         logger.info(f"Logged in as {self.user}")
