@@ -1,3 +1,3 @@
 """Tasks"""
 
-__import__("src.tasks.download")
+__import__("tasks.download")

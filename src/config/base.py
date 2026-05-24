@@ -5,9 +5,9 @@ from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from src.config.plugins.discord import DiscordConfig
-from src.config.plugins.un_fichier import UnFichierDownloaderConfig
-from src.config.plugins.youtube import YoutubeDownloaderConfig
+from config.plugins.discord import DiscordConfig
+from config.plugins.un_fichier import UnFichierDownloaderConfig
+from config.plugins.youtube import YoutubeDownloaderConfig
 
 
 class CeleryConfig(BaseSettings):

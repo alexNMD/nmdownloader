@@ -6,12 +6,12 @@ from typing import Any
 import requests
 from loguru import logger
 
-from src.config.base import app_settings
-from src.libs.download import (
+from config.base import app_settings
+from libs.download import (
     DownloadRevokeException,
     DownloadStatus,
 )
-from src.services.discord_api import DiscordAPI
+from services.discord_api import DiscordAPI
 
 discord_api = DiscordAPI()
 
