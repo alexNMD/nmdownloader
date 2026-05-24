@@ -1,8 +1,9 @@
 from flask import request, Blueprint, jsonify, render_template
 from loguru import logger
-from nmdownloader.config.base import app_settings
-from nmdownloader.libs.task import get_task_result
-from nmdownloader.tasks.download import download_task
+
+from src.config.base import app_settings
+from src.libs.task import get_task_result
+from src.tasks.download import download_task
 
 download_bp = Blueprint(
     "download", __name__, url_prefix="/download", template_folder="templates"

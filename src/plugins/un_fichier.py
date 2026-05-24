@@ -1,10 +1,10 @@
 import requests
 from loguru import logger
 
-from nmdownloader.config.base import app_settings
-from nmdownloader.libs.download import DownloadException
-from nmdownloader.libs.plugins import register_downloader
-from nmdownloader.services.download_media import DownloadMedia
+from src.config.base import app_settings
+from src.libs.download import DownloadException
+from src.libs.plugins import register_downloader
+from src.services.download_media import DownloadMedia
 
 
 @register_downloader("1fichier.com")

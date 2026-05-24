@@ -2,8 +2,8 @@ from discord.ext import commands
 
 from loguru import logger
 
-from nmdownloader.config.base import app_settings
-from nmdownloader.tasks.download import download_task
+from src.config.base import app_settings
+from src.tasks.download import download_task
 
 
 class Download(commands.Cog):

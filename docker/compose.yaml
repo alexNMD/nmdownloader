@@ -21,7 +21,7 @@ services:
 #    image: ghcr.io/alexnmd/nmdownloader:latest
 #    container_name: nmdiscord
 #    restart: unless-stopped
-#    command: ["python", "-m", "nmdownloader.apps.discord_app"]
+#    command: ["python", "-m", "src.apps.discord_app"]
 #    env_file:
 #      - .env
 
@@ -33,13 +33,13 @@ services:
     image: ghcr.io/alexnmd/nmdownloader:latest
     container_name: nmdcelery
     restart: unless-stopped
-    command: ["celery", "--app", "nmdownloader.apps.celery_app", "worker", "--loglevel=${NMD_LOG_LEVEL:-INFO}", "--events"]
+    command: ["celery", "--app", "src.apps.celery_app", "worker", "--loglevel=${NMD_LOG_LEVEL:-INFO}", "--events"]
     volumes:
       - ${DOWNLOAD_PATH:-./data/download}:/media
     environment:
       C_FORCE_ROOT: "true"
     healthcheck:
-      test: celery --app nmdownloader.apps.celery_app status
+      test: celery --app src.apps.celery_app status
       interval: 10s
       timeout: 10s
       retries: 10
@@ -59,7 +59,7 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:5555:5555"
-    command: ["celery", "--app", "nmdownloader.apps.celery_app", "flower"]
+    command: ["celery", "--app", "src.apps.celery_app", "flower"]
     env_file:
       - .env
 
@@ -74,7 +74,7 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:8000:8000"
-    command: ["gunicorn", "nmdownloader.apps.flask_app:flask_app"]
+    command: ["gunicorn", "src.apps.flask_app:flask_app"]
     env_file:
       - .env
 

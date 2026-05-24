@@ -1,4 +1,4 @@
-from nmdownloader.services.download_media import DownloadMedia
+from src.services.download_media import DownloadMedia
 
 
 class DownloadDefault(DownloadMedia):

@@ -1,10 +1,10 @@
 from typing import Type
 from urllib.parse import urlparse
 
-from nmdownloader.config.base import app_settings
-from nmdownloader.services.download import Download
-from nmdownloader.services.download_default import DownloadDefault
-from nmdownloader.services.download_media import DownloadMedia
+from src.config.base import app_settings
+from src.services.download import Download
+from src.services.download_default import DownloadDefault
+from src.services.download_media import DownloadMedia
 
 
 def register_downloader(*hosts: str):

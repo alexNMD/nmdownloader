@@ -2,7 +2,7 @@ import platform
 
 from flask import Blueprint, jsonify, Response
 
-from nmdownloader.config.base import app_settings
+from src.config.base import app_settings
 
 hello_bp = Blueprint("hello", __name__)
 
