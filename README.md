@@ -29,17 +29,17 @@ uv run pre-commit install
 
 ### Start the debug flask app
 ```shell
-uv run -- flask --app nmdownloader.apps.flask_app run --debug
+uv run -- flask --app apps.flask_app run --debug
 ```
 
 ### Start the celery app
 ```shell
-uv run -- celery --app nmdownloader.apps.celery_app worker
+uv run -- celery --app apps.celery_app worker
 ```
 
 ### Start the discord app
 ```shell
-uv run -- python -m nmdownloader.apps.discord_app
+uv run -- python -m apps.discord_app
 ```
 
 ### Code Quality
@@ -51,13 +51,4 @@ uv run ruff format .
 ### Typing Check
 ```shell
 uv run mypy .
-```
-
-### Docker
-```shell
-# Build
-docker compose -f compose-dev.yaml build
-
-# Start
-docker compose -f compose-dev.yaml up
 ```
