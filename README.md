@@ -52,3 +52,8 @@ uv run ruff format .
 ```shell
 uv run mypy .
 ```
+
+### Testing (with coverage)
+```shell
+uv run pytest --cov
+```
