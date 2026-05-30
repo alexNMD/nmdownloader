@@ -61,10 +61,3 @@ def clean_registry():
     original_registry = app_settings.downloader.plugin.registry.copy()
     yield
     app_settings.downloader.plugin.registry = original_registry
-
-
-# Pytest hooks
-def pytest_configure(config):
-    """Register custom markers."""
-    config.addinivalue_line("markers", "integration: mark test as integration test")
-    config.addinivalue_line("markers", "slow: mark test as slow")
