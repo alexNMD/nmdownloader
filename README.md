@@ -1,7 +1,7 @@
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
-[![Build & Push Multi-Arch Docker Image](https://github.com/alexNMD/nmdownloader/actions/workflows/build.yml/badge.svg)](https://github.com/alexNMD/nmdownloader/actions/workflows/build.yml)
+[![Tests](https://github.com/alexNMD/nmdownloader/actions/workflows/tests.yml/badge.svg)](https://github.com/alexNMD/nmdownloader/actions/workflows/tests.yml)
 
 ## ✅ Prerequisites
 
@@ -51,4 +51,9 @@ uv run ruff format .
 ### Typing Check
 ```shell
 uv run mypy .
+```
+
+### Testing (with coverage)
+```shell
+uv run pytest --cov
 ```
