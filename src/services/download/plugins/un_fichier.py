@@ -1,7 +1,7 @@
 import requests
 from loguru import logger
 
-from config import app_settings
+from apps.celery_app import app_settings
 from services.download.helpers.exceptions import DownloadException
 from services.download.helpers.plugins import register_downloader
 from services.download.models import DownloadMedia

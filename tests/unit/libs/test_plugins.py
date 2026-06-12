@@ -1,6 +1,6 @@
 """Unit tests for libs/plugins.py module."""
 
-from config import app_settings
+from apps.celery_app import app_settings
 from services.download.helpers.plugins import get_downloader, register_downloader
 from services.download.plugins.un_fichier import Download1fichier
 from services.download.plugins.youtube import DownloadYoutube
@@ -93,7 +93,7 @@ class TestGetDownloader:
         # Get the downloader
         result = get_downloader("https://test.com/file")
 
-        assert result == MockDownloader
+        assert result is MockDownloader
 
     def test_get_downloader_returns_default_for_unknown_host(self, clean_registry):
         """Test getting default downloader for unknown host."""
@@ -102,7 +102,7 @@ class TestGetDownloader:
         # Get downloader for unknown host
         result = get_downloader("https://unknown.com/file")
 
-        assert result == DownloadDefault
+        assert result is DownloadDefault
 
     def test_get_downloader_with_youtube_urls(self):
         """Test getting downloader for YouTube URLs."""
@@ -117,7 +117,7 @@ class TestGetDownloader:
 
         for url in youtube_urls:
             result = get_downloader(url)
-            assert result == DownloadYoutube
+            assert result is DownloadYoutube
 
     def test_get_downloader_with_un_fichier_url(self):
         """Test getting downloader for 1fichier URLs."""
@@ -127,18 +127,18 @@ class TestGetDownloader:
         url = "https://1fichier.com/?abc123"
         result = get_downloader(url)
 
-        assert result == Download1fichier
+        assert result is Download1fichier
 
     def test_get_downloader_parses_url_correctly(self):
         """Test that URL parsing extracts netloc correctly."""
 
         # URL with www should match youtube.com registration
         result = get_downloader("https://www.youtube.com/watch?v=test")
-        assert result == DownloadYoutube
+        assert result is DownloadYoutube
 
         # URL without www should also match
         result = get_downloader("https://youtube.com/watch?v=test")
-        assert result == DownloadYoutube
+        assert result is DownloadYoutube
 
     def test_get_downloader_handles_url_with_port(self):
         """Test getting downloader with URL containing port."""

@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from config import app_settings
+from apps.celery_app import app_settings
 from services.download.helpers import DownloadStatus, DownloadRevokeException
 from services.download.models import DownloadBase
 
@@ -202,9 +202,10 @@ class TestDownloadConcrete:
         assert isinstance(result["filepath"], str)
         assert result["filepath"] == str(filepath)
 
-    @patch("services.download.logger")
+    @patch("loguru.logger")
     def test_download_update_status(self, mock_logger):
         """Test Download update_status method."""
+        from services.download.models import DownloadBase
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
@@ -225,10 +226,12 @@ class TestDownloadConcrete:
         # Check log was called
         mock_logger.info.assert_called()
 
-    @patch("services.download.discord_api")
-    @patch("services.download.logger")
+    @patch("services.download.models.base.discord_api")
+    @patch("loguru.logger")
     def test_download_update_status_with_discord(self, mock_logger, mock_discord_api):
         """Test Download update_status with Discord notifications."""
+        from config import app_settings
+        from services.download.models import DownloadBase
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
@@ -256,6 +259,8 @@ class TestDownloadConcrete:
 
     def test_download_notification_without_token(self):
         """Test that notification is skipped without Discord token."""
+        from config import app_settings
+        from services.download.models import DownloadBase
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
@@ -275,6 +280,8 @@ class TestDownloadConcrete:
 
     def test_download_notification_without_channel(self):
         """Test that notification logs error without channel ID."""
+        from config import app_settings
+        from services.download.models import DownloadBase
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
@@ -291,6 +298,6 @@ class TestDownloadConcrete:
         download = ConcreteDownload(task=mock_task, filepath=filepath, channel_id=None)
 
         # Should log error but not crash
-        with patch("services.download.logger") as mock_logger:
+        with patch("loguru.logger") as mock_logger:
             download.update_status(DownloadStatus.STARTED, "Starting")
             mock_logger.error.assert_called_once()

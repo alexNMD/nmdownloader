@@ -9,11 +9,11 @@ import requests
 import unzipall  # type: ignore
 from loguru import logger
 
-from config import app_settings
+from apps.celery_app import app_settings
 from services.download.helpers import DownloadStatus
 from services.download.helpers.exceptions import DownloadException
-from libs.files import get_relative_directory
-from libs.progressbar import get_progress_bar
+from services.download.helpers.files import get_relative_directory
+from services.download.helpers.progressbar import get_progress_bar
 from services.download.models import DownloadBase
 
 

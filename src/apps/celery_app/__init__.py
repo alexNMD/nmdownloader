@@ -8,7 +8,7 @@ assert plugins
 
 celery_app = Celery(
     "tasks",
-    include=["tasks"],
+    include=["apps.celery_app.tasks"],
     broker=app_settings.celery.broker_url,
     backend=app_settings.celery.backend_url,
     worker_concurrency=app_settings.celery.concurrency,

@@ -3,7 +3,7 @@
 import pytest
 
 
-from libs.progressbar import get_progress_bar, BAR_LENGTH
+from services.download.helpers.progressbar import get_progress_bar, BAR_LENGTH
 
 
 class TestGetProgressBar:

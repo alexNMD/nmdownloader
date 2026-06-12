@@ -1,9 +1,9 @@
 from flask import Flask
 from werkzeug.exceptions import HTTPException
 
-from routes import register_routes
+from apps.flask_app.routes import register_routes
 
-flask_app = Flask(__name__, template_folder="../templates", static_folder="../static")
+flask_app = Flask(__name__)
 
 register_routes(flask_app)
 

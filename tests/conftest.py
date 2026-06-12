@@ -6,6 +6,22 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def reset_loguru_modules():
+    """Reset loguru and related modules before each test to allow patching."""
+    import sys
+
+    # Clear modules that import loguru before patching can work
+    # Don't clear 'apps' as it's needed by other modules
+    modules_to_clear = [
+        k
+        for k in list(sys.modules.keys())
+        if "loguru" in k or "services.download" in k or "plugins" in k
+    ]
+    for mod in modules_to_clear:
+        del sys.modules[mod]
+
+
 @pytest.fixture
 def mock_celery_task():
     """Mock Celery task for testing Download classes."""
@@ -56,7 +72,7 @@ def cleanup_temp_files(tmp_path):
 @pytest.fixture
 def clean_registry():
     """Fixture to save and restore the plugin registry."""
-    from config import app_settings
+    from apps.celery_app import app_settings
 
     original_registry = app_settings.downloader.plugin.registry.copy()
     yield

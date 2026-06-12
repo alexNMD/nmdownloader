@@ -5,7 +5,7 @@ from pytubefix import YouTube  # type: ignore
 from loguru import logger
 from werkzeug.utils import secure_filename
 
-from config import app_settings
+from apps.celery_app import app_settings
 from services.download.helpers import DownloadStatus
 from services.download.helpers.exceptions import DownloadException
 from services.download.helpers.plugins import register_downloader

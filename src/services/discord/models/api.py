@@ -1,6 +1,6 @@
 import requests
 
-from config import app_settings
+from apps.celery_app import app_settings
 
 
 class DiscordAPI:

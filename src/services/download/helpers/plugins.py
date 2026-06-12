@@ -2,8 +2,7 @@ import importlib
 from typing import Type
 from urllib.parse import urlparse
 
-
-from config import app_settings
+from apps.celery_app import app_settings
 from services.download.models import DownloadBase, DownloadMedia, DownloadDefault
 
 

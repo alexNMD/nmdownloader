@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from libs.files import _extract_serie_info, get_relative_directory
+from services.download.helpers.files import _extract_serie_info, get_relative_directory
 
 
 class TestExtractSerieInfo:

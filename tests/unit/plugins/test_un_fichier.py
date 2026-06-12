@@ -28,15 +28,15 @@ class TestDownload1fichier:
 
     def test_download_1fichier_registration(self):
         """Test that Download1fichier is registered for 1fichier host."""
-        # Import to register
-        import services.download.plugins.un_fichier  # noqa: F401
+        # Import to register - already imported at module level
+        # from services.download.plugins.un_fichier import Download1fichier
 
         result = get_downloader("https://1fichier.com/?abc123")
-        assert result == Download1fichier
+        assert result is Download1fichier
 
-    @patch("src.services.download.plugins.un_fichier.requests.post")
-    @patch("src.services.download.plugins.un_fichier.requests.head")
-    @patch("src.services.download.plugins.un_fichier.app_settings")
+    @patch("services.download.plugins.un_fichier.requests.post")
+    @patch("services.download.plugins.un_fichier.requests.head")
+    @patch("services.download.plugins.un_fichier.app_settings")
     def test_download_1fichier_init_with_token(
         self, mock_app_settings, mock_head, mock_post
     ):
@@ -90,9 +90,9 @@ class TestDownload1fichier:
 
         assert "UNFICHIER_API_TOKEN not set" in str(exc_info.value)
 
-    @patch("src.services.download.plugins.un_fichier.requests.post")
-    @patch("src.services.download.plugins.un_fichier.requests.head")
-    @patch("src.services.download.plugins.un_fichier.app_settings")
+    @patch("services.download.plugins.un_fichier.requests.post")
+    @patch("services.download.plugins.un_fichier.requests.head")
+    @patch("services.download.plugins.un_fichier.app_settings")
     def test_download_1fichier_init_with_url_splitting(
         self, mock_app_settings, mock_head, mock_post
     ):
