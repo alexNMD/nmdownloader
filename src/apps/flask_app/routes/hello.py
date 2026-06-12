@@ -24,6 +24,6 @@ def hello() -> Response:
             "celery": {
                 "concurrency": app_settings.celery.concurrency,
             },
-            "ffmpeg": app_settings.downloader.youtube.ffmpeg.to_dict(),
+            "ffmpeg": app_settings.downloader.youtube.ffmpeg.dict(),
         }
     )
