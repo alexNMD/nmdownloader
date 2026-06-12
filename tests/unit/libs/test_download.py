@@ -3,10 +3,10 @@
 from celery.exceptions import Ignore
 from unittest.mock import MagicMock, patch
 
-from libs.download import (
+from services.download.helpers import DownloadStatus
+from services.download.helpers.exceptions import (
     DownloadException,
     DownloadRevokeException,
-    DownloadStatus,
 )
 
 

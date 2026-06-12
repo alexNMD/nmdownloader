@@ -7,9 +7,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from config.base import app_settings
-from libs.download import DownloadRevokeException
-from services.download import Download, DownloadStatus
+from config import app_settings
+from services.download.helpers import DownloadStatus, DownloadRevokeException
+from services.download.models import DownloadBase
 
 
 class TestDownload:
@@ -17,13 +17,15 @@ class TestDownload:
 
     def test_download_is_abstract(self):
         """Test that Download is an abstract base class."""
-        assert issubclass(Download, ABC)
+        assert issubclass(DownloadBase, ABC)
 
     def test_download_abstract_method(self):
         """Test that Download has abstract start method."""
-        assert hasattr(Download, "start")
+        assert hasattr(DownloadBase, "start")
         # Check it's abstract
-        assert inspect.ismethod(Download.start) or inspect.isfunction(Download.start)
+        assert inspect.ismethod(DownloadBase.start) or inspect.isfunction(
+            DownloadBase.start
+        )
 
 
 class TestDownloadConcrete:
@@ -33,7 +35,7 @@ class TestDownloadConcrete:
         """Test Download class initialization."""
 
         # Create a concrete subclass for testing
-        class ConcreteDownload(Download):
+        class ConcreteDownload(DownloadBase):
             def start(self):
                 pass
 
@@ -55,7 +57,7 @@ class TestDownloadConcrete:
         """Test Download initialization with options."""
 
         # Create a concrete subclass for testing
-        class ConcreteDownload(Download):
+        class ConcreteDownload(DownloadBase):
             def start(self):
                 pass
 
@@ -72,7 +74,7 @@ class TestDownloadConcrete:
         """Test Download initialization with default channel."""
 
         # Create a concrete subclass for testing
-        class ConcreteDownload(Download):
+        class ConcreteDownload(DownloadBase):
             def start(self):
                 pass
 
@@ -94,7 +96,7 @@ class TestDownloadConcrete:
         """Test Download _remove method."""
 
         # Create a concrete subclass for testing
-        class ConcreteDownload(Download):
+        class ConcreteDownload(DownloadBase):
             def start(self):
                 pass
 
@@ -120,7 +122,7 @@ class TestDownloadConcrete:
         """Test Download _remove with non-existent file."""
 
         # Create a concrete subclass for testing
-        class ConcreteDownload(Download):
+        class ConcreteDownload(DownloadBase):
             def start(self):
                 pass
 
@@ -136,7 +138,7 @@ class TestDownloadConcrete:
         """Test Download cancel method."""
 
         # Create a concrete subclass for testing
-        class ConcreteDownload(Download):
+        class ConcreteDownload(DownloadBase):
             def start(self):
                 pass
 
@@ -162,7 +164,7 @@ class TestDownloadConcrete:
         """Test Download to_dict method."""
 
         # Create a concrete subclass for testing
-        class ConcreteDownload(Download):
+        class ConcreteDownload(DownloadBase):
             def start(self):
                 pass
 
@@ -187,7 +189,7 @@ class TestDownloadConcrete:
         """Test that to_dict converts Path to string."""
 
         # Create a concrete subclass for testing
-        class ConcreteDownload(Download):
+        class ConcreteDownload(DownloadBase):
             def start(self):
                 pass
 
@@ -205,7 +207,7 @@ class TestDownloadConcrete:
         """Test Download update_status method."""
 
         # Create a concrete subclass for testing
-        class ConcreteDownload(Download):
+        class ConcreteDownload(DownloadBase):
             def start(self):
                 pass
 
@@ -229,7 +231,7 @@ class TestDownloadConcrete:
         """Test Download update_status with Discord notifications."""
 
         # Create a concrete subclass for testing
-        class ConcreteDownload(Download):
+        class ConcreteDownload(DownloadBase):
             def start(self):
                 pass
 
@@ -256,7 +258,7 @@ class TestDownloadConcrete:
         """Test that notification is skipped without Discord token."""
 
         # Create a concrete subclass for testing
-        class ConcreteDownload(Download):
+        class ConcreteDownload(DownloadBase):
             def start(self):
                 pass
 
@@ -275,7 +277,7 @@ class TestDownloadConcrete:
         """Test that notification logs error without channel ID."""
 
         # Create a concrete subclass for testing
-        class ConcreteDownload(Download):
+        class ConcreteDownload(DownloadBase):
             def start(self):
                 pass
 

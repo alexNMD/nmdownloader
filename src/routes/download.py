@@ -1,7 +1,7 @@
 from flask import request, Blueprint, jsonify, render_template
 from loguru import logger
 
-from config.base import app_settings
+from config import app_settings
 from libs.task import get_task_result
 from tasks.download import download_task
 

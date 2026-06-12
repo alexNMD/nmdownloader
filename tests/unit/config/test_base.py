@@ -4,14 +4,14 @@ from pathlib import Path
 
 import pytest
 
-from config.base import (
+from config.settings import (
     CeleryConfig,
     DownloaderConfig,
     DownloaderPluginConfig,
     Settings,
-    app_settings,
     get_app_settings,
 )
+from config import app_settings
 
 
 class TestCeleryConfig:

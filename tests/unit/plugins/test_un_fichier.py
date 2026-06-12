@@ -6,10 +6,13 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from libs.download import DownloadException
-from libs.plugins import get_downloader
-from plugins.un_fichier import Download1fichier, compute_url_from_1fichier
-from services.download_media import DownloadMedia
+from services.download.helpers.exceptions import DownloadException
+from services.download.helpers.plugins import get_downloader
+from services.download.plugins.un_fichier import (
+    Download1fichier,
+    compute_url_from_1fichier,
+)
+from services.download.models.media import DownloadMedia
 
 
 class TestDownload1fichier:
@@ -26,7 +29,7 @@ class TestDownload1fichier:
     def test_download_1fichier_registration(self):
         """Test that Download1fichier is registered for 1fichier host."""
         # Import to register
-        import plugins.un_fichier  # noqa: F401
+        import services.download.plugins.un_fichier  # noqa: F401
 
         result = get_downloader("https://1fichier.com/?abc123")
         assert result == Download1fichier

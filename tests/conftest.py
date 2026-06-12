@@ -56,7 +56,7 @@ def cleanup_temp_files(tmp_path):
 @pytest.fixture
 def clean_registry():
     """Fixture to save and restore the plugin registry."""
-    from config.base import app_settings
+    from config import app_settings
 
     original_registry = app_settings.downloader.plugin.registry.copy()
     yield

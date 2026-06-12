@@ -5,14 +5,15 @@ from pytubefix import YouTube  # type: ignore
 from loguru import logger
 from werkzeug.utils import secure_filename
 
-from config.base import app_settings
-from libs.download import DownloadStatus, DownloadException
-from libs.plugins import register_downloader
-from services.download import Download
+from config import app_settings
+from services.download.helpers import DownloadStatus
+from services.download.helpers.exceptions import DownloadException
+from services.download.helpers.plugins import register_downloader
+from services.download.models import DownloadBase
 
 
 @register_downloader("www.youtube.com", "youtube.com", "youtu.be")
-class DownloadYoutube(Download):
+class DownloadYoutube(DownloadBase):
     def __init__(self, url: str, **kwargs) -> None:
         self.youtube_obj = YouTube(url=url)
         self.filename = secure_filename(

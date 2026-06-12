@@ -1,6 +1,6 @@
 import requests
 
-from config.base import app_settings
+from config import app_settings
 
 
 class DiscordAPI:

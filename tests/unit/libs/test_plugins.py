@@ -1,10 +1,10 @@
 """Unit tests for libs/plugins.py module."""
 
-from config.base import app_settings
-from libs.plugins import get_downloader, register_downloader
-from plugins.un_fichier import Download1fichier
-from plugins.youtube import DownloadYoutube
-from services.download_default import DownloadDefault
+from config import app_settings
+from services.download.helpers.plugins import get_downloader, register_downloader
+from services.download.plugins.un_fichier import Download1fichier
+from services.download.plugins.youtube import DownloadYoutube
+from services.download.models.default import DownloadDefault
 from urllib.parse import urlparse
 
 
@@ -107,7 +107,6 @@ class TestGetDownloader:
     def test_get_downloader_with_youtube_urls(self):
         """Test getting downloader for YouTube URLs."""
         # Import to register the YouTube downloader
-        import plugins.youtube  # noqa: F401
 
         # Test various YouTube URLs
         youtube_urls = [
@@ -123,7 +122,7 @@ class TestGetDownloader:
     def test_get_downloader_with_un_fichier_url(self):
         """Test getting downloader for 1fichier URLs."""
         # Import to register the 1fichier downloader
-        import plugins.un_fichier  # noqa: F401
+        import services.download.plugins.un_fichier  # noqa: F401
 
         url = "https://1fichier.com/?abc123"
         result = get_downloader(url)
@@ -132,7 +131,6 @@ class TestGetDownloader:
 
     def test_get_downloader_parses_url_correctly(self):
         """Test that URL parsing extracts netloc correctly."""
-        import plugins.youtube  # noqa: F401
 
         # URL with www should match youtube.com registration
         result = get_downloader("https://www.youtube.com/watch?v=test")

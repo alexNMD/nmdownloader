@@ -9,11 +9,12 @@ import requests
 import unzipall  # type: ignore
 from loguru import logger
 
-from config.base import app_settings
-from libs.download import DownloadException, DownloadStatus
+from config import app_settings
+from services.download.helpers import DownloadStatus
+from services.download.helpers.exceptions import DownloadException
 from libs.files import get_relative_directory
 from libs.progressbar import get_progress_bar
-from services.download import Download
+from services.download.models import DownloadBase
 
 
 class ShowType(Enum):
@@ -22,7 +23,7 @@ class ShowType(Enum):
     ANIMES = "animes"
 
 
-class DownloadMedia(Download):
+class DownloadMedia(DownloadBase):
     REGEX_SEARCH_TYPE = r"[Ss]\d{1,2}([Ee]\d{1,2})?"
 
     def __init__(self, url: str, **kwargs: Any):

@@ -6,17 +6,14 @@ from typing import Any
 import requests
 from loguru import logger
 
-from config.base import app_settings
-from libs.download import (
-    DownloadRevokeException,
-    DownloadStatus,
-)
-from services.discord_api import DiscordAPI
+from config import app_settings
+from services.download.helpers import DownloadStatus, DownloadRevokeException
+from services.discord import DiscordAPI
 
-discord_api = DiscordAPI()
+discord_api = DiscordAPI()  # TODO: switch to self
 
 
-class Download(ABC):
+class DownloadBase(ABC):
     def __init__(
         self,
         task: Any,  # Celery Task

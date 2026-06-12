@@ -5,10 +5,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from libs.download import DownloadException
-from libs.plugins import get_downloader
-from plugins.youtube import DownloadYoutube
-from services.download import Download
+from services.download.helpers.exceptions import DownloadException
+from services.download.helpers.plugins import get_downloader
+from services.download.plugins.youtube import DownloadYoutube
+from services.download.models import DownloadBase
 
 
 class TestDownloadYoutube:
@@ -20,12 +20,11 @@ class TestDownloadYoutube:
 
     def test_download_youtube_inheritance(self):
         """Test that DownloadYoutube inherits from Download."""
-        assert issubclass(DownloadYoutube, Download)
+        assert issubclass(DownloadYoutube, DownloadBase)
 
     def test_download_youtube_registration(self):
         """Test that DownloadYoutube is registered for YouTube hosts."""
         # Import to register
-        import plugins.youtube  # noqa: F401
 
         youtube_hosts = ["www.youtube.com", "youtube.com", "youtu.be"]
 

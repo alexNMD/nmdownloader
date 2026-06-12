@@ -1,7 +1,10 @@
 from celery import Celery
 
-from config.base import app_settings
-from plugins import load_downloader_plugins
+from config import app_settings
+from services.download import plugins
+from services.download.helpers.plugins import load_downloader_plugins
+
+assert plugins
 
 celery_app = Celery(
     "tasks",
