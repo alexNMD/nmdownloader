@@ -2,7 +2,7 @@ from discord.ext import commands
 from loguru import logger
 
 
-class NMDownloader(commands.Bot):
+class DiscordBot(commands.Bot):
     def __init__(self, bot_channel, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.bot_channel = bot_channel
