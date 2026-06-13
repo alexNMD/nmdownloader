@@ -202,7 +202,7 @@ class TestDownloadConcrete:
         assert isinstance(result["filepath"], str)
         assert result["filepath"] == str(filepath)
 
-    @patch("loguru.logger")
+    @patch("services.download.models.base.logger")
     def test_download_update_status(self, mock_logger):
         """Test Download update_status method."""
         from services.download.models import DownloadBase
@@ -226,9 +226,9 @@ class TestDownloadConcrete:
         # Check log was called
         mock_logger.info.assert_called()
 
-    @patch("services.download.models.base.discord_api")
-    @patch("loguru.logger")
-    def test_download_update_status_with_discord(self, mock_logger, mock_discord_api):
+    @patch("services.download.models.base.DiscordAPI")
+    @patch("services.download.models.base.logger")
+    def test_download_update_status_with_discord(self, mock_logger, mock_discord_class):
         """Test Download update_status with Discord notifications."""
         from config import app_settings
         from services.download.models import DownloadBase
@@ -245,7 +245,9 @@ class TestDownloadConcrete:
         app_settings.discord.token = "test_token"
         app_settings.discord.default_channel_id = 123
 
-        mock_discord_api.send_embed = MagicMock()
+        # Setup mock for DiscordAPI instance
+        mock_discord_api = MagicMock()
+        mock_discord_class.return_value = mock_discord_api
 
         download = ConcreteDownload(
             task=mock_task, filepath=filepath, message_id=None, channel_id=123
@@ -298,6 +300,6 @@ class TestDownloadConcrete:
         download = ConcreteDownload(task=mock_task, filepath=filepath, channel_id=None)
 
         # Should log error but not crash
-        with patch("loguru.logger") as mock_logger:
+        with patch("services.download.models.base.logger") as mock_logger:
             download.update_status(DownloadStatus.STARTED, "Starting")
             mock_logger.error.assert_called_once()

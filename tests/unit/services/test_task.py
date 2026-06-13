@@ -12,11 +12,8 @@ class TestGetTaskResult:
         """Test that get_task_result function exists."""
         assert callable(get_task_result)
 
-    @patch("apps.celery_app.celery_app")
     @patch("services.download.helpers.task.AsyncResult")
-    def test_get_task_result_with_successful_task(
-        self, mock_async_result, mock_celery_app
-    ):
+    def test_get_task_result_with_successful_task(self, mock_async_result):
         """Test get_task_result with a successful task."""
         # Setup mock
         mock_result = MagicMock()

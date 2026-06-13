@@ -69,7 +69,7 @@ class TestDownloadException:
         mock_download = MagicMock()
         message = "Test error"
 
-        with patch("loguru.logger") as mock_logger:
+        with patch("services.download.helpers.exceptions.logger") as mock_logger:
             from services.download.helpers.exceptions import DownloadException
 
             DownloadException(mock_download, message)
@@ -129,7 +129,7 @@ class TestDownloadRevokeException:
         """Test that DownloadRevokeException logs at info level."""
         mock_download = MagicMock()
 
-        with patch("loguru.logger") as mock_logger:
+        with patch("services.download.helpers.exceptions.logger") as mock_logger:
             from services.download.helpers.exceptions import DownloadRevokeException
 
             DownloadRevokeException(mock_download)

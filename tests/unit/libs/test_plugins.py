@@ -127,7 +127,7 @@ class TestGetDownloader:
         url = "https://1fichier.com/?abc123"
         result = get_downloader(url)
 
-        assert isinstance(result, Download1fichier)
+        assert result is Download1fichier
 
     def test_get_downloader_parses_url_correctly(self):
         """Test that URL parsing extracts netloc correctly."""
