@@ -9,7 +9,7 @@ import requests
 import unzipall  # type: ignore
 from loguru import logger
 
-from apps.celery_app import app_settings
+from config import app_settings
 from services.download.helpers import DownloadStatus
 from services.download.helpers.exceptions import DownloadException
 from services.download.helpers.files import get_relative_directory

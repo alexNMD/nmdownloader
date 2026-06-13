@@ -1,7 +1,7 @@
 from flask import request, Blueprint, jsonify, render_template
 from loguru import logger
 
-from apps.celery_app import app_settings
+from config import app_settings
 from services.download.helpers.task import get_task_result
 from apps.celery_app.tasks.download import download_task
 

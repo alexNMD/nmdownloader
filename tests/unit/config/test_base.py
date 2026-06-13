@@ -11,7 +11,7 @@ from config.settings import (
     Settings,
     get_app_settings,
 )
-from apps.celery_app import app_settings
+from config import app_settings
 
 
 class TestCeleryConfig:

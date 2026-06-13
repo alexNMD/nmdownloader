@@ -1,6 +1,6 @@
 """Unit tests for libs/plugins.py module."""
 
-from apps.celery_app import app_settings
+from config import app_settings
 from services.download.helpers.plugins import get_downloader, register_downloader
 from services.download.plugins.un_fichier import Download1fichier
 from services.download.plugins.youtube import DownloadYoutube
@@ -127,7 +127,7 @@ class TestGetDownloader:
         url = "https://1fichier.com/?abc123"
         result = get_downloader(url)
 
-        assert result is Download1fichier
+        assert isinstance(result, Download1fichier)
 
     def test_get_downloader_parses_url_correctly(self):
         """Test that URL parsing extracts netloc correctly."""

@@ -6,7 +6,7 @@ from typing import Any
 import requests
 from loguru import logger
 
-from apps.celery_app import app_settings
+from config import app_settings
 from services.download.helpers import DownloadStatus, DownloadRevokeException
 from services.discord import DiscordAPI
 

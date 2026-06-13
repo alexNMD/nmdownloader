@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from apps.celery_app import app_settings
+from config import app_settings
 from services.download.helpers import DownloadStatus, DownloadRevokeException
 from services.download.models import DownloadBase
 

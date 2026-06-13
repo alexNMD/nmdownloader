@@ -2,7 +2,7 @@ from discord.ext import commands
 
 from loguru import logger
 
-from apps.celery_app import app_settings
+from config import app_settings
 from apps.celery_app.tasks.download import download_task
 
 
