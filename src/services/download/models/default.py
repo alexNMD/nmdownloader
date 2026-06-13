@@ -1,4 +1,4 @@
-from services.download_media import DownloadMedia
+from services.download.models.media import DownloadMedia
 
 
 class DownloadDefault(DownloadMedia):

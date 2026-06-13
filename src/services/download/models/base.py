@@ -6,17 +6,12 @@ from typing import Any
 import requests
 from loguru import logger
 
-from config.base import app_settings
-from libs.download import (
-    DownloadRevokeException,
-    DownloadStatus,
-)
-from services.discord_api import DiscordAPI
-
-discord_api = DiscordAPI()
+from config import app_settings
+from services.discord import DiscordAPI
+from services.download.helpers import DownloadStatus, DownloadRevokeException
 
 
-class Download(ABC):
+class DownloadBase(ABC):
     def __init__(
         self,
         task: Any,  # Celery Task
@@ -26,6 +21,7 @@ class Download(ABC):
         **kwargs,
     ):
         self.task = task
+        self.discord_api = DiscordAPI()
         self.filepath = filepath
         self.message_id = message_id
         self.channel_id = channel_id or app_settings.discord.default_channel_id
@@ -90,17 +86,19 @@ class Download(ABC):
 
         try:
             if status_message_id:
-                discord_api.edit_embed(
+                self.discord_api.edit_embed(
                     channel_id, status_message_id, title, content, status.value
                 )
                 return
 
             self.status_message_id = (
-                discord_api.reply_with_embed(
+                self.discord_api.reply_with_embed(
                     channel_id, message_id, title, content, status.value
                 )
                 if message_id
-                else discord_api.send_embed(channel_id, title, content, status.value)
+                else self.discord_api.send_embed(
+                    channel_id, title, content, status.value
+                )
             )
         except requests.exceptions.HTTPError as http_error:
             if http_error.response.status_code == 401:

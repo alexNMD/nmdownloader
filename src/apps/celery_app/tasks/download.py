@@ -1,7 +1,7 @@
 from loguru import logger
 
 from apps.celery_app import celery_app
-from libs.plugins import get_downloader
+from services.download.helpers.plugins import get_downloader
 
 
 @celery_app.task(bind=True)

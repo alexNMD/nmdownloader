@@ -2,8 +2,8 @@ from discord.ext import commands
 
 from loguru import logger
 
-from config.base import app_settings
-from tasks.download import download_task
+from config import app_settings
+from apps.celery_app.tasks.download import download_task
 
 
 class Download(commands.Cog):

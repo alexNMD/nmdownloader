@@ -1,10 +1,10 @@
 import requests
 from loguru import logger
 
-from config.base import app_settings
-from libs.download import DownloadException
-from libs.plugins import register_downloader
-from services.download_media import DownloadMedia
+from config import app_settings
+from services.download.helpers.exceptions import DownloadException
+from services.download.helpers.plugins import register_downloader
+from services.download.models import DownloadMedia
 
 
 @register_downloader("1fichier.com")

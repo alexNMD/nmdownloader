@@ -5,9 +5,11 @@ from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from config.plugins.discord import DiscordConfig
-from config.plugins.un_fichier import UnFichierDownloaderConfig
-from config.plugins.youtube import YoutubeDownloaderConfig
+from config.plugins import (
+    DiscordConfig,
+    UnFichierDownloaderConfig,
+    YoutubeDownloaderConfig,
+)
 
 
 class CeleryConfig(BaseSettings):
@@ -50,6 +52,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_app_settings() -> Settings:
     return Settings()
-
-
-app_settings = get_app_settings()

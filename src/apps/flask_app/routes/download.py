@@ -1,9 +1,9 @@
 from flask import request, Blueprint, jsonify, render_template
 from loguru import logger
 
-from config.base import app_settings
-from libs.task import get_task_result
-from tasks.download import download_task
+from config import app_settings
+from services.download.helpers.task import get_task_result
+from apps.celery_app.tasks.download import download_task
 
 download_bp = Blueprint(
     "download", __name__, url_prefix="/download", template_folder="templates"

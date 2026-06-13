@@ -1,11 +1,14 @@
 from celery import Celery
 
-from config.base import app_settings
-from plugins import load_downloader_plugins
+from config import app_settings
+from services.download import plugins
+from services.download.helpers.plugins import load_downloader_plugins
+
+assert plugins
 
 celery_app = Celery(
     "tasks",
-    include=["tasks"],
+    include=["apps.celery_app.tasks"],
     broker=app_settings.celery.broker_url,
     backend=app_settings.celery.backend_url,
     worker_concurrency=app_settings.celery.concurrency,

@@ -22,19 +22,6 @@ class FFMPEGVideoConfig(BaseSettings):
     movflags: str = "+faststart"
     format: str = "mp4"
 
-    def to_dict(self) -> dict:
-        return {
-            "vcodec": self.vcodec,
-            "crf": self.crf,
-            "preset": self.preset,
-            "profile:v": self.profile_v,
-            "tune": self.tune,
-            "acodec": self.acodec,
-            "b:a": self.audio_bitrate,
-            "movflags": self.movflags,
-            "format": self.format,
-        }
-
 
 class YoutubeDownloaderConfig(BaseSettings):
     ffmpeg: FFMPEGVideoConfig = Field(default_factory=FFMPEGVideoConfig)

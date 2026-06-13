@@ -1,15 +1,7 @@
-from enum import Enum
-
 from celery.exceptions import Ignore
 from loguru import logger
 
-
-class DownloadStatus(Enum):
-    STARTED = int("e8f30b", 16)
-    RUNNING = int("f3ad0b", 16)
-    DONE = int("0dba2f", 16)
-    ERROR = int("f63106", 16)
-    CANCELED = int("510666", 16)
+from services.download.helpers.constants import DownloadStatus
 
 
 class DownloadException(Exception):

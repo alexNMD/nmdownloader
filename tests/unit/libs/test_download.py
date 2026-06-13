@@ -3,11 +3,7 @@
 from celery.exceptions import Ignore
 from unittest.mock import MagicMock, patch
 
-from libs.download import (
-    DownloadException,
-    DownloadRevokeException,
-    DownloadStatus,
-)
+from services.download.helpers import DownloadStatus
 
 
 class TestDownloadStatus:
@@ -44,10 +40,14 @@ class TestDownloadException:
 
     def test_download_exception_inheritance(self):
         """Test that DownloadException inherits from Exception."""
+        from services.download.helpers.exceptions import DownloadException
+
         assert issubclass(DownloadException, Exception)
 
     def test_download_exception_init(self):
         """Test DownloadException initialization."""
+        from services.download.helpers.exceptions import DownloadException
+
         mock_download = MagicMock()
         mock_download.update_status = MagicMock()
 
@@ -58,8 +58,10 @@ class TestDownloadException:
         mock_download.update_status.assert_called_once()
 
         # Check that it was called with ERROR status
+        from services.download.helpers import DownloadStatus as DS
+
         call_args = mock_download.update_status.call_args
-        assert call_args[0][0] == DownloadStatus.ERROR
+        assert call_args[0][0] == DS.ERROR
         assert call_args[0][1] == message
 
     def test_download_exception_logs_error(self):
@@ -67,7 +69,9 @@ class TestDownloadException:
         mock_download = MagicMock()
         message = "Test error"
 
-        with patch("libs.download.logger") as mock_logger:
+        with patch("services.download.helpers.exceptions.logger") as mock_logger:
+            from services.download.helpers.exceptions import DownloadException
+
             DownloadException(mock_download, message)
 
         mock_logger.error.assert_called_once_with(message)
@@ -78,10 +82,14 @@ class TestDownloadRevokeException:
 
     def test_download_revoke_exception_inheritance(self):
         """Test that DownloadRevokeException inherits from Ignore."""
+        from services.download.helpers.exceptions import DownloadRevokeException
+
         assert issubclass(DownloadRevokeException, Ignore)
 
     def test_download_revoke_exception_default_message(self):
         """Test DownloadRevokeException with default message."""
+        from services.download.helpers.exceptions import DownloadRevokeException
+
         mock_download = MagicMock()
         mock_download.update_status = MagicMock()
 
@@ -91,12 +99,16 @@ class TestDownloadRevokeException:
         mock_download.update_status.assert_called_once()
 
         # Check that it was called with CANCELED status
+        from services.download.helpers import DownloadStatus as DS
+
         call_args = mock_download.update_status.call_args
-        assert call_args[0][0] == DownloadStatus.CANCELED
+        assert call_args[0][0] == DS.CANCELED
         assert call_args[0][1] == "Canceled by User"
 
     def test_download_revoke_exception_custom_message(self):
         """Test DownloadRevokeException with custom message."""
+        from services.download.helpers.exceptions import DownloadRevokeException
+
         mock_download = MagicMock()
         mock_download.update_status = MagicMock()
 
@@ -107,15 +119,19 @@ class TestDownloadRevokeException:
         mock_download.update_status.assert_called_once()
 
         # Check that it was called with CANCELED status
+        from services.download.helpers import DownloadStatus as DS
+
         call_args = mock_download.update_status.call_args
-        assert call_args[0][0] == DownloadStatus.CANCELED
+        assert call_args[0][0] == DS.CANCELED
         assert call_args[0][1] == custom_message
 
     def test_download_revoke_exception_logs_info(self):
         """Test that DownloadRevokeException logs at info level."""
         mock_download = MagicMock()
 
-        with patch("libs.download.logger") as mock_logger:
+        with patch("services.download.helpers.exceptions.logger") as mock_logger:
+            from services.download.helpers.exceptions import DownloadRevokeException
+
             DownloadRevokeException(mock_download)
 
         mock_logger.info.assert_called_once_with("Download Canceled")
