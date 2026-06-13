@@ -63,6 +63,9 @@ jobs:
       contents: write   # for GitHub release
 
     steps:
+      - name: Checkout source
+        uses: actions/checkout@v6
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3.0.0
         with:
