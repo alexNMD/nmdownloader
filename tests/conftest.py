@@ -7,14 +7,6 @@ import pytest
 
 
 @pytest.fixture
-def mock_celery_task():
-    """Mock Celery task for testing Download classes."""
-    task = MagicMock()
-    task.update_state = MagicMock()
-    return task
-
-
-@pytest.fixture
 def mock_app_settings():
     """Mock app_settings for testing without environment variables."""
     with patch("config.base.app_settings") as mock_settings:
@@ -36,21 +28,6 @@ def mock_app_settings():
         mock_settings.downloader.un_fichier.api_url = "https://api.1fichier.com"
 
         yield mock_settings
-
-
-@pytest.fixture
-def temp_media_path(tmp_path):
-    """Create a temporary media directory for testing downloads."""
-    media_dir = tmp_path / "media"
-    media_dir.mkdir()
-    return media_dir
-
-
-@pytest.fixture(autouse=True)
-def cleanup_temp_files(tmp_path):
-    """Clean up temporary files after each test."""
-    yield
-    # Any cleanup can be done here if needed
 
 
 @pytest.fixture
