@@ -22,7 +22,6 @@ jobs:
 
     permissions:
       packages: write   # for ghcr.io push
-      contents: write   # for GitHub release
 
     steps:
       - name: Checkout source
@@ -56,6 +55,14 @@ jobs:
           tags: |
             ghcr.io/alexnmd/${{ env.IMAGE_NAME }}:latest
 
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+
+    permissions:
+      contents: write   # for GitHub release
+
+    steps:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3.0.0
         with:
