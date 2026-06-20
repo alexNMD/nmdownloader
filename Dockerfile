@@ -19,6 +19,5 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-install-project
 
 COPY src/ src/
-COPY gunicorn.conf.py ./
 
 RUN uv sync --locked
