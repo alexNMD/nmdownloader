@@ -13,8 +13,3 @@ client = DiscordBot(
     bot_channel=app_settings.discord.default_channel_id,
     command_prefix=app_settings.discord.command_prefix,
 )
-
-if not (token := app_settings.discord.token):
-    raise AttributeError("DISCORD_TOKEN not set")
-
-client.run(token=token)

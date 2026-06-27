@@ -36,6 +36,7 @@ dev = [
 nmd-worker = "apps.celery_app.runners:worker"
 nmd-flower = "apps.celery_app.runners:flower"
 nmd-flask = "apps.flask_app.runners:gunicorn"
+nmd-discord = "apps.discord_app.runners:bot"
 
 [build-system]
 requires = ["setuptools"]

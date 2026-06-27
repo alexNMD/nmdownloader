@@ -10,10 +10,7 @@ services:
     container_name: !reset null
     build:
       context: ..
-    command:
-      - "python"
-      - "-m"
-      - "apps.discord_app"
+    command: "nmd-discord"
     env_file: !override
       - ../.env
 

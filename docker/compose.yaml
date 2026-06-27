@@ -21,10 +21,7 @@ services:
 #    image: ghcr.io/alexnmd/nmdownloader:latest
 #    container_name: nmdiscord
 #    restart: unless-stopped
-#    command:
-#      - "python"
-#      - "-m"
-#      - "apps.discord_app"
+#    command: "nmd-discord"
 #    env_file:
 #      - .env
 
