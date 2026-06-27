@@ -5,7 +5,7 @@ RUN apt-get update \
       p7zip-full=16.02+transitional.1* \
       unrar-free=1:0.3.1-1* \
       cabextract=1.11-2* \
-      ffmpeg=7:7.1.4-0+deb13u1* \
+      ffmpeg=7:7.1.5-0* \
     && rm -rf /var/lib/apt/lists/ \
     && pip install --no-cache-dir "uv[rust]==0.7.19"
 
