@@ -31,6 +31,10 @@ dev = [
     "httpx>=0.26.0",
 ]
 
+[project.scripts]
+nmd-worker = "apps.celery_app.runners:worker"
+nmd-flower = "apps.celery_app.runners:flower"
+
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"

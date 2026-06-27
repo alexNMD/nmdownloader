@@ -36,19 +36,13 @@ services:
     image: ghcr.io/alexnmd/nmdownloader:latest
     container_name: nmdcelery
     restart: unless-stopped
-    command:
-      - "celery"
-      - "--app"
-      - "apps.celery_app"
-      - "worker"
-      - "--loglevel=${NMD_LOG_LEVEL:-INFO}"
-      - "--events"
+    command: "nmd-worker"
     volumes:
       - ${DOWNLOAD_PATH:-./data/download}:/media
     environment:
       C_FORCE_ROOT: "true"
     healthcheck:
-      test: celery --app src.apps.celery_app status
+      test: celery --app apps.celery_app status
       interval: 10s
       timeout: 10s
       retries: 10
@@ -68,11 +62,7 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:5555:5555"
-    command:
-      - "celery"
-      - "--app"
-      - "apps.celery_app"
-      - "flower"
+    command: "nmd-flower"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5555/api/workers').read()"]
       interval: 30s

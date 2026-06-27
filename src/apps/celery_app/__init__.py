@@ -13,5 +13,6 @@ celery_app = Celery(
     backend=app_settings.celery.backend_url,
     worker_concurrency=app_settings.celery.concurrency,
     broker_connection_retry_on_startup=False,
+    worker_send_task_events=True,
 )
 load_downloader_plugins()
