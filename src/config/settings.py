@@ -35,6 +35,18 @@ class DownloaderConfig(BaseSettings):
     youtube: YoutubeDownloaderConfig = Field(default_factory=YoutubeDownloaderConfig)
 
 
+class GunicornConfig(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_prefix="GUNICORN_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+    port: int = Field(default=8000)
+    workers_count: int = Field(default=4)
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
@@ -43,6 +55,7 @@ class Settings(BaseSettings):
     discord: DiscordConfig = Field(default_factory=DiscordConfig)
     celery: CeleryConfig = Field(default_factory=CeleryConfig)
     downloader: DownloaderConfig = Field(default_factory=DownloaderConfig)
+    gunicorn: GunicornConfig = Field(default_factory=GunicornConfig)
 
     media_path: Path = Field(default=Path("/media"))
     nmd_log_level: str = Field(default="INFO")

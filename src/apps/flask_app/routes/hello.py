@@ -17,6 +17,7 @@ def hello() -> Response:
                 "system": platform.system(),
                 "MEDIA_PATH": str(app_settings.media_path),
             },
+            "gunicorn": app_settings.gunicorn.model_dump(),
             "discord": {
                 "commande_prefix": app_settings.discord.command_prefix,
                 "refresh_rate": app_settings.discord.refresh_rate,
@@ -24,6 +25,6 @@ def hello() -> Response:
             "celery": {
                 "concurrency": app_settings.celery.concurrency,
             },
-            "ffmpeg": app_settings.downloader.youtube.ffmpeg.dict(),
+            "ffmpeg": app_settings.downloader.youtube.ffmpeg.model_dump(),
         }
     )
