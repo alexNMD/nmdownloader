@@ -1,12 +1,11 @@
 FROM python:3.14-slim
 
-# hadolint ignore=DL3008
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
-      p7zip-full \
-      unrar-free \
-      cabextract \
-      ffmpeg \
+      p7zip-full=16.02+transitional.1* \
+      unrar-free=1:0.3.1-1* \
+      cabextract=1.11-2* \
+      ffmpeg=7:7.1.4-0+deb13u1* \
     && rm -rf /var/lib/apt/lists/ \
     && pip install --no-cache-dir "uv[rust]==0.7.19"
 
@@ -19,6 +18,5 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-install-project
 
 COPY src/ src/
-COPY gunicorn.conf.py ./
 
 RUN uv sync --locked
