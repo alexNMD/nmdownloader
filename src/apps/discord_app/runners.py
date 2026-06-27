@@ -7,3 +7,7 @@ def bot() -> None:
         raise AttributeError("DISCORD_TOKEN not set")
 
     client.run(token=token)
+
+
+if __name__ == "__main__":
+    bot()

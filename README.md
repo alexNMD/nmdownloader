@@ -29,17 +29,17 @@ uv run pre-commit install
 
 ### Start the debug flask app
 ```shell
-uv run -- flask --app apps.flask_app run --debug
+uv run gunicorn --config src/apps/flask_app/gunicorn.conf.py apps.flask_app:flask_app --reload
 ```
 
 ### Start the celery app
 ```shell
-uv run -- celery --app apps.celery_app worker
+uv run -- celery --app apps.celery_app worker --loglevel=info
 ```
 
 ### Start the discord app
 ```shell
-uv run -- python -m apps.discord_app
+uv run -- python -m apps.discord_app.runners
 ```
 
 ### Code Quality
