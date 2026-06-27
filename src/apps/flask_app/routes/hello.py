@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, Response
 
 from config import app_settings
 
-hello_bp = Blueprint("hello", __name__)
+hello_bp = Blueprint(name="hello", import_name=__name__)
 
 
 @hello_bp.get("/")
