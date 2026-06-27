@@ -6,7 +6,10 @@ from services.download.helpers.task import get_task_result
 from apps.celery_app.tasks.download import download_task
 
 download_bp = Blueprint(
-    "download", __name__, url_prefix="/download", template_folder="templates"
+    name="download",
+    import_name=__name__,
+    url_prefix="/download",
+    template_folder="templates",
 )
 
 
