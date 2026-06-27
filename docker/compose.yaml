@@ -82,11 +82,7 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:8000:8000"
-    command:
-      - "gunicorn"
-      - "--config"
-      - "src/apps/flask_app/gunicorn.conf.py"
-      - "apps.flask_app:flask_app"
+    command: "nmd-flask"
     healthcheck:
       test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/check').read()" ]
       interval: 30s
