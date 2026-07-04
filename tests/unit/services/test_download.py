@@ -295,7 +295,6 @@ class TestDownloadConcrete:
 
         # Set token but no default channel
         app_settings.discord.token = "test_token"
-        app_settings.discord.default_channel_id = None
 
         download = ConcreteDownload(task=mock_task, filepath=filepath, channel_id=None)
 

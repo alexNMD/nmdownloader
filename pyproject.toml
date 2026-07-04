@@ -30,6 +30,7 @@ dev = [
     "pytest-mock>=3.12.0",
     "httpx>=0.26.0",
     "types-gunicorn>=26.0.0.20260518",
+    "ty>=0.0.56",
 ]
 
 [project.scripts]
@@ -42,5 +43,10 @@ nmd-discord = "apps.discord_app.runners:bot"
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
-[tool.mypy]
-plugins = ['pydantic.mypy']
+[tool.ty.rules]
+missing-type-argument = "error"
+possibly-unresolved-reference = "warn"
+
+[tool.ruff.lint]
+extend-select = ["ANN", "PYI"]
+preview = true

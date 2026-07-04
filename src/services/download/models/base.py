@@ -40,7 +40,7 @@ class DownloadBase(ABC):
         self._remove()
         raise DownloadRevokeException(self)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         download_dict = {}
         for key, value in self.__dict__.items():
             match value:

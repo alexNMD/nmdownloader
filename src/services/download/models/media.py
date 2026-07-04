@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import requests
-import unzipall  # type: ignore
+import unzipall
 from loguru import logger
 
 from config import app_settings
