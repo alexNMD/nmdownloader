@@ -1,9 +1,8 @@
 from discord.ext import commands
-
 from loguru import logger
 
-from config import app_settings
 from apps.celery_app.tasks.download import download_task
+from config import app_settings
 
 
 class Download(commands.Cog):
@@ -32,7 +31,7 @@ class Download(commands.Cog):
 
         message = ctx.message
         message_content = message.content.split()
-        links, type_dl = str(), None
+        links, type_dl = "", None
 
         match len(message_content):
             case 2:

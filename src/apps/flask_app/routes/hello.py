@@ -1,6 +1,6 @@
 import platform
 
-from flask import Blueprint, jsonify, Response
+from flask import Blueprint, Response, jsonify
 
 from config import app_settings
 

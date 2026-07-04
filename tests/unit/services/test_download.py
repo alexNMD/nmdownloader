@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from config import app_settings
-from services.download.helpers import DownloadStatus, DownloadRevokeException
+from services.download.helpers import DownloadRevokeException, DownloadStatus
 from services.download.models import DownloadBase
 
 

@@ -1,8 +1,8 @@
 from pathlib import Path
 
 import ffmpeg
-from pytubefix import YouTube
 from loguru import logger
+from pytubefix import YouTube
 from werkzeug.utils import secure_filename
 
 from config import app_settings

@@ -1,14 +1,13 @@
-from typing import Type
 from urllib.parse import urlparse
 
 from config import app_settings
-from services.download.models import DownloadBase, DownloadMedia, DownloadDefault
+from services.download.models import DownloadBase, DownloadDefault, DownloadMedia
 
 
 def register_downloader(*hosts: str):
     """Decorator to register a plugin for hosts."""
 
-    def decorator(cls: Type[DownloadBase | DownloadMedia]):
+    def decorator(cls: type[DownloadBase | DownloadMedia]):
         for host in hosts:
             app_settings.downloader.plugin.registry[host] = cls
         return cls

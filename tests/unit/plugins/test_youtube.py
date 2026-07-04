@@ -7,8 +7,8 @@ import pytest
 
 from services.download.helpers.exceptions import DownloadException
 from services.download.helpers.plugins import get_downloader
-from services.download.plugins.youtube import DownloadYoutube
 from services.download.models import DownloadBase
+from services.download.plugins.youtube import DownloadYoutube
 
 
 class TestDownloadYoutube:

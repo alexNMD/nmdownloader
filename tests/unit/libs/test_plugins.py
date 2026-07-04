@@ -1,11 +1,12 @@
 """Unit tests for libs/plugins.py module."""
 
+from urllib.parse import urlparse
+
 from config import app_settings
 from services.download.helpers.plugins import get_downloader, register_downloader
+from services.download.models.default import DownloadDefault
 from services.download.plugins.un_fichier import Download1fichier
 from services.download.plugins.youtube import DownloadYoutube
-from services.download.models.default import DownloadDefault
-from urllib.parse import urlparse
 
 
 class TestRegisterDownloader:
