@@ -1,18 +1,25 @@
 repos:
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    # Ruff version.
-    rev: v0.12.3
+  - repo: local
     hooks:
-      # Run the linter.
-      - id: ruff
-        args: [ --fix ]
-      # Run the formatter.
-      - id: ruff-format
+      - id: ruff-check
+        name: ruff check
+        entry: ruff check --fix
+        language: system
+        types: [python]
 
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.10.0
-    hooks:
+      - id: ruff-format
+        name: ruff format
+        entry: ruff format
+        language: system
+        types: [python]
+
       - id: mypy
+        name: mypy
+        entry: mypy
+        language: python
+        types: [python]
+        pass_filenames: false
+        args: [".", "--install-types", "--non-interactive"]
         additional_dependencies:
           - types-requests
           - types-passlib
