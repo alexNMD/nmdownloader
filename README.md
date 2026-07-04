@@ -50,7 +50,7 @@ uv run ruff format .
 
 ### Typing Check
 ```shell
-uv run mypy .
+uv run ty check
 ```
 
 ### Testing (with coverage)
