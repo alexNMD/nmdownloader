@@ -55,12 +55,12 @@ class DownloadBase(ABC):
         return download_dict
 
     def update_status(self, status: DownloadStatus, additional: str = str()) -> None:
-        _base_content = f"[{self.__class__.__name__}] "
+        _base_content = f"[{self.__class__.__name__}]"
         if hasattr(self, "filepath"):
-            _base_content += self.filepath.name
+            _base_content += f" {self.filepath.name}"
 
         title = f"Download {status.name}"
-        content = f"{_base_content}{additional}" if additional else _base_content
+        content = f"{_base_content} {additional}" if additional else _base_content
 
         if hasattr(self, "task"):
             self.task.update_state(meta=self.to_dict())
