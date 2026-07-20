@@ -46,7 +46,3 @@ build-backend = "setuptools.build_meta"
 [tool.ty.rules]
 missing-type-argument = "error"
 possibly-unresolved-reference = "warn"
-
-[tool.ruff.lint]
-extend-select = ["ANN", "PYI"]
-preview = true
