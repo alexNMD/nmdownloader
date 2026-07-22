@@ -21,7 +21,6 @@ class DownloadBase(ABC):
         **kwargs,
     ):
         self.task = task
-        self.discord_api = DiscordAPI()
         self.filepath = filepath
         self.message_id = message_id
         self.channel_id = channel_id or app_settings.discord.default_channel_id
@@ -86,17 +85,17 @@ class DownloadBase(ABC):
 
         try:
             if status_message_id:
-                self.discord_api.edit_embed(
+                DiscordAPI.edit_embed(
                     channel_id, status_message_id, title, content, status.value
                 )
                 return
 
             self.status_message_id = (
-                self.discord_api.reply_with_embed(
+                DiscordAPI.reply_with_embed(
                     channel_id, message_id, title, content, status.value
                 )
                 if message_id
-                else self.discord_api.send_embed(
+                else DiscordAPI.send_embed(
                     channel_id, title, content, status.value
                 )
             )
