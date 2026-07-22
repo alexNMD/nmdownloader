@@ -55,4 +55,7 @@ select = [
     "SIM",
     "I",
     "N",
+    "ANN",
+    "PYI",
 ]
+preview = true

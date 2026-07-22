@@ -79,7 +79,7 @@ class DownloadMedia(DownloadBase):
                     self.total_size = int(response.headers.get("Content-Length", 0))
                     self.download_start_time = time.time()
 
-                    ### Start reading file
+                    # Start reading file
                     with (
                         open(self.filepath, "wb") as file,
                         io.BufferedWriter(
@@ -88,12 +88,12 @@ class DownloadMedia(DownloadBase):
                         ) as file_buffer,
                     ):
                         self._handle_chunks(file_buffer, response)
-                    ### Close file
+                    # Close file
 
                     if self.is_compressed:
                         self._decompress()
 
-                    ### Finish
+                    # Finish
                     self.update_status(DownloadStatus.DONE)
         except (
             FileNotFoundError,

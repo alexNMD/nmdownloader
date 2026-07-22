@@ -56,7 +56,7 @@ class DownloadYoutube(DownloadBase):
                 Path(_video_path).unlink(missing_ok=True)
                 Path(_audio_path).unlink(missing_ok=True)
 
-            ### Finish
+            # Finish
             self.update_status(DownloadStatus.DONE)
         except (
             FileNotFoundError,
