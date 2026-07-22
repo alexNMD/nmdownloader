@@ -4,15 +4,22 @@ from config import app_settings
 
 
 class DiscordAPI:
-    def __init__(self):
-        self.token = app_settings.discord.token
-        self.base_url = app_settings.discord.api_url
-        self.headers = {
-            "Authorization": f"Bot {self.token}",
-            "Content-Type": "application/json",
-        }
+    TIMEOUT = 10
+    BASE_URL = app_settings.discord.api_url
+    TOKEN = app_settings.discord.token
 
-    def reply_with_embed(self, channel_id, message_id, title, description, color):
+    @classmethod
+    def _call(cls, endpoint: str, **kwargs) -> dict:
+        url = f"{cls.BASE_URL}/{endpoint}"
+        headers = { "Authorization": f"Bot {cls.TOKEN}", "Content-Type": "application/json"}
+
+        response = requests.request(url=url, headers=headers, timeout=cls.TIMEOUT, **kwargs)
+        response.raise_for_status()
+
+        return response.json()
+
+    @classmethod
+    def reply_with_embed(cls, channel_id, message_id, title, description, color):
         """
         Répond à un message dans un canal Discord avec un embed.
         :param channel_id: ID du canal où le message a été envoyé.
@@ -22,22 +29,19 @@ class DiscordAPI:
         :param color: La couleur de l'embed (en hexadécimal).
         :return: La réponse de l'API Discord.
         """
-        url = f"{self.base_url}/channels/{channel_id}/messages"
-
         embed = {
             "title": title,
             "description": description,
             "color": color,
         }
-
         data = {"embeds": [embed], "message_reference": {"message_id": message_id}}
 
-        response = requests.post(url, headers=self.headers, json=data, timeout=10)
-        response.raise_for_status()
-        response_json = response.json()
-        return response_json.get("id")
+        response = cls._call(method="POST", endpoint=f"channels/{channel_id}/messages", json=data)
 
-    def send_embed(self, channel_id, title, description, color):
+        return response.get("id")
+
+    @classmethod
+    def send_embed(cls, channel_id, title, description, color):
         """
         Envoie un message dans un canal Discord avec un embed (sans répondre à un autre message).
         :param channel_id: ID du canal où envoyer le message.
@@ -46,23 +50,20 @@ class DiscordAPI:
         :param color: La couleur de l'embed (en hexadécimal ou entier).
         :return: La réponse de l'API Discord.
         """
-        url = f"{self.base_url}/channels/{channel_id}/messages"
-
         embed = {
             "title": title,
             "description": description,
             "color": color,
         }
-
         data = {"embeds": [embed]}
 
-        response = requests.post(url, headers=self.headers, json=data, timeout=10)
-        response.raise_for_status()
-        response_json = response.json()
-        return response_json.get("id")
+        response = cls._call(method="POST", endpoint=f"channels/{channel_id}/messages", json=data)
 
+        return response.get("id")
+
+    @classmethod
     def edit_embed(
-        self, channel_id, message_id, title=None, description=None, color=None
+        cls, channel_id, message_id, title=None, description=None, color=None
     ):
         """
         Modifie un embed dans un message existant dans un canal Discord.
@@ -73,8 +74,6 @@ class DiscordAPI:
         :param color: Nouvelle couleur de l'embed (en entier, optionnel).
         :return: La réponse de l'API Discord.
         """
-        url = f"{self.base_url}/channels/{channel_id}/messages/{message_id}"
-
         embed = {}
         if title is not None:
             embed["title"] = title
@@ -85,25 +84,26 @@ class DiscordAPI:
 
         data = {"embeds": [embed]}
 
-        response = requests.patch(url, headers=self.headers, json=data, timeout=10)
-        response.raise_for_status()
-        return response.json()
+        response = cls._call(method="PATCH", endpoint=f"channels/{channel_id}/messages/{message_id}", json=data)
 
-    def send_message(self, channel_id, content):
+        return response
+
+    @classmethod
+    def send_message(cls, channel_id, content):
         """
         Envoie un message à un canal Discord spécifié.
         :param channel_id: ID du canal Discord.
         :param content: Le contenu du message.
         :return: La réponse de l'API Discord.
         """
-        url = f"{self.base_url}/channels/{channel_id}/messages"
         data = {"content": content}
-        response = requests.post(url, headers=self.headers, json=data, timeout=10)
-        response.raise_for_status()
-        response_json = response.json()
-        return response_json.get("id")
 
-    def edit_message(self, channel_id, message_id, new_content):
+        response = cls._call(method="POST", endpoint=f"channels/{channel_id}/messages", json=data)
+
+        return response.get("id")
+
+    @classmethod
+    def edit_message(cls, channel_id, message_id, new_content):
         """
         Modifie un message existant dans un canal Discord.
         :param channel_id: ID du canal où le message a été envoyé.
@@ -111,13 +111,14 @@ class DiscordAPI:
         :param new_content: Nouveau contenu du message.
         :return: La réponse de l'API Discord.
         """
-        url = f"{self.base_url}/channels/{channel_id}/messages/{message_id}"
         data = {"content": new_content}
-        response = requests.patch(url, headers=self.headers, json=data, timeout=10)
-        response.raise_for_status()
-        return response.json()
 
-    def reply_to_message(self, channel_id, message_id, content):
+        response = cls._call(method="PATCH", endpoint=f"channels/{channel_id}/messages/{message_id}", json=data)
+
+        return response
+
+    @classmethod
+    def reply_to_message(cls, channel_id, message_id, content):
         """
         Répond à un message dans un canal Discord.
         :param channel_id: ID du canal où le message a été envoyé.
@@ -125,9 +126,8 @@ class DiscordAPI:
         :param content: Contenu de la réponse.
         :return: L'ID du message envoyé.
         """
-        url = f"{self.base_url}/channels/{channel_id}/messages"
         data = {"content": content, "message_reference": {"message_id": message_id}}
-        response = requests.post(url, headers=self.headers, json=data, timeout=10)
-        response.raise_for_status()
-        response_json = response.json()
-        return response_json.get("id")
+
+        response = cls._call(method="POST", endpoint=f"channels/{channel_id}/messages", json=data)
+
+        return response.get("id")
