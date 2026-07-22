@@ -14,15 +14,15 @@ from services.download.plugins.youtube import DownloadYoutube
 class TestDownloadYoutube:
     """Tests for DownloadYoutube class."""
 
-    def test_download_youtube_class_exists(self):
+    def test_download_youtube_class_exists(self) -> None:
         """Test that DownloadYoutube class exists."""
         assert DownloadYoutube is not None
 
-    def test_download_youtube_inheritance(self):
+    def test_download_youtube_inheritance(self) -> None:
         """Test that DownloadYoutube inherits from Download."""
         assert issubclass(DownloadYoutube, DownloadBase)
 
-    def test_download_youtube_registration(self):
+    def test_download_youtube_registration(self) -> None:
         """Test that DownloadYoutube is registered for YouTube hosts."""
         # Import to register
 
@@ -34,7 +34,9 @@ class TestDownloadYoutube:
 
     @patch("services.download.plugins.youtube.YouTube")
     @patch("services.download.plugins.youtube.secure_filename")
-    def test_download_youtube_init(self, mock_secure_filename, mock_youtube):
+    def test_download_youtube_init(
+        self, mock_secure_filename: MagicMock, mock_youtube: MagicMock
+    ) -> None:
         """Test DownloadYoutube initialization."""
         # Setup mocks
         mock_youtube_instance = MagicMock()
@@ -60,7 +62,9 @@ class TestDownloadYoutube:
 
     @patch("services.download.plugins.youtube.YouTube")
     @patch("services.download.plugins.youtube.secure_filename")
-    def test_download_youtube_filename_sanitization(self, mock_secure_filename, mock_youtube):
+    def test_download_youtube_filename_sanitization(
+        self, mock_secure_filename: MagicMock, mock_youtube: MagicMock
+    ) -> None:
         """Test that filename is properly sanitized."""
         mock_youtube_instance = MagicMock()
         mock_youtube_instance.title = "Test/Video:With*Special|Chars?.mp4"
@@ -80,7 +84,9 @@ class TestDownloadYoutube:
 
     @patch("services.download.plugins.youtube.YouTube")
     @patch("services.download.plugins.youtube.secure_filename")
-    def test_download_youtube_filepath(self, mock_secure_filename, mock_youtube):
+    def test_download_youtube_filepath(
+        self, mock_secure_filename: MagicMock, mock_youtube: MagicMock
+    ) -> None:
         """Test DownloadYoutube filepath construction."""
         mock_youtube_instance = MagicMock()
         mock_youtube_instance.title = "Test Video"
@@ -98,7 +104,9 @@ class TestDownloadYoutube:
 
     @patch("services.download.plugins.youtube.YouTube")
     @patch("services.download.plugins.youtube.secure_filename")
-    def test_download_youtube_start_no_audio_stream(self, mock_secure_filename, mock_youtube):
+    def test_download_youtube_start_no_audio_stream(
+        self, mock_secure_filename: MagicMock, mock_youtube: MagicMock
+    ) -> None:
         """Test DownloadYoutube start with no audio stream."""
         mock_youtube_instance = MagicMock()
         mock_youtube_instance.title = "Test Video"

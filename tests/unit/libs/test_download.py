@@ -10,7 +10,7 @@ from services.download.helpers import DownloadStatus
 class TestDownloadStatus:
     """Tests for DownloadStatus enum."""
 
-    def test_download_status_enum_values(self):
+    def test_download_status_enum_values(self) -> None:
         """Test that DownloadStatus has expected values."""
         assert hasattr(DownloadStatus, "STARTED")
         assert hasattr(DownloadStatus, "RUNNING")
@@ -18,7 +18,7 @@ class TestDownloadStatus:
         assert hasattr(DownloadStatus, "ERROR")
         assert hasattr(DownloadStatus, "CANCELED")
 
-    def test_download_status_hex_values(self):
+    def test_download_status_hex_values(self) -> None:
         """Test that DownloadStatus values are hex color codes."""
         # These are the expected hex values (converted to int)
         assert DownloadStatus.STARTED.value == int("e8f30b", 16)
@@ -27,7 +27,7 @@ class TestDownloadStatus:
         assert DownloadStatus.ERROR.value == int("f63106", 16)
         assert DownloadStatus.CANCELED.value == int("510666", 16)
 
-    def test_download_status_names(self):
+    def test_download_status_names(self) -> None:
         """Test DownloadStatus enum member names."""
         assert DownloadStatus.STARTED.name == "STARTED"
         assert DownloadStatus.RUNNING.name == "RUNNING"
@@ -39,13 +39,13 @@ class TestDownloadStatus:
 class TestDownloadException:
     """Tests for DownloadException class."""
 
-    def test_download_exception_inheritance(self):
+    def test_download_exception_inheritance(self) -> None:
         """Test that DownloadException inherits from Exception."""
         from services.download.helpers.exceptions import DownloadError
 
         assert issubclass(DownloadError, Exception)
 
-    def test_download_exception_init(self):
+    def test_download_exception_init(self) -> None:
         """Test DownloadException initialization."""
         from services.download.helpers.exceptions import DownloadError
 
@@ -65,7 +65,7 @@ class TestDownloadException:
         assert call_args[0][0] == DownloadStatus.ERROR
         assert call_args[0][1] == message
 
-    def test_download_exception_logs_error(self):
+    def test_download_exception_logs_error(self) -> None:
         """Test that DownloadException logs the error."""
         mock_download = MagicMock()
         message = "Test error"
@@ -81,13 +81,13 @@ class TestDownloadException:
 class TestDownloadRevokeException:
     """Tests for DownloadRevokeException class."""
 
-    def test_download_revoke_exception_inheritance(self):
+    def test_download_revoke_exception_inheritance(self) -> None:
         """Test that DownloadRevokeException inherits from Ignore."""
         from services.download.helpers.exceptions import DownloadRevokeException
 
         assert issubclass(DownloadRevokeException, Ignore)
 
-    def test_download_revoke_exception_default_message(self):
+    def test_download_revoke_exception_default_message(self) -> None:
         """Test DownloadRevokeException with default message."""
         from services.download.helpers.exceptions import DownloadRevokeException
 
@@ -106,7 +106,7 @@ class TestDownloadRevokeException:
         assert call_args[0][0] == DownloadStatus.CANCELED
         assert call_args[0][1] == "Canceled by User"
 
-    def test_download_revoke_exception_custom_message(self):
+    def test_download_revoke_exception_custom_message(self) -> None:
         """Test DownloadRevokeException with custom message."""
         from services.download.helpers.exceptions import DownloadRevokeException
 
@@ -126,7 +126,7 @@ class TestDownloadRevokeException:
         assert call_args[0][0] == DownloadStatus.CANCELED
         assert call_args[0][1] == custom_message
 
-    def test_download_revoke_exception_logs_info(self):
+    def test_download_revoke_exception_logs_info(self) -> None:
         """Test that DownloadRevokeException logs at info level."""
         mock_download = MagicMock()
 

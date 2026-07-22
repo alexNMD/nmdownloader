@@ -6,18 +6,18 @@ from pathlib import Path
 import pytest
 
 
-def test_imports():
+def test_imports() -> None:
     """Test that all main modules can be imported."""
     # All imports are at the top of the file
     assert True  # If we get here, all imports succeeded
 
 
-def test_pytest_setup():
+def test_pytest_setup() -> None:
     """Test that pytest is properly configured."""
     assert pytest is not None
 
 
-def test_sys_path():
+def test_sys_path() -> None:
     """Test that src is in sys.path."""
     # Check that src directory is in the Python path
     # The conftest.py adds it, so we can verify it's there

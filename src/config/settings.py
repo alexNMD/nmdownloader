@@ -30,9 +30,7 @@ class DownloaderPluginConfig(BaseSettings):
 class DownloaderConfig(BaseSettings):
     plugin: DownloaderPluginConfig = Field(default_factory=DownloaderPluginConfig)
 
-    un_fichier: UnFichierDownloaderConfig = Field(
-        default_factory=UnFichierDownloaderConfig
-    )
+    un_fichier: UnFichierDownloaderConfig = Field(default_factory=UnFichierDownloaderConfig)
     youtube: YoutubeDownloaderConfig = Field(default_factory=YoutubeDownloaderConfig)
 
 
@@ -49,9 +47,7 @@ class GunicornConfig(BaseSettings):
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     discord: DiscordConfig = Field(default_factory=DiscordConfig)
     celery: CeleryConfig = Field(default_factory=CeleryConfig)

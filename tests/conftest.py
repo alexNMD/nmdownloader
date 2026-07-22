@@ -1,13 +1,18 @@
 """Pytest configuration and fixtures for NMDownloader tests."""
 
+from collections.abc import Generator
 from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, patch
 
 import pytest
 
+if TYPE_CHECKING:
+    pass
+
 
 @pytest.fixture
-def mock_app_settings():
+def mock_app_settings() -> Generator[MagicMock, None, None]:
     """Mock app_settings for testing without environment variables."""
     with patch("config.base.app_settings") as mock_settings:
         # Create mock nested objects
@@ -31,7 +36,7 @@ def mock_app_settings():
 
 
 @pytest.fixture
-def clean_registry():
+def clean_registry() -> Generator[None, None, None]:
     """Fixture to save and restore the plugin registry."""
     from config import app_settings
 

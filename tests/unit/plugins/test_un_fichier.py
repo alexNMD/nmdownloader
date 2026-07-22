@@ -18,15 +18,15 @@ from services.download.plugins.un_fichier import (
 class TestDownload1fichier:
     """Tests for Download1fichier class."""
 
-    def test_download_1fichier_class_exists(self):
+    def test_download_1fichier_class_exists(self) -> None:
         """Test that Download1fichier class exists."""
         assert Download1fichier is not None
 
-    def test_download_1fichier_inheritance(self):
+    def test_download_1fichier_inheritance(self) -> None:
         """Test that Download1fichier inherits from DownloadMedia."""
         assert issubclass(Download1fichier, DownloadMedia)
 
-    def test_download_1fichier_registration(self):
+    def test_download_1fichier_registration(self) -> None:
         """Test that Download1fichier is registered for 1fichier host."""
         # Import to register - already imported at module level
         # from services.download.plugins.un_fichier import Download1fichier
@@ -37,7 +37,9 @@ class TestDownload1fichier:
     @patch("services.download.plugins.un_fichier.requests.post")
     @patch("services.download.plugins.un_fichier.requests.head")
     @patch("services.download.plugins.un_fichier.app_settings")
-    def test_download_1fichier_init_with_token(self, mock_app_settings, mock_head, mock_post):
+    def test_download_1fichier_init_with_token(
+        self, mock_app_settings: MagicMock, mock_head: MagicMock, mock_post: MagicMock
+    ) -> None:
         """Test Download1fichier initialization with API token."""
         # Setup mocks
         mock_app_settings.downloader.un_fichier.api_token = "test_token"
@@ -72,7 +74,9 @@ class TestDownload1fichier:
 
     @patch("services.download.plugins.un_fichier.requests.post")
     @patch("services.download.plugins.un_fichier.app_settings")
-    def test_download_1fichier_init_without_token(self, mock_app_settings, mock_post):
+    def test_download_1fichier_init_without_token(
+        self, mock_app_settings: MagicMock, mock_post: MagicMock
+    ) -> None:
         """Test Download1fichier initialization without API token."""
         # Setup mocks - no token
         mock_app_settings.downloader.un_fichier.api_token = None
@@ -90,8 +94,8 @@ class TestDownload1fichier:
     @patch("services.download.plugins.un_fichier.requests.head")
     @patch("services.download.plugins.un_fichier.app_settings")
     def test_download_1fichier_init_with_url_splitting(
-        self, mock_app_settings, mock_head, mock_post
-    ):
+        self, mock_app_settings: MagicMock, mock_head: MagicMock, mock_post: MagicMock
+    ) -> None:
         """Test Download1fichier initialization with URL containing ampersand."""
         mock_app_settings.downloader.un_fichier.api_token = "test_token"
         mock_app_settings.downloader.un_fichier.api_url = "https://api.1fichier.com"
@@ -124,7 +128,9 @@ class TestComputeUrlFrom1fichier:
 
     @patch("services.download.plugins.un_fichier.requests.post")
     @patch("services.download.plugins.un_fichier.app_settings")
-    def test_compute_url_from_1fichier_success(self, mock_app_settings, mock_post):
+    def test_compute_url_from_1fichier_success(
+        self, mock_app_settings: MagicMock, mock_post: MagicMock
+    ) -> None:
         """Test compute_url_from_1fichier with successful response."""
         mock_app_settings.downloader.un_fichier.api_token = "test_token"
         mock_app_settings.downloader.un_fichier.api_url = "https://api.1fichier.com"
@@ -140,7 +146,9 @@ class TestComputeUrlFrom1fichier:
 
     @patch("services.download.plugins.un_fichier.requests.post")
     @patch("services.download.plugins.un_fichier.app_settings")
-    def test_compute_url_from_1fichier_with_error(self, mock_app_settings, mock_post):
+    def test_compute_url_from_1fichier_with_error(
+        self, mock_app_settings: MagicMock, mock_post: MagicMock
+    ) -> None:
         """Test compute_url_from_1fichier with API error."""
         mock_app_settings.downloader.un_fichier.api_token = "test_token"
         mock_app_settings.downloader.un_fichier.api_url = "https://api.1fichier.com"
@@ -155,7 +163,9 @@ class TestComputeUrlFrom1fichier:
 
     @patch("services.download.plugins.un_fichier.requests.post")
     @patch("services.download.plugins.un_fichier.app_settings")
-    def test_compute_url_from_1fichier_http_error(self, mock_app_settings, mock_post):
+    def test_compute_url_from_1fichier_http_error(
+        self, mock_app_settings: MagicMock, mock_post: MagicMock
+    ) -> None:
         """Test compute_url_from_1fichier with HTTP error."""
         mock_app_settings.downloader.un_fichier.api_token = "test_token"
         mock_app_settings.downloader.un_fichier.api_url = "https://api.1fichier.com"
@@ -171,7 +181,9 @@ class TestComputeUrlFrom1fichier:
 
     @patch("services.download.plugins.un_fichier.requests.post")
     @patch("services.download.plugins.un_fichier.app_settings")
-    def test_compute_url_from_1fichier_correct_request(self, mock_app_settings, mock_post):
+    def test_compute_url_from_1fichier_correct_request(
+        self, mock_app_settings: MagicMock, mock_post: MagicMock
+    ) -> None:
         """Test that compute_url_from_1fichier makes correct request."""
         mock_app_settings.downloader.un_fichier.api_token = "test_token"
         mock_app_settings.downloader.un_fichier.api_url = "https://api.1fichier.com"

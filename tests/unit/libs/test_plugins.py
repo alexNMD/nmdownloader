@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 
 from config import app_settings
 from services.download.helpers.plugins import get_downloader, register_downloader
+from services.download.models import DownloadBase
 from services.download.models.default import DownloadDefault
 from services.download.plugins.un_fichier import Download1fichier
 from services.download.plugins.youtube import DownloadYoutube
@@ -12,18 +13,19 @@ from services.download.plugins.youtube import DownloadYoutube
 class TestRegisterDownloader:
     """Tests for register_downloader decorator."""
 
-    def test_register_downloader_decorator_exists(self):
+    def test_register_downloader_decorator_exists(self) -> None:
         """Test that register_downloader decorator exists."""
         assert callable(register_downloader)
 
-    def test_register_downloader_with_single_host(self, clean_registry):
+    def test_register_downloader_with_single_host(self, clean_registry: object) -> None:
         """Test registering a downloader with a single host."""
         # Clear the registry first
         app_settings.downloader.plugin.registry.clear()
 
-        # Create a mock class
-        class MockDownloader:
-            pass
+        # Create a mock class that inherits from DownloadBase
+        class MockDownloader(DownloadBase):
+            def start(self) -> None:
+                pass
 
         # Register the downloader
         decorator = register_downloader("example.com")
@@ -33,18 +35,17 @@ class TestRegisterDownloader:
         assert "example.com" in app_settings.downloader.plugin.registry
         assert app_settings.downloader.plugin.registry["example.com"] == MockDownloader
 
-    def test_register_downloader_with_multiple_hosts(self, clean_registry):
+    def test_register_downloader_with_multiple_hosts(self, clean_registry: object) -> None:
         """Test registering a downloader with multiple hosts."""
         # Clear the registry
         app_settings.downloader.plugin.registry.clear()
 
-        class MockDownloader:
-            pass
+        class MockDownloader(DownloadBase):
+            def start(self) -> None:
+                pass
 
         # Register with multiple hosts
-        decorator = register_downloader(
-            "example.com", "www.example.com", "cdn.example.com"
-        )
+        decorator = register_downloader("example.com", "www.example.com", "cdn.example.com")
         decorator(MockDownloader)
 
         # Check all hosts are registered
@@ -54,19 +55,16 @@ class TestRegisterDownloader:
 
         # All should point to the same class
         assert app_settings.downloader.plugin.registry["example.com"] == MockDownloader
-        assert (
-            app_settings.downloader.plugin.registry["www.example.com"] == MockDownloader
-        )
-        assert (
-            app_settings.downloader.plugin.registry["cdn.example.com"] == MockDownloader
-        )
+        assert app_settings.downloader.plugin.registry["www.example.com"] == MockDownloader
+        assert app_settings.downloader.plugin.registry["cdn.example.com"] == MockDownloader
 
-    def test_register_downloader_returns_class(self, clean_registry):
+    def test_register_downloader_returns_class(self, clean_registry: object) -> None:
         """Test that register_downloader returns the class."""
         app_settings.downloader.plugin.registry.clear()
 
-        class MockDownloader:
-            pass
+        class MockDownloader(DownloadBase):
+            def start(self) -> None:
+                pass
 
         decorator = register_downloader("test.com")
         result = decorator(MockDownloader)
@@ -77,16 +75,17 @@ class TestRegisterDownloader:
 class TestGetDownloader:
     """Tests for get_downloader function."""
 
-    def test_get_downloader_function_exists(self):
+    def test_get_downloader_function_exists(self) -> None:
         """Test that get_downloader function exists."""
         assert callable(get_downloader)
 
-    def test_get_downloader_returns_registered_class(self, clean_registry):
+    def test_get_downloader_returns_registered_class(self, clean_registry: object) -> None:
         """Test getting a registered downloader."""
         app_settings.downloader.plugin.registry.clear()
 
-        class MockDownloader:
-            pass
+        class MockDownloader(DownloadBase):
+            def start(self) -> None:
+                pass
 
         # Register a downloader
         register_downloader("test.com")(MockDownloader)
@@ -96,7 +95,7 @@ class TestGetDownloader:
 
         assert result is MockDownloader
 
-    def test_get_downloader_returns_default_for_unknown_host(self, clean_registry):
+    def test_get_downloader_returns_default_for_unknown_host(self, clean_registry: object) -> None:
         """Test getting default downloader for unknown host."""
         app_settings.downloader.plugin.registry.clear()
 
@@ -105,7 +104,7 @@ class TestGetDownloader:
 
         assert result is DownloadDefault
 
-    def test_get_downloader_with_youtube_urls(self):
+    def test_get_downloader_with_youtube_urls(self) -> None:
         """Test getting downloader for YouTube URLs."""
         # Import to register the YouTube downloader
 
@@ -120,7 +119,7 @@ class TestGetDownloader:
             result = get_downloader(url)
             assert result is DownloadYoutube
 
-    def test_get_downloader_with_un_fichier_url(self):
+    def test_get_downloader_with_un_fichier_url(self) -> None:
         """Test getting downloader for 1fichier URLs."""
         # Import to register the 1fichier downloader
         import services.download.plugins.un_fichier  # noqa: F401
@@ -130,7 +129,7 @@ class TestGetDownloader:
 
         assert result is Download1fichier
 
-    def test_get_downloader_parses_url_correctly(self):
+    def test_get_downloader_parses_url_correctly(self) -> None:
         """Test that URL parsing extracts netloc correctly."""
 
         # URL with www should match youtube.com registration
@@ -141,7 +140,7 @@ class TestGetDownloader:
         result = get_downloader("https://youtube.com/watch?v=test")
         assert result is DownloadYoutube
 
-    def test_get_downloader_handles_url_with_port(self):
+    def test_get_downloader_handles_url_with_port(self) -> None:
         """Test getting downloader with URL containing port."""
         # Test that urlparse correctly extracts netloc with port
         url = "http://localhost:8080/file"

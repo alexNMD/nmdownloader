@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, Response, jsonify, make_response, render_template, request
 from loguru import logger
 
 from apps.celery_app.tasks.download import download_task
@@ -14,17 +14,17 @@ download_bp = Blueprint(
 
 
 @download_bp.get("/")
-def home():
-    return render_template("download.html", version=app_settings.version)
+def home() -> Response:
+    return make_response(render_template("download.html", version=app_settings.version))
 
 
 @download_bp.post("/")
-def launch():
+def launch() -> Response:
     data = request.get_json()
     if not (urls := data.get("urls")):
-        return {"message": "URLs cannot be empty"}, 400
+        return make_response(jsonify({"message": "URLs cannot be empty"}), 400)
     if not isinstance(urls, list):
-        return {"message": "URLs must be a list"}, 400
+        return make_response(jsonify({"message": "URLs must be a list"}), 400)
 
     type_dl = data.get("type_dl")
     tasks_uuids = []
@@ -33,11 +33,11 @@ def launch():
         tasks_uuids.append(task.id)
         logger.info(f"Task sent: {task.id}")
 
-    return jsonify({"uuids": tasks_uuids})
+    return make_response(jsonify({"uuids": tasks_uuids}))
 
 
 @download_bp.get("/<uuid>")
-def status(uuid):
+def status(uuid: str) -> Response:
     download = get_task_result(task_id=uuid)
 
-    return jsonify(download)
+    return make_response(jsonify(download))

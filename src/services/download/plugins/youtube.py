@@ -21,7 +21,7 @@ class DownloadYoutube(DownloadBase):
 
         super().__init__(filepath=(self.base_download_path / self.filename), **kwargs)
 
-    def start(self):
+    def start(self) -> None:
         try:
             self.update_status(DownloadStatus.STARTED)
             self.base_download_path.mkdir(parents=True, exist_ok=True)

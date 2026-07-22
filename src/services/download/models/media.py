@@ -3,7 +3,7 @@ import re
 import time
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import cast
 
 import requests
 import unzipall
@@ -26,7 +26,7 @@ class ShowType(Enum):
 class DownloadMedia(DownloadBase):
     REGEX_SEARCH_TYPE = r"[Ss]\d{1,2}([Ee]\d{1,2})?"
 
-    def __init__(self, url: str, **kwargs: Any):
+    def __init__(self, url: str, **kwargs) -> None:
         self.url = url
         try:
             self.filename = self._extract_filename(url=self.url)
@@ -70,7 +70,7 @@ class DownloadMedia(DownloadBase):
 
         return filename.replace(" ", ".")
 
-    def start(self):
+    def start(self) -> None:
         try:
             self.destination_directory.mkdir(parents=True, exist_ok=True)
             with requests.get(self.url, stream=True, timeout=3600) as response:
@@ -87,7 +87,7 @@ class DownloadMedia(DownloadBase):
                             buffer_size=(1024 * 64),  # 64 KB
                         ) as file_buffer,
                     ):
-                        self._handle_chunks(file_buffer, response)
+                        self._handle_chunks(cast(io.BufferedWriter, file_buffer), response)
                     # Close file
 
                     if self.is_compressed:
@@ -106,7 +106,7 @@ class DownloadMedia(DownloadBase):
             self._remove()
             raise DownloadError(self, error) from error
 
-    def _handle_chunks(self, file_buffer, response) -> None:
+    def _handle_chunks(self, file_buffer: io.BufferedWriter, response: requests.Response) -> None:
         _count_refresh = 0
 
         for chunk in response.iter_content(chunk_size=1024 * 64):
