@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from config import app_settings
-from config.settings import (
+from nmdownloader.config import app_settings
+from nmdownloader.config.settings import (
     CeleryConfig,
     DownloaderConfig,
     DownloaderPluginConfig,

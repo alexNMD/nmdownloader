@@ -2,7 +2,7 @@
 
 from unittest.mock import MagicMock, patch
 
-from services.download.helpers.task import get_task_result
+from nmdownloader.services.download.helpers.task import get_task_result
 
 
 class TestGetTaskResult:
@@ -12,7 +12,7 @@ class TestGetTaskResult:
         """Test that get_task_result function exists."""
         assert callable(get_task_result)
 
-    @patch("services.download.helpers.task.AsyncResult")
+    @patch("nmdownloader.services.download.helpers.task.AsyncResult")
     def test_get_task_result_with_successful_task(self, mock_async_result: MagicMock) -> None:
         """Test get_task_result with a successful task."""
         # Setup mock
@@ -28,8 +28,8 @@ class TestGetTaskResult:
         assert result["status"] == "SUCCESS"
         assert result["info"] == {"key": "value"}
 
-    @patch("services.download.helpers.task.celery_app")
-    @patch("services.download.helpers.task.AsyncResult")
+    @patch("nmdownloader.services.download.helpers.task.celery_app")
+    @patch("nmdownloader.services.download.helpers.task.AsyncResult")
     def test_get_task_result_with_failed_task(
         self, mock_async_result: MagicMock, mock_celery_app: MagicMock
     ) -> None:
@@ -49,8 +49,8 @@ class TestGetTaskResult:
         assert isinstance(result["info"], str)
         assert "Task failed" in result["info"]
 
-    @patch("services.download.helpers.task.celery_app")
-    @patch("services.download.helpers.task.AsyncResult")
+    @patch("nmdownloader.services.download.helpers.task.celery_app")
+    @patch("nmdownloader.services.download.helpers.task.AsyncResult")
     def test_get_task_result_returns_dict(
         self, mock_async_result: MagicMock, mock_celery_app: MagicMock
     ) -> None:
@@ -68,8 +68,8 @@ class TestGetTaskResult:
         assert "status" in result
         assert "info" in result
 
-    @patch("services.download.helpers.task.celery_app")
-    @patch("services.download.helpers.task.AsyncResult")
+    @patch("nmdownloader.services.download.helpers.task.celery_app")
+    @patch("nmdownloader.services.download.helpers.task.AsyncResult")
     def test_get_task_result_with_complex_info(
         self, mock_async_result: MagicMock, mock_celery_app: MagicMock
     ) -> None:

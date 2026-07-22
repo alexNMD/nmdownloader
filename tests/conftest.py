@@ -38,7 +38,7 @@ def mock_app_settings() -> Generator[MagicMock, None, None]:
 @pytest.fixture
 def clean_registry() -> Generator[None, None, None]:
     """Fixture to save and restore the plugin registry."""
-    from config import app_settings
+    from nmdownloader.config import app_settings
 
     original_registry = app_settings.downloader.plugin.registry.copy()
     yield

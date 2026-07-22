@@ -7,9 +7,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from config import app_settings
-from services.download.helpers import DownloadRevokeException, DownloadStatus
-from services.download.models import DownloadBase
+from nmdownloader.config import app_settings
+from nmdownloader.services.download.helpers import DownloadRevokeException, DownloadStatus
+from nmdownloader.services.download.models import DownloadBase
 
 
 class TestDownload:
@@ -200,10 +200,10 @@ class TestDownloadConcrete:
         assert isinstance(result["filepath"], str)
         assert result["filepath"] == str(filepath)
 
-    @patch("services.download.models.base.logger")
+    @patch("nmdownloader.services.download.models.base.logger")
     def test_download_update_status(self, mock_logger: MagicMock) -> None:
         """Test Download update_status method."""
-        from services.download.models import DownloadBase
+        from nmdownloader.services.download.models import DownloadBase
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
@@ -224,14 +224,14 @@ class TestDownloadConcrete:
         # Check log was called
         mock_logger.info.assert_called()
 
-    @patch("services.download.models.base.DiscordAPI")
-    @patch("services.download.models.base.logger")
+    @patch("nmdownloader.services.download.models.base.DiscordAPI")
+    @patch("nmdownloader.services.download.models.base.logger")
     def test_download_update_status_with_discord(
         self, mock_logger: MagicMock, mock_discord_class: MagicMock
     ) -> None:
         """Test Download update_status with Discord notifications."""
-        from config import app_settings
-        from services.download.models import DownloadBase
+        from nmdownloader.config import app_settings
+        from nmdownloader.services.download.models import DownloadBase
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
@@ -257,8 +257,8 @@ class TestDownloadConcrete:
 
     def test_download_notification_without_token(self) -> None:
         """Test that notification is skipped without Discord token."""
-        from config import app_settings
-        from services.download.models import DownloadBase
+        from nmdownloader.config import app_settings
+        from nmdownloader.services.download.models import DownloadBase
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
@@ -278,8 +278,8 @@ class TestDownloadConcrete:
 
     def test_download_notification_without_channel(self) -> None:
         """Test that notification logs error without channel ID."""
-        from config import app_settings
-        from services.download.models import DownloadBase
+        from nmdownloader.config import app_settings
+        from nmdownloader.services.download.models import DownloadBase
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
@@ -295,6 +295,6 @@ class TestDownloadConcrete:
         download = ConcreteDownload(task=mock_task, filepath=filepath, channel_id=None)
 
         # Should log error but not crash
-        with patch("services.download.models.base.logger") as mock_logger:
+        with patch("nmdownloader.services.download.models.base.logger") as mock_logger:
             download.update_status(DownloadStatus.STARTED, "Starting")
             mock_logger.error.assert_called_once()

@@ -39,7 +39,7 @@ services:
     environment:
       C_FORCE_ROOT: "true"
     healthcheck:
-      test: celery --app apps.celery_app status
+      test: celery --app nmdownloader.apps.celery_app status
       interval: 10s
       timeout: 10s
       retries: 10
