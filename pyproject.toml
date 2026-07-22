@@ -60,4 +60,3 @@ select = [
 ]
 preview = true
 ignore = ["ANN002", "ANN003"]
-
