@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: astral-sh/ruff-action@v4.0.0
 
-  mypy:
+  ty:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -36,8 +36,8 @@ jobs:
       - name: Install dependencies
         run: uv sync --group dev
 
-      - name: Run mypy
-        run: uv run mypy .
+      - name: Run ty
+        run: uv run ty check
 
   pytest:
     runs-on: ubuntu-latest

@@ -1,8 +1,8 @@
 from pathlib import Path
 
-import ffmpeg  # type: ignore
-from pytubefix import YouTube  # type: ignore
+import ffmpeg
 from loguru import logger
+from pytubefix import YouTube
 from werkzeug.utils import secure_filename
 
 from config import app_settings
@@ -31,6 +31,10 @@ class DownloadYoutube(DownloadBase):
             video_stream = self.youtube_obj.streams.get_highest_resolution(
                 progressive=False
             )
+            if not video_stream:
+                raise AttributeError(
+                    f"No video stream found for {self.youtube_obj.title}"
+                )
             if not (audio_streams := self.youtube_obj.streams.get_audio_only()):
                 raise AttributeError("No suitable audio stream found.")
 
@@ -43,13 +47,14 @@ class DownloadYoutube(DownloadBase):
             _audio_path = audio_streams.download(
                 output_path=str(self.base_download_path)
             )
+            assert _video_path and _audio_path
 
             try:
                 output = ffmpeg.output(
                     ffmpeg.input(filename=_video_path),
                     ffmpeg.input(filename=_audio_path),
                     filename=self.filepath,
-                    **app_settings.downloader.youtube.ffmpeg.to_dict(),
+                    **app_settings.downloader.youtube.ffmpeg.model_dump(),
                 )
                 self.update_status(
                     DownloadStatus.RUNNING, additional="Multiplexage in progress..."

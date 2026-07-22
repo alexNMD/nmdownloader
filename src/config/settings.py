@@ -1,6 +1,7 @@
 from functools import lru_cache
 from importlib.metadata import version
 from pathlib import Path
+from typing import Any
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -23,7 +24,7 @@ class CeleryConfig(BaseSettings):
 
 class DownloaderPluginConfig(BaseSettings):
     modules: list[str] = ["un_fichier.Download1fichier", "youtube.DownloadYoutube"]
-    registry: dict[str, type] = {}
+    registry: dict[str, Any] = {}
 
 
 class DownloaderConfig(BaseSettings):

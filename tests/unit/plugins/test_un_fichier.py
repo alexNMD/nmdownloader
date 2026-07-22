@@ -8,11 +8,11 @@ import requests
 
 from services.download.helpers.exceptions import DownloadException
 from services.download.helpers.plugins import get_downloader
+from services.download.models.media import DownloadMedia
 from services.download.plugins.un_fichier import (
     Download1fichier,
     compute_url_from_1fichier,
 )
-from services.download.models.media import DownloadMedia
 
 
 class TestDownload1fichier:

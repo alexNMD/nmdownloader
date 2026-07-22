@@ -8,7 +8,7 @@ from loguru import logger
 
 from config import app_settings
 from services.discord import DiscordAPI
-from services.download.helpers import DownloadStatus, DownloadRevokeException
+from services.download.helpers import DownloadRevokeException, DownloadStatus
 
 
 class DownloadBase(ABC):
@@ -39,7 +39,7 @@ class DownloadBase(ABC):
         self._remove()
         raise DownloadRevokeException(self)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         download_dict = {}
         for key, value in self.__dict__.items():
             match value:
@@ -53,7 +53,7 @@ class DownloadBase(ABC):
                         pass
         return download_dict
 
-    def update_status(self, status: DownloadStatus, additional: str = str()) -> None:
+    def update_status(self, status: DownloadStatus, additional: str = "") -> None:
         _base_content = f"[{self.__class__.__name__}]"
         if hasattr(self, "filepath"):
             _base_content += f" {self.filepath.name}"

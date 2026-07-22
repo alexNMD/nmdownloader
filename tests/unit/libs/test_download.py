@@ -1,7 +1,8 @@
 """Unit tests for libs/download.py module."""
 
-from celery.exceptions import Ignore
 from unittest.mock import MagicMock, patch
+
+from celery.exceptions import Ignore
 
 from services.download.helpers import DownloadStatus
 

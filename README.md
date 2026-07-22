@@ -1,6 +1,6 @@
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![Checked with mypy](https://www.mypy-lang.org/static/mypy_badge.svg)](https://mypy-lang.org/)
+[![ty](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ty/main/assets/badge/v0.json)](https://github.com/astral-sh/ty)
 [![Tests](https://github.com/alexNMD/nmdownloader/actions/workflows/tests.yml/badge.svg)](https://github.com/alexNMD/nmdownloader/actions/workflows/tests.yml)
 
 ## ✅ Prerequisites
@@ -44,13 +44,13 @@ uv run -- python -m apps.discord_app.runners
 
 ### Code Quality
 ```shell
-uv run ruff check .
-uv run ruff format .
+uv run ruff check
+uv run ruff format
 ```
 
 ### Typing Check
 ```shell
-uv run mypy .
+uv run ty check
 ```
 
 ### Testing (with coverage)

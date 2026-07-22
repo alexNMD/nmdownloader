@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from config import app_settings
-from services.download.helpers import DownloadStatus, DownloadRevokeException
+from services.download.helpers import DownloadRevokeException, DownloadStatus
 from services.download.models import DownloadBase
 
 
@@ -291,7 +291,6 @@ class TestDownloadConcrete:
 
         # Set token but no default channel
         app_settings.discord.token = "test_token"
-        app_settings.discord.default_channel_id = None
 
         download = ConcreteDownload(task=mock_task, filepath=filepath, channel_id=None)
 

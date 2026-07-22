@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import requests
-import unzipall  # type: ignore
+import unzipall
 from loguru import logger
 
 from config import app_settings
@@ -61,7 +61,7 @@ class DownloadMedia(DownloadBase):
     @classmethod
     def _extract_filename(cls, url: str) -> str:
         _content_disposition = requests.head(url, timeout=10).headers.get(
-            "Content-Disposition", str()
+            "Content-Disposition", ""
         )
         _filename_regex = r'filename\*?=(?:UTF-8\'\')?"?([^;\n"]+)"?'
 

@@ -1,8 +1,9 @@
+import importlib
+
 from celery import Celery
 
 from config import app_settings
 from services.download import plugins
-from services.download.helpers.plugins import load_downloader_plugins
 
 assert plugins
 
@@ -15,4 +16,4 @@ celery_app = Celery(
     broker_connection_retry_on_startup=False,
     worker_send_task_events=True,
 )
-load_downloader_plugins()
+importlib.import_module("services.download.plugins")

@@ -5,7 +5,7 @@ SERIE_REGEX = r"^(?P<name>.+?)[\s._]*[Ss](?P<season>\d+)(?:[Ee](?P<episode>\d+))
 SERIE_REGEX_FALLBACK = r"^(?P<name>(?:[A-Z][a-z]*\.?)+[A-Z][a-z]*)"
 
 
-def _extract_serie_info(filename: str) -> dict:
+def _extract_serie_info(filename: str) -> dict[str, str]:
     if match := re.search(SERIE_REGEX, filename):
         return match.groupdict()
     if fallback_match := re.search(SERIE_REGEX_FALLBACK, filename):

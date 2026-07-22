@@ -13,16 +13,8 @@ repos:
         language: system
         types: [python]
 
-      - id: mypy
-        name: mypy
-        entry: mypy
-        language: python
+      - id: ty
+        name: ty
+        entry: ty check
+        language: system
         types: [python]
-        pass_filenames: false
-        args: [".", "--install-types", "--non-interactive"]
-        additional_dependencies:
-          - types-requests
-          - types-passlib
-          - types-gunicorn
-          - Flask
-          - pydantic
