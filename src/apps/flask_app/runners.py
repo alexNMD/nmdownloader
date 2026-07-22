@@ -19,5 +19,5 @@ class GunicornApp(Application):
 
 
 def gunicorn() -> None:
-    config_path = os.path.join(os.path.dirname(__file__), "gunicorn.conf.py")
+    config_path = os.path.join(os.path.dirname(__file__), "gunicorn_conf.py")
     GunicornApp(flask_app, config_path).run()
