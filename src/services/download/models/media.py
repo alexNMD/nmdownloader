@@ -30,8 +30,8 @@ class DownloadMedia(DownloadBase):
         self.url = url
         try:
             self.filename = self._extract_filename(url=self.url)
-        except ValueError:
-            raise DownloadException(self, "Unable to retrieve filename")
+        except ValueError as error:
+            raise DownloadException(self, "Unable to retrieve filename") from error
         except Exception as error:
             raise DownloadException(
                 self, f"Unable to retrieve filename. Reason: {error}"
@@ -60,9 +60,7 @@ class DownloadMedia(DownloadBase):
 
     @classmethod
     def _extract_filename(cls, url: str) -> str:
-        _content_disposition = requests.head(url, timeout=10).headers.get(
-            "Content-Disposition", ""
-        )
+        _content_disposition = requests.head(url, timeout=10).headers.get("Content-Disposition", "")
         _filename_regex = r'filename\*?=(?:UTF-8\'\')?"?([^;\n"]+)"?'
 
         if _match := re.search(_filename_regex, _content_disposition):
@@ -84,12 +82,14 @@ class DownloadMedia(DownloadBase):
                     self.download_start_time = time.time()
 
                     ### Start reading file
-                    with open(self.filepath, "wb") as file:
-                        with io.BufferedWriter(
+                    with (
+                        open(self.filepath, "wb") as file,
+                        io.BufferedWriter(
                             file,
                             buffer_size=(1024 * 64),  # 64 KB
-                        ) as file_buffer:
-                            self._handle_chunks(file_buffer, response)
+                        ) as file_buffer,
+                    ):
+                        self._handle_chunks(file_buffer, response)
                     ### Close file
 
                     if self.is_compressed:
@@ -119,28 +119,20 @@ class DownloadMedia(DownloadBase):
 
             self.downloaded_size += len(chunk)
             _elapsed_time = time.time() - self.download_start_time
-            _refresh_interval_count = int(
-                _elapsed_time / app_settings.discord.refresh_rate
-            )
+            _refresh_interval_count = int(_elapsed_time / app_settings.discord.refresh_rate)
 
             if _refresh_interval_count > _count_refresh:
                 _count_refresh += 1
                 self.download_speed = self.downloaded_size / _elapsed_time
-                self.update_status(
-                    DownloadStatus.RUNNING, additional=self._compute_progress()
-                )
+                self.update_status(DownloadStatus.RUNNING, additional=self._compute_progress())
 
     def _compute_progress(self) -> str:
-        _remaining_time_seconds = (
-            self.total_size - self.downloaded_size
-        ) / self.download_speed
+        _remaining_time_seconds = (self.total_size - self.downloaded_size) / self.download_speed
         _less_than_one_minute = _remaining_time_seconds < 60
 
         progress_bar = get_progress_bar(self.downloaded_size, self.total_size)
         remaining_time = (
-            _remaining_time_seconds
-            if _less_than_one_minute
-            else _remaining_time_seconds / 60
+            _remaining_time_seconds if _less_than_one_minute else _remaining_time_seconds / 60
         )
         time_unit = "sec" if _less_than_one_minute else "min"
         speed_in_mb = self.download_speed / (1024 * 1024)
@@ -148,13 +140,9 @@ class DownloadMedia(DownloadBase):
         return f"{progress_bar} [ETA {remaining_time:.0f} {time_unit} @ {speed_in_mb:.2f} MB/s]"
 
     def _decompress(self) -> None:
-        self.update_status(
-            DownloadStatus.RUNNING, additional="Extraction in progress..."
-        )
+        self.update_status(DownloadStatus.RUNNING, additional="Extraction in progress...")
 
         logger.info(f"{self.filename} extraction in progress...")
-        unzipall.extract(
-            archive_path=self.filepath, extract_to=self.destination_directory
-        )
+        unzipall.extract(archive_path=self.filepath, extract_to=self.destination_directory)
         self._remove()
         logger.info(f"{self.filename} extraction done")

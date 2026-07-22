@@ -59,10 +59,10 @@ class TestDownloadException:
         mock_download.update_status.assert_called_once()
 
         # Check that it was called with ERROR status
-        from services.download.helpers import DownloadStatus as DS
+        from services.download.helpers import DownloadStatus
 
         call_args = mock_download.update_status.call_args
-        assert call_args[0][0] == DS.ERROR
+        assert call_args[0][0] == DownloadStatus.ERROR
         assert call_args[0][1] == message
 
     def test_download_exception_logs_error(self):
@@ -100,10 +100,10 @@ class TestDownloadRevokeException:
         mock_download.update_status.assert_called_once()
 
         # Check that it was called with CANCELED status
-        from services.download.helpers import DownloadStatus as DS
+        from services.download.helpers import DownloadStatus
 
         call_args = mock_download.update_status.call_args
-        assert call_args[0][0] == DS.CANCELED
+        assert call_args[0][0] == DownloadStatus.CANCELED
         assert call_args[0][1] == "Canceled by User"
 
     def test_download_revoke_exception_custom_message(self):
@@ -120,10 +120,10 @@ class TestDownloadRevokeException:
         mock_download.update_status.assert_called_once()
 
         # Check that it was called with CANCELED status
-        from services.download.helpers import DownloadStatus as DS
+        from services.download.helpers import DownloadStatus
 
         call_args = mock_download.update_status.call_args
-        assert call_args[0][0] == DS.CANCELED
+        assert call_args[0][0] == DownloadStatus.CANCELED
         assert call_args[0][1] == custom_message
 
     def test_download_revoke_exception_logs_info(self):
