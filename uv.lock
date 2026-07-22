@@ -466,18 +466,6 @@ redis = [
 ]
 
 [[package]]
-name = "celery-types"
-version = "0.26.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/fc/38/813dd7534e41682684d3a5c2cc4a8710e3acc51b364920b9c4d747c7b18f/celery_types-0.26.0.tar.gz", hash = "sha256:fa318136fdad83f83f1531deecd9fe664b5dfffff29f3c31e9120a46b8e3908f", size = 106210, upload-time = "2026-03-12T23:06:49.941Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d9/e5/c5ec98f7fd7817d077c9a5a5e705d54f74d4ca08ee3f14dee881c93c0511/celery_types-0.26.0-py3-none-any.whl", hash = "sha256:eb9da76f461786091970df466ec647d9a27956399852542cb6cab9309970f950", size = 211260, upload-time = "2026-03-12T23:06:48.588Z" },
-]
-
-[[package]]
 name = "certifi"
 version = "2026.5.20"
 source = { registry = "https://pypi.org/simple" }
@@ -1578,7 +1566,6 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
-    { name = "celery-types" },
     { name = "httpx" },
     { name = "mypy" },
     { name = "pre-commit" },
@@ -1587,7 +1574,6 @@ dev = [
     { name = "pytest-mock" },
     { name = "ruff" },
     { name = "ty" },
-    { name = "types-gunicorn" },
     { name = "types-requests" },
 ]
 
@@ -1609,7 +1595,6 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "celery-types", specifier = ">=0.24.0" },
     { name = "httpx", specifier = ">=0.26.0" },
     { name = "mypy", specifier = ">=1.19.1" },
     { name = "pre-commit", specifier = ">=4.5.1" },
@@ -1618,7 +1603,6 @@ dev = [
     { name = "pytest-mock", specifier = ">=3.12.0" },
     { name = "ruff", specifier = ">=0.14.11" },
     { name = "ty", specifier = ">=0.0.56" },
-    { name = "types-gunicorn", specifier = ">=26.0.0.20260518" },
     { name = "types-requests", specifier = ">=2.32.4.20260107" },
 ]
 
@@ -2535,58 +2519,15 @@ wheels = [
 ]
 
 [[package]]
-name = "types-gevent"
-version = "26.4.0.20260518"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "types-greenlet" },
-    { name = "types-psutil" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/5c/fd/6fce890808f93049b7206a54ae771a570d4da9550f9d42bb3f65b4734578/types_gevent-26.4.0.20260518.tar.gz", hash = "sha256:69634c49d5d973170d6fb3dc8292ab4c19bc2500143434d0804d92bb8574a1ec", size = 38518, upload-time = "2026-05-18T06:07:34.55Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/12/29/08ec2f541eddc2bf3db2d6a9121db5664ed8a9c7a4e99c5c8d9ecbc12731/types_gevent-26.4.0.20260518-py3-none-any.whl", hash = "sha256:c28a087073da74dd70ccf4ecfbd15e659413c4cb154f0181b9dbd3e8438fad32", size = 55470, upload-time = "2026-05-18T06:07:33.189Z" },
-]
-
-[[package]]
-name = "types-greenlet"
-version = "3.5.0.20260518"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/e4/58/ec7e4d35ce36557d7599d347c51632723e5f89af551af776d25bab7c605f/types_greenlet-3.5.0.20260518.tar.gz", hash = "sha256:2abc0b31a60d10244bba4a9f9e5d19b7254749b14ea85cb2f72eef282fab39f4", size = 9084, upload-time = "2026-05-18T06:03:08.352Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/4e/1f/112ebbffe68c40af3bca8e948a9d2df66a53dd7b3124e031e3110fcba3e5/types_greenlet-3.5.0.20260518-py3-none-any.whl", hash = "sha256:ce8f2b59314ffd683648d8f7fc1eab7b7a36a0330adb4a054d0a2157b9624166", size = 8816, upload-time = "2026-05-18T06:03:07.06Z" },
-]
-
-[[package]]
-name = "types-gunicorn"
-version = "26.0.0.20260518"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "types-gevent" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/74/1c/a01ec531454c9b1904ac5164bc6fd1c5dfebe97b7976c8cb2135b90625ec/types_gunicorn-26.0.0.20260518.tar.gz", hash = "sha256:40d40019cd1798924f19c62b5fe96bc5a63a2051278706d788c39805fabdb306", size = 34157, upload-time = "2026-05-18T06:07:57.858Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/8b/1a/07fa198168b4023286692d3df4db3232eb94c6815b516e5c5488abd15f71/types_gunicorn-26.0.0.20260518-py3-none-any.whl", hash = "sha256:5b5e1d9d43a1c56e90a380694106a9eba295d4d99e64abbdcbedee44c2c6dc50", size = 52182, upload-time = "2026-05-18T06:07:57.022Z" },
-]
-
-[[package]]
-name = "types-psutil"
-version = "7.2.2.20260518"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/cb/f1/6901857281d4e8d792492e1495eef6f4f01318a3b6a066486d81000a4511/types_psutil-7.2.2.20260518.tar.gz", hash = "sha256:9f825f631463a5b4d26f19f63aebc9ec25f01140d655026f3ad8a67841f9b331", size = 26660, upload-time = "2026-05-18T06:05:09.389Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/cd/eb/f726339668879819599c74c2e1f0cab760912a4159046942bdae2ad37bd6/types_psutil-7.2.2.20260518-py3-none-any.whl", hash = "sha256:6a3d697665754a60d7b5a41d5a2cff12b53f5e0676d77810cd28ba5e14cb4049", size = 32820, upload-time = "2026-05-18T06:05:08.321Z" },
-]
-
-[[package]]
 name = "types-requests"
-version = "2.33.0.20260518"
+version = "2.33.0.20260712"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e0/01/c5a19253fe1ac159159ddf9a3a07cec8bb5e486ec4d9002ad2821da0e5d2/types_requests-2.33.0.20260518.tar.gz", hash = "sha256:df7bd3bfe0ca8402dfb841e7d9be714bb5578203283d66d7dc4ef69343449a5e", size = 24752, upload-time = "2026-05-18T06:07:37.966Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/db/51/703318f7b7be8bee126ec13bf615050f932d0179b8784420f3a0199cc769/types_requests-2.33.0.20260712.tar.gz", hash = "sha256:2141b67ab534a5c5cd2dac5034f2a35f42e699c5bf185eee608c5246a069d7fb", size = 25084, upload-time = "2026-07-12T05:14:20.455Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/1c/bc/b139710a3b6018f7fb2b9508b35c8af564e61bf2bf4fa619d088f3e16f85/types_requests-2.33.0.20260518-py3-none-any.whl", hash = "sha256:626d697d1adaaff76e2044dc8c5c051d8f21abc157bdfe204a75558076fe0bf0", size = 21391, upload-time = "2026-05-18T06:07:37.044Z" },
+    { url = "https://files.pythonhosted.org/packages/62/e7/010c87f559e216d83f9dc51e939633fd0d0ead3377340181ab0e223cd3b5/types_requests-2.33.0.20260712-py3-none-any.whl", hash = "sha256:de027e28c171d3da529689cbfa023b0b4eab188c8dfa22fd834eebd2cee6e7bb", size = 21392, upload-time = "2026-07-12T05:14:19.616Z" },
 ]
 
 [[package]]
