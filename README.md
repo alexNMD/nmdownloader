@@ -29,7 +29,7 @@ uv run pre-commit install
 
 ### Start the debug flask app
 ```shell
-uv run gunicorn --config src/apps/flask_app/gunicorn.conf.py apps.flask_app:flask_app --reload
+uv run gunicorn --config src/apps/flask_app/gunicorn_conf.py apps.flask_app:flask_app --workers 1 --reload
 ```
 
 ### Start the celery app
