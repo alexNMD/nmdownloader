@@ -4,7 +4,7 @@ from loguru import logger
 from services.download.helpers.constants import DownloadStatus
 
 
-class DownloadException(Exception):
+class DownloadError(Exception):
     def __init__(self, download, message):
         super().__init__(message)
         logger.error(message)

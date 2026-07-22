@@ -11,7 +11,7 @@ from loguru import logger
 
 from config import app_settings
 from services.download.helpers import DownloadStatus
-from services.download.helpers.exceptions import DownloadException
+from services.download.helpers.exceptions import DownloadError
 from services.download.helpers.files import get_relative_directory
 from services.download.helpers.progressbar import get_progress_bar
 from services.download.models import DownloadBase
@@ -31,11 +31,9 @@ class DownloadMedia(DownloadBase):
         try:
             self.filename = self._extract_filename(url=self.url)
         except ValueError as error:
-            raise DownloadException(self, "Unable to retrieve filename") from error
+            raise DownloadError(self, "Unable to retrieve filename") from error
         except Exception as error:
-            raise DownloadException(
-                self, f"Unable to retrieve filename. Reason: {error}"
-            ) from error
+            raise DownloadError(self, f"Unable to retrieve filename. Reason: {error}") from error
         self.type_dl = kwargs.get("type_dl") or (
             ShowType.SERIES.value
             if re.search(self.REGEX_SEARCH_TYPE, self.filename)
@@ -103,10 +101,10 @@ class DownloadMedia(DownloadBase):
             ValueError,
             unzipall.ArchiveExtractionError,
         ) as error:
-            raise DownloadException(self, error) from error
+            raise DownloadError(self, error) from error
         except Exception as error:
             self._remove()
-            raise DownloadException(self, error) from error
+            raise DownloadError(self, error) from error
 
     def _handle_chunks(self, file_buffer, response) -> None:
         _count_refresh = 0

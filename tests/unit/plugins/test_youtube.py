@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from services.download.helpers.exceptions import DownloadException
+from services.download.helpers.exceptions import DownloadError
 from services.download.helpers.plugins import get_downloader
 from services.download.models import DownloadBase
 from services.download.plugins.youtube import DownloadYoutube
@@ -46,9 +46,7 @@ class TestDownloadYoutube:
         mock_task = MagicMock()
 
         # Create DownloadYoutube instance
-        download = DownloadYoutube(
-            url="https://www.youtube.com/watch?v=test", task=mock_task
-        )
+        download = DownloadYoutube(url="https://www.youtube.com/watch?v=test", task=mock_task)
 
         # Check attributes
         assert download.youtube_obj == mock_youtube_instance
@@ -62,9 +60,7 @@ class TestDownloadYoutube:
 
     @patch("services.download.plugins.youtube.YouTube")
     @patch("services.download.plugins.youtube.secure_filename")
-    def test_download_youtube_filename_sanitization(
-        self, mock_secure_filename, mock_youtube
-    ):
+    def test_download_youtube_filename_sanitization(self, mock_secure_filename, mock_youtube):
         """Test that filename is properly sanitized."""
         mock_youtube_instance = MagicMock()
         mock_youtube_instance.title = "Test/Video:With*Special|Chars?.mp4"
@@ -74,9 +70,7 @@ class TestDownloadYoutube:
 
         mock_task = MagicMock()
 
-        download = DownloadYoutube(
-            url="https://www.youtube.com/watch?v=test", task=mock_task
-        )
+        download = DownloadYoutube(url="https://www.youtube.com/watch?v=test", task=mock_task)
 
         # secure_filename should have been called
         mock_secure_filename.assert_called_once()
@@ -96,9 +90,7 @@ class TestDownloadYoutube:
 
         mock_task = MagicMock()
 
-        download = DownloadYoutube(
-            url="https://www.youtube.com/watch?v=test", task=mock_task
-        )
+        download = DownloadYoutube(url="https://www.youtube.com/watch?v=test", task=mock_task)
 
         # Check that filepath is constructed correctly (using default /media path)
         expected_path = Path("/media") / "youtube" / "Test_Video.mp4"
@@ -106,17 +98,13 @@ class TestDownloadYoutube:
 
     @patch("services.download.plugins.youtube.YouTube")
     @patch("services.download.plugins.youtube.secure_filename")
-    def test_download_youtube_start_no_audio_stream(
-        self, mock_secure_filename, mock_youtube
-    ):
+    def test_download_youtube_start_no_audio_stream(self, mock_secure_filename, mock_youtube):
         """Test DownloadYoutube start with no audio stream."""
         mock_youtube_instance = MagicMock()
         mock_youtube_instance.title = "Test Video"
 
         mock_video_stream = MagicMock()
-        mock_youtube_instance.streams.get_highest_resolution.return_value = (
-            mock_video_stream
-        )
+        mock_youtube_instance.streams.get_highest_resolution.return_value = mock_video_stream
         mock_youtube_instance.streams.get_audio_only.return_value = []  # No audio streams
 
         mock_youtube.return_value = mock_youtube_instance
@@ -124,10 +112,8 @@ class TestDownloadYoutube:
 
         mock_task = MagicMock()
 
-        download = DownloadYoutube(
-            url="https://www.youtube.com/watch?v=test", task=mock_task
-        )
+        download = DownloadYoutube(url="https://www.youtube.com/watch?v=test", task=mock_task)
 
         # Should raise DownloadException
-        with pytest.raises(DownloadException):
+        with pytest.raises(DownloadError):
             download.start()

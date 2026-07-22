@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from services.download.helpers.exceptions import DownloadException
+from services.download.helpers.exceptions import DownloadError
 from services.download.helpers.plugins import get_downloader
 from services.download.models.media import DownloadMedia
 from services.download.plugins.un_fichier import (
@@ -37,9 +37,7 @@ class TestDownload1fichier:
     @patch("services.download.plugins.un_fichier.requests.post")
     @patch("services.download.plugins.un_fichier.requests.head")
     @patch("services.download.plugins.un_fichier.app_settings")
-    def test_download_1fichier_init_with_token(
-        self, mock_app_settings, mock_head, mock_post
-    ):
+    def test_download_1fichier_init_with_token(self, mock_app_settings, mock_head, mock_post):
         """Test Download1fichier initialization with API token."""
         # Setup mocks
         mock_app_settings.downloader.un_fichier.api_token = "test_token"
@@ -55,9 +53,7 @@ class TestDownload1fichier:
 
         # Mock the HEAD request for filename extraction
         mock_head_response = MagicMock()
-        mock_head_response.headers = {
-            "Content-Disposition": 'attachment; filename="test_file.mkv"'
-        }
+        mock_head_response.headers = {"Content-Disposition": 'attachment; filename="test_file.mkv"'}
         mock_head.return_value = mock_head_response
 
         mock_task = MagicMock()
@@ -85,7 +81,7 @@ class TestDownload1fichier:
         mock_task = MagicMock()
 
         # Should raise DownloadException
-        with pytest.raises(DownloadException) as exc_info:
+        with pytest.raises(DownloadError) as exc_info:
             Download1fichier(url="https://1fichier.com/?abc123", task=mock_task)
 
         assert "UNFICHIER_API_TOKEN not set" in str(exc_info.value)
@@ -108,9 +104,7 @@ class TestDownload1fichier:
         mock_post.return_value = mock_post_response
 
         mock_head_response = MagicMock()
-        mock_head_response.headers = {
-            "Content-Disposition": 'attachment; filename="test_file.mkv"'
-        }
+        mock_head_response.headers = {"Content-Disposition": 'attachment; filename="test_file.mkv"'}
         mock_head.return_value = mock_head_response
 
         mock_task = MagicMock()
@@ -140,9 +134,7 @@ class TestComputeUrlFrom1fichier:
         mock_response.raise_for_status.return_value = None
         mock_post.return_value = mock_response
 
-        result = compute_url_from_1fichier(
-            link="https://1fichier.com/?abc123", token="test_token"
-        )
+        result = compute_url_from_1fichier(link="https://1fichier.com/?abc123", token="test_token")
 
         assert result == "https://download.url/file"
 
@@ -157,9 +149,7 @@ class TestComputeUrlFrom1fichier:
         mock_post.side_effect = Exception("API Error")
 
         with pytest.raises(Exception) as exc_info:
-            compute_url_from_1fichier(
-                link="https://1fichier.com/?abc123", token="test_token"
-            )
+            compute_url_from_1fichier(link="https://1fichier.com/?abc123", token="test_token")
 
         assert "API Error" in str(exc_info.value)
 
@@ -173,21 +163,15 @@ class TestComputeUrlFrom1fichier:
         # Mock to raise HTTPError
         mock_response = MagicMock()
         mock_response.status_code = 404
-        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError(
-            "Not Found"
-        )
+        mock_response.raise_for_status.side_effect = requests.exceptions.HTTPError("Not Found")
         mock_post.return_value = mock_response
 
         with pytest.raises(requests.exceptions.HTTPError):
-            compute_url_from_1fichier(
-                link="https://1fichier.com/?abc123", token="test_token"
-            )
+            compute_url_from_1fichier(link="https://1fichier.com/?abc123", token="test_token")
 
     @patch("services.download.plugins.un_fichier.requests.post")
     @patch("services.download.plugins.un_fichier.app_settings")
-    def test_compute_url_from_1fichier_correct_request(
-        self, mock_app_settings, mock_post
-    ):
+    def test_compute_url_from_1fichier_correct_request(self, mock_app_settings, mock_post):
         """Test that compute_url_from_1fichier makes correct request."""
         mock_app_settings.downloader.un_fichier.api_token = "test_token"
         mock_app_settings.downloader.un_fichier.api_url = "https://api.1fichier.com"

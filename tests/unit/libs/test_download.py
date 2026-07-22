@@ -41,19 +41,19 @@ class TestDownloadException:
 
     def test_download_exception_inheritance(self):
         """Test that DownloadException inherits from Exception."""
-        from services.download.helpers.exceptions import DownloadException
+        from services.download.helpers.exceptions import DownloadError
 
-        assert issubclass(DownloadException, Exception)
+        assert issubclass(DownloadError, Exception)
 
     def test_download_exception_init(self):
         """Test DownloadException initialization."""
-        from services.download.helpers.exceptions import DownloadException
+        from services.download.helpers.exceptions import DownloadError
 
         mock_download = MagicMock()
         mock_download.update_status = MagicMock()
 
         message = "Test error message"
-        exception = DownloadException(mock_download, message)
+        exception = DownloadError(mock_download, message)
 
         assert str(exception) == message
         mock_download.update_status.assert_called_once()
@@ -71,9 +71,9 @@ class TestDownloadException:
         message = "Test error"
 
         with patch("services.download.helpers.exceptions.logger") as mock_logger:
-            from services.download.helpers.exceptions import DownloadException
+            from services.download.helpers.exceptions import DownloadError
 
-            DownloadException(mock_download, message)
+            DownloadError(mock_download, message)
 
         mock_logger.error.assert_called_once_with(message)
 
