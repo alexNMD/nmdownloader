@@ -1,15 +1,24 @@
+from typing import TYPE_CHECKING, Any
+
 from discord.ext import commands
+from discord.ext.commands import Context
 from loguru import logger
 
 from apps.celery_app.tasks.download import download_task
 from config import app_settings
 
+if TYPE_CHECKING:
+    from discord import Message
+    from discord.ext.commands import Bot
+
+ContextT = Context[Any]
+
 
 class Download(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: Bot) -> None:
         self.bot = bot
 
-    async def cog_check(self, ctx):
+    async def cog_check(self, ctx: ContextT) -> bool:
         if ctx.message.webhook_id:
             return True
 
@@ -26,7 +35,7 @@ class Download(commands.Cog):
         return True
 
     @commands.command(name="download", aliases=["d"])
-    async def handle_download(self, ctx):
+    async def handle_download(self, ctx: ContextT) -> None:
         """USAGE: send link to download file (separate w/ ',')"""
 
         message = ctx.message
@@ -39,9 +48,7 @@ class Download(commands.Cog):
             case 3:
                 _, type_dl, links = message_content
             case _:
-                await message.reply(
-                    "USAGE: send link to download file (separate w/ ',')"
-                )
+                await message.reply("USAGE: send link to download file (separate w/ ',')")
                 return
 
         try:
@@ -60,7 +67,7 @@ class Download(commands.Cog):
 
     # Cause: Discords Cog command isn't triggered when message is posted from webhook...
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: Message) -> None:
         if message.author == self.bot.user:
             return
 
@@ -69,5 +76,5 @@ class Download(commands.Cog):
             await self.bot.invoke(ctx)
 
 
-async def setup(bot):
+async def setup(bot: Bot) -> None:
     await bot.add_cog(Download(bot))

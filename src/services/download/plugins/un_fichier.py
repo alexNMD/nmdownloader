@@ -2,7 +2,7 @@ import requests
 from loguru import logger
 
 from config import app_settings
-from services.download.helpers.exceptions import DownloadException
+from services.download.helpers.exceptions import DownloadError
 from services.download.helpers.plugins import register_downloader
 from services.download.models import DownloadMedia
 
@@ -11,14 +11,12 @@ from services.download.models import DownloadMedia
 class Download1fichier(DownloadMedia):
     def __init__(self, url: str, **kwargs) -> None:
         if not (bearer_token := app_settings.downloader.un_fichier.api_token):
-            raise DownloadException(self, "UNFICHIER_API_TOKEN not set")
+            raise DownloadError(self, "UNFICHIER_API_TOKEN not set")
 
         try:
-            download_1fichier_url = compute_url_from_1fichier(
-                link=url, token=bearer_token
-            )
+            download_1fichier_url = compute_url_from_1fichier(link=url, token=bearer_token)
         except Exception as error:
-            raise DownloadException(self, str(error)) from error
+            raise DownloadError(self, str(error)) from error
 
         super().__init__(url=download_1fichier_url, **kwargs)
 

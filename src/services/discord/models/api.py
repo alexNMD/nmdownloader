@@ -18,15 +18,15 @@ class DiscordAPI:
             "Content-Type": "application/json",
         }
 
-        response = requests.request(
-            url=url, headers=headers, timeout=cls.TIMEOUT, **kwargs
-        )
+        response = requests.request(url=url, headers=headers, timeout=cls.TIMEOUT, **kwargs)
         response.raise_for_status()
 
         return response.json()
 
     @classmethod
-    def reply_with_embed(cls, channel_id, message_id, title, description, color):
+    def reply_with_embed(
+        cls, channel_id: int, message_id: int, title: str, description: str, color: int
+    ) -> str | None:
         """
         Répond à un message dans un canal Discord avec un embed.
         :param channel_id: ID du canal où le message a été envoyé.
@@ -43,14 +43,12 @@ class DiscordAPI:
         }
         data = {"embeds": [embed], "message_reference": {"message_id": message_id}}
 
-        response = cls._call(
-            method="POST", endpoint=f"channels/{channel_id}/messages", json=data
-        )
+        response = cls._call(method="POST", endpoint=f"channels/{channel_id}/messages", json=data)
 
         return response.get("id")
 
     @classmethod
-    def send_embed(cls, channel_id, title, description, color):
+    def send_embed(cls, channel_id: int, title: str, description: str, color: int) -> str | None:
         """
         Envoie un message dans un canal Discord avec un embed (sans répondre à un autre message).
         :param channel_id: ID du canal où envoyer le message.
@@ -66,16 +64,19 @@ class DiscordAPI:
         }
         data = {"embeds": [embed]}
 
-        response = cls._call(
-            method="POST", endpoint=f"channels/{channel_id}/messages", json=data
-        )
+        response = cls._call(method="POST", endpoint=f"channels/{channel_id}/messages", json=data)
 
         return response.get("id")
 
     @classmethod
     def edit_embed(
-        cls, channel_id, message_id, title=None, description=None, color=None
-    ):
+        cls,
+        channel_id: int,
+        message_id: int,
+        title: str | None = None,
+        description: str | None = None,
+        color: int | None = None,
+    ) -> dict[str, Any]:
         """
         Modifie un embed dans un message existant dans un canal Discord.
         :param channel_id: ID du canal.
@@ -104,7 +105,7 @@ class DiscordAPI:
         return response
 
     @classmethod
-    def send_message(cls, channel_id, content):
+    def send_message(cls, channel_id: int, content: str) -> str | None:
         """
         Envoie un message à un canal Discord spécifié.
         :param channel_id: ID du canal Discord.
@@ -113,14 +114,12 @@ class DiscordAPI:
         """
         data = {"content": content}
 
-        response = cls._call(
-            method="POST", endpoint=f"channels/{channel_id}/messages", json=data
-        )
+        response = cls._call(method="POST", endpoint=f"channels/{channel_id}/messages", json=data)
 
         return response.get("id")
 
     @classmethod
-    def edit_message(cls, channel_id, message_id, new_content):
+    def edit_message(cls, channel_id: int, message_id: int, new_content: str) -> dict[str, Any]:
         """
         Modifie un message existant dans un canal Discord.
         :param channel_id: ID du canal où le message a été envoyé.
@@ -139,7 +138,7 @@ class DiscordAPI:
         return response
 
     @classmethod
-    def reply_to_message(cls, channel_id, message_id, content):
+    def reply_to_message(cls, channel_id: int, message_id: int, content: str) -> str | None:
         """
         Répond à un message dans un canal Discord.
         :param channel_id: ID du canal où le message a été envoyé.
@@ -149,8 +148,6 @@ class DiscordAPI:
         """
         data = {"content": content, "message_reference": {"message_id": message_id}}
 
-        response = cls._call(
-            method="POST", endpoint=f"channels/{channel_id}/messages", json=data
-        )
+        response = cls._call(method="POST", endpoint=f"channels/{channel_id}/messages", json=data)
 
         return response.get("id")

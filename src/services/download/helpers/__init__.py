@@ -1,8 +1,8 @@
 from .constants import DownloadStatus
-from .exceptions import DownloadException, DownloadRevokeException
+from .exceptions import DownloadError, DownloadRevokeException
 
 __all__ = [
-    "DownloadException",
+    "DownloadError",
     "DownloadRevokeException",
     "DownloadStatus",
 ]
