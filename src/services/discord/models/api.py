@@ -1,3 +1,5 @@
+from typing import Any
+
 import requests
 
 from config import app_settings
@@ -9,11 +11,16 @@ class DiscordAPI:
     TOKEN = app_settings.discord.token
 
     @classmethod
-    def _call(cls, endpoint: str, **kwargs) -> dict:
+    def _call(cls, endpoint: str, **kwargs) -> dict[str, Any]:
         url = f"{cls.BASE_URL}/{endpoint}"
-        headers = { "Authorization": f"Bot {cls.TOKEN}", "Content-Type": "application/json"}
+        headers = {
+            "Authorization": f"Bot {cls.TOKEN}",
+            "Content-Type": "application/json",
+        }
 
-        response = requests.request(url=url, headers=headers, timeout=cls.TIMEOUT, **kwargs)
+        response = requests.request(
+            url=url, headers=headers, timeout=cls.TIMEOUT, **kwargs
+        )
         response.raise_for_status()
 
         return response.json()
@@ -36,7 +43,9 @@ class DiscordAPI:
         }
         data = {"embeds": [embed], "message_reference": {"message_id": message_id}}
 
-        response = cls._call(method="POST", endpoint=f"channels/{channel_id}/messages", json=data)
+        response = cls._call(
+            method="POST", endpoint=f"channels/{channel_id}/messages", json=data
+        )
 
         return response.get("id")
 
@@ -57,7 +66,9 @@ class DiscordAPI:
         }
         data = {"embeds": [embed]}
 
-        response = cls._call(method="POST", endpoint=f"channels/{channel_id}/messages", json=data)
+        response = cls._call(
+            method="POST", endpoint=f"channels/{channel_id}/messages", json=data
+        )
 
         return response.get("id")
 
@@ -84,7 +95,11 @@ class DiscordAPI:
 
         data = {"embeds": [embed]}
 
-        response = cls._call(method="PATCH", endpoint=f"channels/{channel_id}/messages/{message_id}", json=data)
+        response = cls._call(
+            method="PATCH",
+            endpoint=f"channels/{channel_id}/messages/{message_id}",
+            json=data,
+        )
 
         return response
 
@@ -98,7 +113,9 @@ class DiscordAPI:
         """
         data = {"content": content}
 
-        response = cls._call(method="POST", endpoint=f"channels/{channel_id}/messages", json=data)
+        response = cls._call(
+            method="POST", endpoint=f"channels/{channel_id}/messages", json=data
+        )
 
         return response.get("id")
 
@@ -113,7 +130,11 @@ class DiscordAPI:
         """
         data = {"content": new_content}
 
-        response = cls._call(method="PATCH", endpoint=f"channels/{channel_id}/messages/{message_id}", json=data)
+        response = cls._call(
+            method="PATCH",
+            endpoint=f"channels/{channel_id}/messages/{message_id}",
+            json=data,
+        )
 
         return response
 
@@ -128,6 +149,8 @@ class DiscordAPI:
         """
         data = {"content": content, "message_reference": {"message_id": message_id}}
 
-        response = cls._call(method="POST", endpoint=f"channels/{channel_id}/messages", json=data)
+        response = cls._call(
+            method="POST", endpoint=f"channels/{channel_id}/messages", json=data
+        )
 
         return response.get("id")

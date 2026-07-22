@@ -95,9 +95,7 @@ class DownloadBase(ABC):
                     channel_id, message_id, title, content, status.value
                 )
                 if message_id
-                else DiscordAPI.send_embed(
-                    channel_id, title, content, status.value
-                )
+                else DiscordAPI.send_embed(channel_id, title, content, status.value)
             )
         except requests.exceptions.HTTPError as http_error:
             if http_error.response.status_code == 401:
