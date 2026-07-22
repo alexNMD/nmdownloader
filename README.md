@@ -44,8 +44,8 @@ uv run -- python -m apps.discord_app.runners
 
 ### Code Quality
 ```shell
-uv run ruff check .
-uv run ruff format .
+uv run ruff check
+uv run ruff format
 ```
 
 ### Typing Check
