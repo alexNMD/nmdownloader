@@ -245,10 +245,6 @@ class TestDownloadConcrete:
         app_settings.discord.token = "test_token"
         app_settings.discord.default_channel_id = 123
 
-        # Setup mock for DiscordAPI instance
-        mock_discord_api = MagicMock()
-        mock_discord_class.return_value = mock_discord_api
-
         download = ConcreteDownload(
             task=mock_task, filepath=filepath, message_id=None, channel_id=123
         )
@@ -256,8 +252,8 @@ class TestDownloadConcrete:
         # Call update_status
         download.update_status(DownloadStatus.STARTED, "Starting")
 
-        # Discord API should be called
-        mock_discord_api.send_embed.assert_called_once()
+        # Discord API class method should be called
+        mock_discord_class.send_embed.assert_called_once()
 
     def test_download_notification_without_token(self):
         """Test that notification is skipped without Discord token."""
