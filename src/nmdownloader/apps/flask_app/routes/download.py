@@ -15,9 +15,7 @@ download_bp = Blueprint(
 
 @download_bp.get("/")
 def home() -> Response:
-    return make_response(
-        render_template("../templates/download.html", version=app_settings.version)
-    )
+    return make_response(render_template("download.html", version=app_settings.version))
 
 
 @download_bp.post("/")
