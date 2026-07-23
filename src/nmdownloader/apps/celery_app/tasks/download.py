@@ -8,7 +8,7 @@ from nmdownloader.services.download.helpers.plugins import get_downloader
 
 
 @celery_app.task(bind=True)
-def download_task(self: Task, url: str, **kwargs) -> dict[str, Any]:
+def download_task(self: Task[Any, Any], url: str, **kwargs) -> dict[str, Any]:
     download = get_downloader(url)(task=self, url=url, **kwargs)
 
     logger.info("Download started")

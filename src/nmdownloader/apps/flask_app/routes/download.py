@@ -29,7 +29,7 @@ def launch() -> Response:
         return make_response(jsonify({"message": "URLs must be a list"}), 400)
 
     type_dl = data.get("type_dl")
-    tasks_uuids = [download_task.delay(url=url, type_dl=type_dl) for url in urls]
+    tasks_uuids = [download_task.delay(url=url, type_dl=type_dl).id for url in urls]
     logger.info(f"Tasks UUIDs: {','.join(tasks_uuids)}")
 
     return make_response(jsonify({"uuids": tasks_uuids}))

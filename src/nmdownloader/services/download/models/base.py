@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class DownloadBase(ABC):
     def __init__(
         self,
-        task: Task | None,
+        task: Task[Any, Any] | None,
         filepath: Path,
         message_id: int | None = None,
         channel_id: int | None = None,
