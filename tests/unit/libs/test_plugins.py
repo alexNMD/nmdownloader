@@ -2,12 +2,12 @@
 
 from urllib.parse import urlparse
 
-from config import app_settings
-from services.download.helpers.plugins import get_downloader, register_downloader
-from services.download.models import DownloadBase
-from services.download.models.default import DownloadDefault
-from services.download.plugins.un_fichier import Download1fichier
-from services.download.plugins.youtube import DownloadYoutube
+from nmdownloader.config import app_settings
+from nmdownloader.services.download.helpers.plugins import get_downloader, register_downloader
+from nmdownloader.services.download.models import DownloadBase
+from nmdownloader.services.download.models.default import DownloadDefault
+from nmdownloader.services.download.plugins.un_fichier import Download1fichier
+from nmdownloader.services.download.plugins.youtube import DownloadYoutube
 
 
 class TestRegisterDownloader:
@@ -122,7 +122,7 @@ class TestGetDownloader:
     def test_get_downloader_with_un_fichier_url(self) -> None:
         """Test getting downloader for 1fichier URLs."""
         # Import to register the 1fichier downloader
-        import services.download.plugins.un_fichier  # noqa: F401
+        import nmdownloader.services.download.plugins.un_fichier  # noqa: F401
 
         url = "https://1fichier.com/?abc123"
         result = get_downloader(url)

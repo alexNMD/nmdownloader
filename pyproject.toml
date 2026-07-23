@@ -30,14 +30,14 @@ dev = [
 ]
 
 [project.scripts]
-nmd-worker = "apps.celery_app.runners:worker"
-nmd-flower = "apps.celery_app.runners:flower"
-nmd-flask = "apps.flask_app.runners:gunicorn"
-nmd-discord = "apps.discord_app.runners:bot"
+nmd-worker = "nmdownloader.apps.celery_app.runners:worker"
+nmd-flower = "nmdownloader.apps.celery_app.runners:flower"
+nmd-flask = "nmdownloader.apps.flask_app.runners:gunicorn"
+nmd-discord = "nmdownloader.apps.discord_app.runners:bot"
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.11.30,<0.12.0"]
+build-backend = "uv_build"
 
 [tool.ty.rules]
 missing-type-argument = "error"

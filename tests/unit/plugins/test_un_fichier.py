@@ -6,10 +6,10 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 
-from services.download.helpers.exceptions import DownloadError
-from services.download.helpers.plugins import get_downloader
-from services.download.models.media import DownloadMedia
-from services.download.plugins.un_fichier import (
+from nmdownloader.services.download.helpers.exceptions import DownloadError
+from nmdownloader.services.download.helpers.plugins import get_downloader
+from nmdownloader.services.download.models import DownloadMedia
+from nmdownloader.services.download.plugins.un_fichier import (
     Download1fichier,
     compute_url_from_1fichier,
 )
@@ -34,9 +34,9 @@ class TestDownload1fichier:
         result = get_downloader("https://1fichier.com/?abc123")
         assert result is Download1fichier
 
-    @patch("services.download.plugins.un_fichier.requests.post")
-    @patch("services.download.plugins.un_fichier.requests.head")
-    @patch("services.download.plugins.un_fichier.app_settings")
+    @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
+    @patch("nmdownloader.services.download.plugins.un_fichier.requests.head")
+    @patch("nmdownloader.services.download.plugins.un_fichier.app_settings")
     def test_download_1fichier_init_with_token(
         self, mock_app_settings: MagicMock, mock_head: MagicMock, mock_post: MagicMock
     ) -> None:
@@ -72,8 +72,8 @@ class TestDownload1fichier:
         # Check attributes - the DownloadMedia __init__ was called with the download URL
         assert download.url == "https://download.url/file"
 
-    @patch("services.download.plugins.un_fichier.requests.post")
-    @patch("services.download.plugins.un_fichier.app_settings")
+    @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
+    @patch("nmdownloader.services.download.plugins.un_fichier.app_settings")
     def test_download_1fichier_init_without_token(
         self, mock_app_settings: MagicMock, mock_post: MagicMock
     ) -> None:
@@ -90,9 +90,9 @@ class TestDownload1fichier:
 
         assert "UNFICHIER_API_TOKEN not set" in str(exc_info.value)
 
-    @patch("services.download.plugins.un_fichier.requests.post")
-    @patch("services.download.plugins.un_fichier.requests.head")
-    @patch("services.download.plugins.un_fichier.app_settings")
+    @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
+    @patch("nmdownloader.services.download.plugins.un_fichier.requests.head")
+    @patch("nmdownloader.services.download.plugins.un_fichier.app_settings")
     def test_download_1fichier_init_with_url_splitting(
         self, mock_app_settings: MagicMock, mock_head: MagicMock, mock_post: MagicMock
     ) -> None:
@@ -126,8 +126,8 @@ class TestDownload1fichier:
 class TestComputeUrlFrom1fichier:
     """Tests for compute_url_from_1fichier function."""
 
-    @patch("services.download.plugins.un_fichier.requests.post")
-    @patch("services.download.plugins.un_fichier.app_settings")
+    @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
+    @patch("nmdownloader.services.download.plugins.un_fichier.app_settings")
     def test_compute_url_from_1fichier_success(
         self, mock_app_settings: MagicMock, mock_post: MagicMock
     ) -> None:
@@ -144,8 +144,8 @@ class TestComputeUrlFrom1fichier:
 
         assert result == "https://download.url/file"
 
-    @patch("services.download.plugins.un_fichier.requests.post")
-    @patch("services.download.plugins.un_fichier.app_settings")
+    @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
+    @patch("nmdownloader.services.download.plugins.un_fichier.app_settings")
     def test_compute_url_from_1fichier_with_error(
         self, mock_app_settings: MagicMock, mock_post: MagicMock
     ) -> None:
@@ -161,8 +161,8 @@ class TestComputeUrlFrom1fichier:
 
         assert "API Error" in str(exc_info.value)
 
-    @patch("services.download.plugins.un_fichier.requests.post")
-    @patch("services.download.plugins.un_fichier.app_settings")
+    @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
+    @patch("nmdownloader.services.download.plugins.un_fichier.app_settings")
     def test_compute_url_from_1fichier_http_error(
         self, mock_app_settings: MagicMock, mock_post: MagicMock
     ) -> None:
@@ -179,8 +179,8 @@ class TestComputeUrlFrom1fichier:
         with pytest.raises(requests.exceptions.HTTPError):
             compute_url_from_1fichier(link="https://1fichier.com/?abc123", token="test_token")
 
-    @patch("services.download.plugins.un_fichier.requests.post")
-    @patch("services.download.plugins.un_fichier.app_settings")
+    @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
+    @patch("nmdownloader.services.download.plugins.un_fichier.app_settings")
     def test_compute_url_from_1fichier_correct_request(
         self, mock_app_settings: MagicMock, mock_post: MagicMock
     ) -> None:

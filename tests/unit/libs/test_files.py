@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from services.download.helpers.files import _extract_serie_info, get_relative_directory
+from nmdownloader.services.download.helpers.files import _extract_serie_info, get_relative_directory
 
 
 class TestExtractSerieInfo:

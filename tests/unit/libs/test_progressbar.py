@@ -2,7 +2,7 @@
 
 import pytest
 
-from services.download.helpers.progressbar import BAR_LENGTH, get_progress_bar
+from nmdownloader.services.download.helpers.progressbar import BAR_LENGTH, get_progress_bar
 
 
 class TestGetProgressBar:

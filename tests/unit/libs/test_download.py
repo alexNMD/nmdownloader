@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 from celery.exceptions import Ignore
 
-from services.download.helpers import DownloadStatus
+from nmdownloader.services.download.helpers import DownloadStatus
 
 
 class TestDownloadStatus:
@@ -41,13 +41,13 @@ class TestDownloadException:
 
     def test_download_exception_inheritance(self) -> None:
         """Test that DownloadException inherits from Exception."""
-        from services.download.helpers.exceptions import DownloadError
+        from nmdownloader.services.download.helpers.exceptions import DownloadError
 
         assert issubclass(DownloadError, Exception)
 
     def test_download_exception_init(self) -> None:
         """Test DownloadException initialization."""
-        from services.download.helpers.exceptions import DownloadError
+        from nmdownloader.services.download.helpers.exceptions import DownloadError
 
         mock_download = MagicMock()
         mock_download.update_status = MagicMock()
@@ -59,7 +59,7 @@ class TestDownloadException:
         mock_download.update_status.assert_called_once()
 
         # Check that it was called with ERROR status
-        from services.download.helpers import DownloadStatus
+        from nmdownloader.services.download.helpers import DownloadStatus
 
         call_args = mock_download.update_status.call_args
         assert call_args[0][0] == DownloadStatus.ERROR
@@ -70,8 +70,8 @@ class TestDownloadException:
         mock_download = MagicMock()
         message = "Test error"
 
-        with patch("services.download.helpers.exceptions.logger") as mock_logger:
-            from services.download.helpers.exceptions import DownloadError
+        with patch("nmdownloader.services.download.helpers.exceptions.logger") as mock_logger:
+            from nmdownloader.services.download.helpers.exceptions import DownloadError
 
             DownloadError(mock_download, message)
 
@@ -83,13 +83,13 @@ class TestDownloadRevokeException:
 
     def test_download_revoke_exception_inheritance(self) -> None:
         """Test that DownloadRevokeException inherits from Ignore."""
-        from services.download.helpers.exceptions import DownloadRevokeException
+        from nmdownloader.services.download.helpers.exceptions import DownloadRevokeException
 
         assert issubclass(DownloadRevokeException, Ignore)
 
     def test_download_revoke_exception_default_message(self) -> None:
         """Test DownloadRevokeException with default message."""
-        from services.download.helpers.exceptions import DownloadRevokeException
+        from nmdownloader.services.download.helpers.exceptions import DownloadRevokeException
 
         mock_download = MagicMock()
         mock_download.update_status = MagicMock()
@@ -100,7 +100,7 @@ class TestDownloadRevokeException:
         mock_download.update_status.assert_called_once()
 
         # Check that it was called with CANCELED status
-        from services.download.helpers import DownloadStatus
+        from nmdownloader.services.download.helpers import DownloadStatus
 
         call_args = mock_download.update_status.call_args
         assert call_args[0][0] == DownloadStatus.CANCELED
@@ -108,7 +108,7 @@ class TestDownloadRevokeException:
 
     def test_download_revoke_exception_custom_message(self) -> None:
         """Test DownloadRevokeException with custom message."""
-        from services.download.helpers.exceptions import DownloadRevokeException
+        from nmdownloader.services.download.helpers.exceptions import DownloadRevokeException
 
         mock_download = MagicMock()
         mock_download.update_status = MagicMock()
@@ -120,7 +120,7 @@ class TestDownloadRevokeException:
         mock_download.update_status.assert_called_once()
 
         # Check that it was called with CANCELED status
-        from services.download.helpers import DownloadStatus
+        from nmdownloader.services.download.helpers import DownloadStatus
 
         call_args = mock_download.update_status.call_args
         assert call_args[0][0] == DownloadStatus.CANCELED
@@ -130,8 +130,8 @@ class TestDownloadRevokeException:
         """Test that DownloadRevokeException logs at info level."""
         mock_download = MagicMock()
 
-        with patch("services.download.helpers.exceptions.logger") as mock_logger:
-            from services.download.helpers.exceptions import DownloadRevokeException
+        with patch("nmdownloader.services.download.helpers.exceptions.logger") as mock_logger:
+            from nmdownloader.services.download.helpers.exceptions import DownloadRevokeException
 
             DownloadRevokeException(mock_download)
 
