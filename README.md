@@ -29,17 +29,17 @@ uv run pre-commit install
 
 ### Start the debug flask app
 ```shell
-uv run gunicorn --config src/apps/flask_app/gunicorn_conf.py apps.flask_app:flask_app --workers 1 --reload
+uv run gunicorn --config src/nmdownloader/apps/flask_app/gunicorn_conf.py nmdownloader.apps.flask_app:flask_app --workers 1 --reload
 ```
 
 ### Start the celery app
 ```shell
-uv run -- celery --app apps.celery_app worker --loglevel=info
+uv run -- celery --app nmdownloader.apps.celery_app worker --loglevel=info
 ```
 
 ### Start the discord app
 ```shell
-uv run -- python -m apps.discord_app.runners
+uv run -- python -m nmdownloader.apps.discord_app.runners
 ```
 
 ### Code Quality

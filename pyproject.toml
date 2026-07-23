@@ -35,6 +35,9 @@ nmd-worker = "nmdownloader.apps.celery_app.runners:worker"
 nmd-flower = "nmdownloader.apps.celery_app.runners:flower"
 nmd-flask = "nmdownloader.apps.flask_app.runners:gunicorn"
 nmd-discord = "nmdownloader.apps.discord_app.runners:bot"
+nmd-flask-healthcheck = "nmdownloader.healthchecks.api:main"
+nmd-flower-healthcheck = "nmdownloader.healthchecks.flower:main"
+nmd-worker-healthcheck = "nmdownloader.healthchecks.worker:main"
 
 [build-system]
 requires = ["uv_build>=0.11.30,<0.12.0"]
