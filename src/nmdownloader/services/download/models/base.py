@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -17,7 +19,7 @@ if TYPE_CHECKING:
 class DownloadBase(ABC):
     def __init__(
         self,
-        task: "Task[Any, Any] | None",
+        task: Task[Any, Any] | None,
         filepath: Path,
         message_id: int | None = None,
         channel_id: int | None = None,
