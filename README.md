@@ -5,7 +5,7 @@
 
 ## ✅ Prerequisites
 
-- Python >=3.11
+- Python >=3.14
 - [uv](https://github.com/astral-sh/uv)
 - [direnv](https://direnv.net)
 
