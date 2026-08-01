@@ -8,6 +8,7 @@ class FFMPEGVideoConfig(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         extra="ignore",
+        validate_by_name=True,
     )
     vcodec: str = "libx264"
     crf: int = Field(default=30, ge=0, le=51)
