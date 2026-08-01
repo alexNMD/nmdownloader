@@ -27,14 +27,14 @@ class DownloadMedia(DownloadBase):
     REGEX_SEARCH_TYPE = r"[Ss]\d{1,2}([Ee]\d{1,2})?"
 
     def __init__(self, url: str, **kwargs) -> None:
-        self.url = url
+        self.url: str = url
         try:
-            self.filename = self._extract_filename(url=self.url)
+            self.filename: str = self._extract_filename(url=self.url)
         except ValueError as error:
             raise DownloadError(self, "Unable to retrieve filename") from error
         except Exception as error:
             raise DownloadError(self, f"Unable to retrieve filename. Reason: {error}") from error
-        self.type_dl = kwargs.get("type_dl") or (
+        self.type_dl: str = kwargs.get("type_dl") or (
             ShowType.SERIES.value
             if re.search(self.REGEX_SEARCH_TYPE, self.filename)
             else ShowType.FILMS.value
