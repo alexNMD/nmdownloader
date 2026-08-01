@@ -44,13 +44,13 @@ class DownloadYoutube(DownloadBase):
                     ffmpeg.input(filename=_video_path),
                     ffmpeg.input(filename=_audio_path),
                     filename=self.filepath,
-                    **app_settings.downloader.youtube.ffmpeg.model_dump(),
+                    **app_settings.downloader.youtube.ffmpeg.model_dump(by_alias=True),
                 )
                 self.update_status(DownloadStatus.RUNNING, additional="Multiplexage in progress...")
                 output.run(capture_stdout=True, capture_stderr=True)
             except ffmpeg.Error as error:
-                logger.error("stdout: %s", error.stdout.decode())
-                logger.error("stderr: %s", error.stderr.decode())
+                logger.error(f"stdout: {error.stdout.decode()}")
+                logger.error(f"stderr: {error.stderr.decode()}")
                 raise error
             finally:
                 Path(_video_path).unlink(missing_ok=True)
