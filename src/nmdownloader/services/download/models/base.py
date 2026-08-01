@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import http
 import json
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -95,7 +96,7 @@ class DownloadBase(ABC):
                 else DiscordAPI.send_embed(self.channel_id, title, content, status.value)
             )
         except requests.exceptions.HTTPError as http_error:
-            if http_error.response.status_code == 401:
+            if http_error.response.status_code == http.HTTPStatus.UNAUTHORIZED:
                 logger.error("DISCORD_TOKEN invalid. Unable to send notification")
                 return
             logger.error(f"Unable to use discord api, got: {http_error.response.status_code}")
