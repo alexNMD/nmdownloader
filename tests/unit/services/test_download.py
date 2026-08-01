@@ -40,9 +40,7 @@ class TestDownloadConcrete:
         mock_task = MagicMock()
         filepath = Path("/tmp/test.mkv")
 
-        download = ConcreteDownload(
-            task=mock_task, filepath=filepath, message_id=123, channel_id=456
-        )
+        download = ConcreteDownload(task=mock_task, filepath=filepath, message_id=123, channel_id=456)
 
         assert download.task == mock_task
         assert download.filepath == filepath
@@ -62,9 +60,7 @@ class TestDownloadConcrete:
         mock_task = MagicMock()
         filepath = Path("/tmp/test.mkv")
 
-        download = ConcreteDownload(
-            task=mock_task, filepath=filepath, type_dl="series", quality="1080p"
-        )
+        download = ConcreteDownload(task=mock_task, filepath=filepath, type_dl="series", quality="1080p")
 
         assert download.options == {"type_dl": "series", "quality": "1080p"}
 
@@ -169,9 +165,7 @@ class TestDownloadConcrete:
         mock_task = MagicMock()
         filepath = Path("/tmp/test.mkv")
 
-        download = ConcreteDownload(
-            task=mock_task, filepath=filepath, message_id=123, channel_id=456
-        )
+        download = ConcreteDownload(task=mock_task, filepath=filepath, message_id=123, channel_id=456)
 
         result = download.to_dict()
 
@@ -226,9 +220,7 @@ class TestDownloadConcrete:
 
     @patch("nmdownloader.services.download.models.base.DiscordAPI")
     @patch("nmdownloader.services.download.models.base.logger")
-    def test_download_update_status_with_discord(
-        self, mock_logger: MagicMock, mock_discord_class: MagicMock
-    ) -> None:
+    def test_download_update_status_with_discord(self, mock_logger: MagicMock, mock_discord_class: MagicMock) -> None:
         """Test Download update_status with Discord notifications."""
         from nmdownloader.config import app_settings
         from nmdownloader.services.download.models import DownloadBase
@@ -245,9 +237,7 @@ class TestDownloadConcrete:
         app_settings.discord.token = "test_token"
         app_settings.discord.default_channel_id = 123
 
-        download = ConcreteDownload(
-            task=mock_task, filepath=filepath, message_id=None, channel_id=123
-        )
+        download = ConcreteDownload(task=mock_task, filepath=filepath, message_id=None, channel_id=123)
 
         # Call update_status
         download.update_status(DownloadStatus.STARTED, "Starting")

@@ -48,7 +48,7 @@ missing-type-argument = "error"
 possibly-unresolved-reference = "warn"
 
 [tool.ruff]
-line-length = 100
+line-length = 120
 
 [tool.ruff.lint]
 select = [

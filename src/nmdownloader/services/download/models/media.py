@@ -35,9 +35,7 @@ class DownloadMedia(DownloadBase):
         except Exception as error:
             raise DownloadError(self, f"Unable to retrieve filename. Reason: {error}") from error
         self.type_dl: str = kwargs.get("type_dl") or (
-            ShowType.SERIES.value
-            if re.search(self.REGEX_SEARCH_TYPE, self.filename)
-            else ShowType.FILMS.value
+            ShowType.SERIES.value if re.search(self.REGEX_SEARCH_TYPE, self.filename) else ShowType.FILMS.value
         )
         self.base_download_path: Path = app_settings.media_path / self.type_dl
         self.destination_directory: Path = (
@@ -129,9 +127,7 @@ class DownloadMedia(DownloadBase):
         _less_than_one_minute = _remaining_time_seconds < 60
 
         progress_bar = get_progress_bar(self.downloaded_size, self.total_size)
-        remaining_time = (
-            _remaining_time_seconds if _less_than_one_minute else _remaining_time_seconds / 60
-        )
+        remaining_time = _remaining_time_seconds if _less_than_one_minute else _remaining_time_seconds / 60
         time_unit = "sec" if _less_than_one_minute else "min"
         speed_in_mb = self.download_speed / (1024 * 1024)
 
