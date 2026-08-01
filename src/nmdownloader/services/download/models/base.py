@@ -58,7 +58,7 @@ class DownloadBase(ABC):
                         pass
         return download_dict
 
-    def update_status(self, status: DownloadStatus, additional: str = "") -> None:
+    def update_status(self, status: DownloadStatus, additional: str | None = None) -> None:
         _base_content = f"[{self.__class__.__name__}]"
         if hasattr(self, "filepath"):
             _base_content += f" {self.filepath.name}"
