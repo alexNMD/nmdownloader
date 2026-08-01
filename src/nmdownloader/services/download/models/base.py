@@ -29,8 +29,8 @@ class DownloadBase(ABC):
         self.filepath = filepath
         self.message_id = message_id
         self.channel_id = channel_id or app_settings.discord.default_channel_id
-        self.options = kwargs
-        self.status_message_id = None
+        self.options: dict[str, Any] = kwargs
+        self.status_message_id: int | None = None
 
     @abstractmethod
     def start(self) -> None:
@@ -73,26 +73,26 @@ class DownloadBase(ABC):
     def _do_notification(self, status: DownloadStatus, title: str, content: str) -> None:
         logger.info(f"{title} => {content}")
 
-        status_message_id = getattr(self, "status_message_id", None)
-        channel_id = getattr(self, "channel_id", app_settings.discord.default_channel_id)
-        message_id = getattr(self, "message_id", None)
-
         if not app_settings.discord.token:
             logger.debug("DISCORD_TOKEN not set. Unable to send notification")
             return
-        if not channel_id:
+        if not hasattr(self, "channel_id") or not self.channel_id:
             logger.error("DISCORD_DEFAULT_CHANNEL_ID not set. Unable to send notification")
             return
 
         try:
-            if status_message_id:
-                DiscordAPI.edit_embed(channel_id, status_message_id, title, content, status.value)
+            if hasattr(self, "channel_id") and self.status_message_id:
+                DiscordAPI.edit_embed(
+                    self.channel_id, self.status_message_id, title, content, status.value
+                )
                 return
 
             self.status_message_id = (
-                DiscordAPI.reply_with_embed(channel_id, message_id, title, content, status.value)
-                if message_id
-                else DiscordAPI.send_embed(channel_id, title, content, status.value)
+                DiscordAPI.reply_with_embed(
+                    self.channel_id, self.message_id, title, content, status.value
+                )
+                if hasattr(self, "message_id") and self.message_id
+                else DiscordAPI.send_embed(self.channel_id, title, content, status.value)
             )
         except requests.exceptions.HTTPError as http_error:
             if http_error.response.status_code == 401:
@@ -101,3 +101,5 @@ class DownloadBase(ABC):
             logger.error(f"Unable to use discord api, got: {http_error.response.status_code}")
         except requests.exceptions.RequestException as error:
             logger.error(f"Unable to reach Discord API: {error}")
+        except ValueError as error:
+            logger.error(f"Unable to read data from Discord API: {error}")
