@@ -210,7 +210,7 @@ class TestDownloadConcrete:
         download = ConcreteDownload(task=mock_task, filepath=filepath)
 
         # Call update_status
-        download.update_status(DownloadStatus.STARTED, "Starting download")
+        download.update_status(DownloadStatus.STARTED, description="Starting download")
 
         # Check task state was updated
         mock_task.update_state.assert_called_once()
@@ -240,7 +240,7 @@ class TestDownloadConcrete:
         download = ConcreteDownload(task=mock_task, filepath=filepath, message_id=None, channel_id=123)
 
         # Call update_status
-        download.update_status(DownloadStatus.STARTED, "Starting")
+        download.update_status(DownloadStatus.STARTED, description="Starting")
 
         # Discord API class method should be called
         mock_discord_class.send_embed.assert_called_once()
@@ -264,7 +264,7 @@ class TestDownloadConcrete:
         download = ConcreteDownload(task=mock_task, filepath=filepath)
 
         # Should not raise error even without token
-        download.update_status(DownloadStatus.STARTED, "Starting")
+        download.update_status(DownloadStatus.STARTED, description="Starting")
 
     def test_download_notification_without_channel(self) -> None:
         """Test that notification logs error without channel ID."""
@@ -286,5 +286,5 @@ class TestDownloadConcrete:
 
         # Should log error but not crash
         with patch("nmdownloader.services.download.models.base.logger") as mock_logger:
-            download.update_status(DownloadStatus.STARTED, "Starting")
+            download.update_status(DownloadStatus.STARTED, description="Starting")
             mock_logger.error.assert_called_once()

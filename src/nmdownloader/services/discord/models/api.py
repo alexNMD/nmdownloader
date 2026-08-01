@@ -1,6 +1,23 @@
+from datetime import UTC, datetime
+from typing import TypedDict
+
 import requests
 
 from nmdownloader.config import app_settings
+
+
+class EmbedFieldPayload(TypedDict):
+    name: str
+    value: str
+    inline: bool
+
+
+class EmbedPayload(TypedDict):
+    title: str
+    description: str
+    color: int
+    fields: list[dict[str, str | bool]]
+    timestamp: str
 
 
 class DiscordAPI:
@@ -26,9 +43,26 @@ class DiscordAPI:
         return message_id
 
     @classmethod
-    def reply_with_embed(
-        cls, channel_id: int, message_id: int, title: str, description: str, color: int
-    ) -> int:
+    def _build_embed(
+        cls, title: str, description: str, color: int, fields: list[dict[str, str]] | None
+    ) -> EmbedPayload:
+        embed_payload: EmbedPayload = {
+            "title": title,
+            "description": description,
+            "color": color,
+            "fields": [],
+            "timestamp": datetime.now(UTC).isoformat(),
+        }
+
+        if fields:
+            embed_payload["fields"] = [
+                {"name": field["name"], "value": field["value"], "inline": True} for field in fields
+            ]
+
+        return embed_payload
+
+    @classmethod
+    def reply_with_embed(cls, channel_id: int, message_id: int, **kwargs) -> int:
         """
         Répond à un message dans un canal Discord avec un embed.
         :param channel_id: ID du canal où le message a été envoyé.
@@ -38,19 +72,14 @@ class DiscordAPI:
         :param color: La couleur de l'embed (en hexadécimal).
         :return: La réponse de l'API Discord.
         """
-        embed = {
-            "title": title,
-            "description": description,
-            "color": color,
-        }
-        data = {"embeds": [embed], "message_reference": {"message_id": message_id}}
-
         return cls._send_and_get_message_id(
-            method="POST", endpoint=f"channels/{channel_id}/messages", json=data
+            method="POST",
+            endpoint=f"channels/{channel_id}/messages",
+            json={"embeds": [cls._build_embed(**kwargs)], "message_reference": {"message_id": message_id}},
         )
 
     @classmethod
-    def send_embed(cls, channel_id: int, title: str, description: str, color: int) -> int:
+    def send_embed(cls, channel_id: int, **kwargs) -> int:
         """
         Envoie un message dans un canal Discord avec un embed (sans répondre à un autre message).
         :param channel_id: ID du canal où envoyer le message.
@@ -59,26 +88,12 @@ class DiscordAPI:
         :param color: La couleur de l'embed (en hexadécimal ou entier).
         :return: La réponse de l'API Discord.
         """
-        embed = {
-            "title": title,
-            "description": description,
-            "color": color,
-        }
-        data = {"embeds": [embed]}
-
         return cls._send_and_get_message_id(
-            method="POST", endpoint=f"channels/{channel_id}/messages", json=data
+            method="POST", endpoint=f"channels/{channel_id}/messages", json={"embeds": [cls._build_embed(**kwargs)]}
         )
 
     @classmethod
-    def edit_embed(
-        cls,
-        channel_id: int,
-        message_id: int,
-        title: str | None = None,
-        description: str | None = None,
-        color: int | None = None,
-    ) -> int:
+    def edit_embed(cls, channel_id: int, message_id: int, **kwargs) -> int:
         """
         Modifie un embed dans un message existant dans un canal Discord.
         :param channel_id: ID du canal.
@@ -88,18 +103,8 @@ class DiscordAPI:
         :param color: Nouvelle couleur de l'embed (en entier, optionnel).
         :return: La réponse de l'API Discord.
         """
-        embed = {}
-        if title is not None:
-            embed["title"] = title
-        if description is not None:
-            embed["description"] = description
-        if color is not None:
-            embed["color"] = color
-
-        data = {"embeds": [embed]}
-
         return cls._send_and_get_message_id(
             method="PATCH",
             endpoint=f"channels/{channel_id}/messages/{message_id}",
-            json=data,
+            json={"embeds": [cls._build_embed(**kwargs)]},
         )

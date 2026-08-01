@@ -120,7 +120,7 @@ class DownloadMedia(DownloadBase):
             if _refresh_interval_count > _count_refresh:
                 _count_refresh += 1
                 self.download_speed = self.downloaded_size / _elapsed_time
-                self.update_status(DownloadStatus.RUNNING, additional=self._compute_progress())
+                self.update_status(DownloadStatus.RUNNING, description=self._compute_progress())
 
     def _compute_progress(self) -> str:
         _remaining_time_seconds = (self.total_size - self.downloaded_size) / self.download_speed
@@ -134,7 +134,7 @@ class DownloadMedia(DownloadBase):
         return f"{progress_bar} [ETA {remaining_time:.0f} {time_unit} @ {speed_in_mb:.2f} MB/s]"
 
     def _decompress(self) -> None:
-        self.update_status(DownloadStatus.RUNNING, additional="Extraction in progress...")
+        self.update_status(DownloadStatus.RUNNING, description="Extraction in progress...")
 
         logger.info(f"{self.filename} extraction in progress...")
         unzipall.extract(archive_path=self.filepath, extract_to=self.destination_directory)
