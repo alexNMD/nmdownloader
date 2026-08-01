@@ -18,6 +18,10 @@ if TYPE_CHECKING:
 
 
 class DownloadBase(ABC):
+    channel_id: int | None = None
+    message_id: int | None = None
+    status_message_id: int | None = None
+
     def __init__(
         self,
         task: Task[Any, Any] | None,
@@ -77,12 +81,15 @@ class DownloadBase(ABC):
         if not app_settings.discord.token:
             logger.debug("DISCORD_TOKEN not set. Unable to send notification")
             return
-        if not hasattr(self, "channel_id") or not self.channel_id:
+
+        if not self.channel_id:
+            self.channel_id = app_settings.discord.default_channel_id
+        if not self.channel_id:
             logger.error("DISCORD_DEFAULT_CHANNEL_ID not set. Unable to send notification")
             return
 
         try:
-            if hasattr(self, "channel_id") and self.status_message_id:
+            if self.status_message_id:
                 DiscordAPI.edit_embed(
                     self.channel_id, self.status_message_id, title, content, status.value
                 )
@@ -92,7 +99,7 @@ class DownloadBase(ABC):
                 DiscordAPI.reply_with_embed(
                     self.channel_id, self.message_id, title, content, status.value
                 )
-                if hasattr(self, "message_id") and self.message_id
+                if self.message_id
                 else DiscordAPI.send_embed(self.channel_id, title, content, status.value)
             )
         except requests.exceptions.HTTPError as http_error:
