@@ -76,12 +76,12 @@ class DownloadBase(ABC):
         if not app_settings.discord.token:
             logger.debug("DISCORD_TOKEN not set. Unable to send notification")
             return
-        if not self.channel_id:
+        if not hasattr(self, "channel_id") or not self.channel_id:
             logger.error("DISCORD_DEFAULT_CHANNEL_ID not set. Unable to send notification")
             return
 
         try:
-            if self.status_message_id:
+            if hasattr(self, "channel_id") and self.status_message_id:
                 DiscordAPI.edit_embed(
                     self.channel_id, self.status_message_id, title, content, status.value
                 )
@@ -91,7 +91,7 @@ class DownloadBase(ABC):
                 DiscordAPI.reply_with_embed(
                     self.channel_id, self.message_id, title, content, status.value
                 )
-                if self.message_id
+                if hasattr(self, "message_id") and self.message_id
                 else DiscordAPI.send_embed(self.channel_id, title, content, status.value)
             )
         except requests.exceptions.HTTPError as http_error:

@@ -90,6 +90,32 @@ class TestDownload1fichier:
 
         assert "UNFICHIER_API_TOKEN not set" in str(exc_info.value)
 
+    @patch("nmdownloader.services.download.models.base.app_settings")
+    @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
+    @patch("nmdownloader.services.download.plugins.un_fichier.app_settings")
+    def test_download_1fichier_init_without_token_with_discord_set(
+        self,
+        mock_app_settings_un_fichier: MagicMock,
+        mock_post: MagicMock,
+        mock_app_settings_base: MagicMock,
+    ) -> None:
+        """Test Download1fichier raises error when DISCORD_TOKEN is set."""
+        # Setup mocks for un_fichier module - no token
+        mock_app_settings_un_fichier.downloader.un_fichier.api_token = None
+        mock_app_settings_un_fichier.downloader.un_fichier.api_url = "https://api.1fichier.com"
+
+        # Setup mocks for base module - DISCORD_TOKEN is set
+        mock_app_settings_base.discord.token = "test_discord_token"
+        mock_app_settings_base.discord.default_channel_id = 123456789
+
+        mock_task = MagicMock()
+
+        # Should raise DownloadError but not crash due to missing channel_id
+        with pytest.raises(DownloadError) as exc_info:
+            Download1fichier(url="https://1fichier.com/?abc123", task=mock_task)
+
+        assert "UNFICHIER_API_TOKEN not set" in str(exc_info.value)
+
     @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
     @patch("nmdownloader.services.download.plugins.un_fichier.requests.head")
     @patch("nmdownloader.services.download.plugins.un_fichier.app_settings")
