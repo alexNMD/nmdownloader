@@ -15,6 +15,7 @@ from nmdownloader.services.download.helpers.exceptions import DownloadError
 from nmdownloader.services.download.helpers.files import get_relative_directory
 from nmdownloader.services.download.helpers.progressbar import get_progress_bar
 from nmdownloader.services.download.models import DownloadBase
+from nmdownloader.services.tmdb.models.api import TMDBApi
 
 
 class ShowType(Enum):
@@ -54,6 +55,12 @@ class DownloadMedia(DownloadBase):
     def is_compressed(self) -> bool:
         return Path(self.filepath).suffix in unzipall.list_supported_formats()
 
+    def _setup(self) -> None:
+        self.thumbnail = TMDBApi.get_thumbnail(query=self.filename)
+
+        self.update_status(DownloadStatus.STARTED, thumbnail=self.thumbnail)
+        self.destination_directory.mkdir(parents=True, exist_ok=True)
+
     @classmethod
     def _extract_filename(cls, url: str) -> str:
         _content_disposition = requests.head(url, timeout=10).headers.get("Content-Disposition", "")
@@ -68,15 +75,12 @@ class DownloadMedia(DownloadBase):
 
         return filename.replace(" ", ".")
 
-    def start(self) -> None:
+    def _download(self) -> None:
         try:
-            self.destination_directory.mkdir(parents=True, exist_ok=True)
             with requests.get(self.url, stream=True, timeout=3600) as response:
                 if response.ok:
-                    self.update_status(DownloadStatus.STARTED)
                     self.total_size = int(response.headers.get("Content-Length", 0))
                     self.download_start_time = time.time()
-
                     # Start reading file
                     with (
                         open(self.filepath, "wb") as file,

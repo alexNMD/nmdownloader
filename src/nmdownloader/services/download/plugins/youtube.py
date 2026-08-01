@@ -18,21 +18,24 @@ class DownloadYoutube(DownloadBase):
         self.youtube_obj = YouTube(url=url)
         self.filename = secure_filename(str(Path(self.youtube_obj.title).with_suffix(".mp4")))
         self.base_download_path: Path = app_settings.media_path / "youtube"
+        self.thumbnail = self.youtube_obj.thumbnail_url
 
         super().__init__(filepath=(self.base_download_path / self.filename), **kwargs)
 
-    def start(self) -> None:
-        try:
-            self.update_status(DownloadStatus.STARTED)
-            self.base_download_path.mkdir(parents=True, exist_ok=True)
+    def _setup(self) -> None:
+        self.update_status(DownloadStatus.STARTED, thumbnail=self.thumbnail)
+        self.base_download_path.mkdir(parents=True, exist_ok=True)
 
+    def _download(self) -> None:
+        try:
+            logger.info(f"Youtube Download: {self.filename}")
             video_stream = self.youtube_obj.streams.get_highest_resolution(progressive=False)
+
             if not video_stream:
                 raise AttributeError(f"No video stream found for {self.youtube_obj.title}")
             if not (audio_streams := self.youtube_obj.streams.get_audio_only()):
                 raise AttributeError("No suitable audio stream found.")
 
-            logger.info(f"Youtube Download: {self.filename}")
             self.update_status(DownloadStatus.RUNNING)
 
             _video_path = video_stream.download(output_path=str(self.base_download_path))
