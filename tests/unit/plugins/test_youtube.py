@@ -34,9 +34,7 @@ class TestDownloadYoutube:
 
     @patch("nmdownloader.services.download.plugins.youtube.YouTube")
     @patch("nmdownloader.services.download.plugins.youtube.secure_filename")
-    def test_download_youtube_init(
-        self, mock_secure_filename: MagicMock, mock_youtube: MagicMock
-    ) -> None:
+    def test_download_youtube_init(self, mock_secure_filename: MagicMock, mock_youtube: MagicMock) -> None:
         """Test DownloadYoutube initialization."""
         # Setup mocks
         mock_youtube_instance = MagicMock()
@@ -84,9 +82,7 @@ class TestDownloadYoutube:
 
     @patch("nmdownloader.services.download.plugins.youtube.YouTube")
     @patch("nmdownloader.services.download.plugins.youtube.secure_filename")
-    def test_download_youtube_filepath(
-        self, mock_secure_filename: MagicMock, mock_youtube: MagicMock
-    ) -> None:
+    def test_download_youtube_filepath(self, mock_secure_filename: MagicMock, mock_youtube: MagicMock) -> None:
         """Test DownloadYoutube filepath construction."""
         mock_youtube_instance = MagicMock()
         mock_youtube_instance.title = "Test Video"

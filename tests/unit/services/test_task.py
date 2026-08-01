@@ -30,9 +30,7 @@ class TestGetTaskResult:
 
     @patch("nmdownloader.services.download.helpers.task.celery_app")
     @patch("nmdownloader.services.download.helpers.task.AsyncResult")
-    def test_get_task_result_with_failed_task(
-        self, mock_async_result: MagicMock, mock_celery_app: MagicMock
-    ) -> None:
+    def test_get_task_result_with_failed_task(self, mock_async_result: MagicMock, mock_celery_app: MagicMock) -> None:
         """Test get_task_result with a failed task."""
         # Setup mock
         mock_result = MagicMock()
@@ -51,9 +49,7 @@ class TestGetTaskResult:
 
     @patch("nmdownloader.services.download.helpers.task.celery_app")
     @patch("nmdownloader.services.download.helpers.task.AsyncResult")
-    def test_get_task_result_returns_dict(
-        self, mock_async_result: MagicMock, mock_celery_app: MagicMock
-    ) -> None:
+    def test_get_task_result_returns_dict(self, mock_async_result: MagicMock, mock_celery_app: MagicMock) -> None:
         """Test that get_task_result returns a dictionary."""
         mock_result = MagicMock()
         mock_result.successful.return_value = True
@@ -70,9 +66,7 @@ class TestGetTaskResult:
 
     @patch("nmdownloader.services.download.helpers.task.celery_app")
     @patch("nmdownloader.services.download.helpers.task.AsyncResult")
-    def test_get_task_result_with_complex_info(
-        self, mock_async_result: MagicMock, mock_celery_app: MagicMock
-    ) -> None:
+    def test_get_task_result_with_complex_info(self, mock_async_result: MagicMock, mock_celery_app: MagicMock) -> None:
         """Test get_task_result with complex info object."""
         # Setup mock with complex info
         mock_result = MagicMock()

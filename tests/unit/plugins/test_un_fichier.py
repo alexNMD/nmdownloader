@@ -74,9 +74,7 @@ class TestDownload1fichier:
 
     @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
     @patch("nmdownloader.services.download.plugins.un_fichier.app_settings")
-    def test_download_1fichier_init_without_token(
-        self, mock_app_settings: MagicMock, mock_post: MagicMock
-    ) -> None:
+    def test_download_1fichier_init_without_token(self, mock_app_settings: MagicMock, mock_post: MagicMock) -> None:
         """Test Download1fichier initialization without API token."""
         # Setup mocks - no token
         mock_app_settings.downloader.un_fichier.api_token = None
@@ -154,9 +152,7 @@ class TestComputeUrlFrom1fichier:
 
     @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
     @patch("nmdownloader.services.download.plugins.un_fichier.app_settings")
-    def test_compute_url_from_1fichier_success(
-        self, mock_app_settings: MagicMock, mock_post: MagicMock
-    ) -> None:
+    def test_compute_url_from_1fichier_success(self, mock_app_settings: MagicMock, mock_post: MagicMock) -> None:
         """Test compute_url_from_1fichier with successful response."""
         mock_app_settings.downloader.un_fichier.api_token = "test_token"
         mock_app_settings.downloader.un_fichier.api_url = "https://api.1fichier.com"
@@ -172,9 +168,7 @@ class TestComputeUrlFrom1fichier:
 
     @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
     @patch("nmdownloader.services.download.plugins.un_fichier.app_settings")
-    def test_compute_url_from_1fichier_with_error(
-        self, mock_app_settings: MagicMock, mock_post: MagicMock
-    ) -> None:
+    def test_compute_url_from_1fichier_with_error(self, mock_app_settings: MagicMock, mock_post: MagicMock) -> None:
         """Test compute_url_from_1fichier with API error."""
         mock_app_settings.downloader.un_fichier.api_token = "test_token"
         mock_app_settings.downloader.un_fichier.api_url = "https://api.1fichier.com"
@@ -189,9 +183,7 @@ class TestComputeUrlFrom1fichier:
 
     @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
     @patch("nmdownloader.services.download.plugins.un_fichier.app_settings")
-    def test_compute_url_from_1fichier_http_error(
-        self, mock_app_settings: MagicMock, mock_post: MagicMock
-    ) -> None:
+    def test_compute_url_from_1fichier_http_error(self, mock_app_settings: MagicMock, mock_post: MagicMock) -> None:
         """Test compute_url_from_1fichier with HTTP error."""
         mock_app_settings.downloader.un_fichier.api_token = "test_token"
         mock_app_settings.downloader.un_fichier.api_url = "https://api.1fichier.com"

@@ -46,7 +46,7 @@ class DownloadYoutube(DownloadBase):
                     filename=self.filepath,
                     **app_settings.downloader.youtube.ffmpeg.model_dump(by_alias=True),
                 )
-                self.update_status(DownloadStatus.RUNNING, additional="Multiplexage in progress...")
+                self.update_status(DownloadStatus.RUNNING, description="Multiplexage in progress...")
                 output.run(capture_stdout=True, capture_stderr=True)
             except ffmpeg.Error as error:
                 logger.error(f"stdout: {error.stdout.decode()}")

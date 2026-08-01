@@ -14,9 +14,7 @@ from nmdownloader.config.plugins import (
 
 
 class CeleryConfig(BaseSettings):
-    model_config = SettingsConfigDict(
-        env_prefix="CELERY_", env_file=".env", env_file_encoding="utf-8", extra="ignore"
-    )
+    model_config = SettingsConfigDict(env_prefix="CELERY_", env_file=".env", env_file_encoding="utf-8", extra="ignore")
     concurrency: int = Field(default=5)
     broker_url: str = Field(default="redis://redis:6379/0")
     backend_url: str = Field(default="redis://redis:6379/0")

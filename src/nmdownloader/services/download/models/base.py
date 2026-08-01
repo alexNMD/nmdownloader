@@ -63,20 +63,16 @@ class DownloadBase(ABC):
                         pass
         return download_dict
 
-    def update_status(self, status: DownloadStatus, additional: str | None = None) -> None:
-        _base_content = f"[{self.__class__.__name__}]"
-        if hasattr(self, "filepath"):
-            _base_content += f" {self.filepath.name}"
-
-        title = f"Download {status.name}"
-        content = f"{_base_content} {additional}" if additional else _base_content
-
+    def update_status(self, status: DownloadStatus, description: str | None = None) -> None:
         if hasattr(self, "task") and self.task is not None:
             self.task.update_state(meta=self.to_dict())
-        self._do_notification(status, title, content)
+        self._do_notification(status, description=description)
 
-    def _do_notification(self, status: DownloadStatus, title: str, content: str) -> None:
-        logger.info(f"{title} => {content}")
+    def _do_notification(self, status: DownloadStatus, description: str | None) -> None:
+        title = self.filepath.name if hasattr(self, "filepath") else self.__class__.__name__
+        fields = [{"name": "Status", "value": status.name}]
+
+        logger.info(f"{title} => {status.name}")
 
         if not app_settings.discord.token:
             logger.debug("DISCORD_TOKEN not set. Unable to send notification")
@@ -88,19 +84,22 @@ class DownloadBase(ABC):
             logger.error("DISCORD_DEFAULT_CHANNEL_ID not set. Unable to send notification")
             return
 
+        embed_payload = {
+            "title": title,
+            "description": description,
+            "color": status.value,
+            "fields": fields,
+        }
+
         try:
             if self.status_message_id:
-                DiscordAPI.edit_embed(
-                    self.channel_id, self.status_message_id, title, content, status.value
-                )
+                DiscordAPI.edit_embed(channel_id=self.channel_id, message_id=self.status_message_id, **embed_payload)
                 return
 
             self.status_message_id = (
-                DiscordAPI.reply_with_embed(
-                    self.channel_id, self.message_id, title, content, status.value
-                )
+                DiscordAPI.reply_with_embed(channel_id=self.channel_id, message_id=self.message_id, **embed_payload)
                 if self.message_id
-                else DiscordAPI.send_embed(self.channel_id, title, content, status.value)
+                else DiscordAPI.send_embed(channel_id=self.channel_id, **embed_payload)
             )
         except requests.exceptions.HTTPError as http_error:
             if http_error.response.status_code == http.HTTPStatus.UNAUTHORIZED:

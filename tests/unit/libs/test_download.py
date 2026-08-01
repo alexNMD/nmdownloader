@@ -63,7 +63,7 @@ class TestDownloadException:
 
         call_args = mock_download.update_status.call_args
         assert call_args[0][0] == DownloadStatus.ERROR
-        assert call_args[0][1] == message
+        assert call_args[1] == {"description": message}
 
     def test_download_exception_logs_error(self) -> None:
         """Test that DownloadException logs the error."""
@@ -104,7 +104,7 @@ class TestDownloadRevokeException:
 
         call_args = mock_download.update_status.call_args
         assert call_args[0][0] == DownloadStatus.CANCELED
-        assert call_args[0][1] == "Canceled by User"
+        assert call_args[1] == {"description": "Canceled by User"}
 
     def test_download_revoke_exception_custom_message(self) -> None:
         """Test DownloadRevokeException with custom message."""
@@ -124,7 +124,7 @@ class TestDownloadRevokeException:
 
         call_args = mock_download.update_status.call_args
         assert call_args[0][0] == DownloadStatus.CANCELED
-        assert call_args[0][1] == custom_message
+        assert call_args[1] == {"description": custom_message}
 
     def test_download_revoke_exception_logs_info(self) -> None:
         """Test that DownloadRevokeException logs at info level."""

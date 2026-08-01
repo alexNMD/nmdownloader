@@ -35,9 +35,7 @@ class DownloadMedia(DownloadBase):
         except Exception as error:
             raise DownloadError(self, f"Unable to retrieve filename. Reason: {error}") from error
         self.type_dl: str = kwargs.get("type_dl") or (
-            ShowType.SERIES.value
-            if re.search(self.REGEX_SEARCH_TYPE, self.filename)
-            else ShowType.FILMS.value
+            ShowType.SERIES.value if re.search(self.REGEX_SEARCH_TYPE, self.filename) else ShowType.FILMS.value
         )
         self.base_download_path: Path = app_settings.media_path / self.type_dl
         self.destination_directory: Path = (
@@ -122,23 +120,21 @@ class DownloadMedia(DownloadBase):
             if _refresh_interval_count > _count_refresh:
                 _count_refresh += 1
                 self.download_speed = self.downloaded_size / _elapsed_time
-                self.update_status(DownloadStatus.RUNNING, additional=self._compute_progress())
+                self.update_status(DownloadStatus.RUNNING, description=self._compute_progress())
 
     def _compute_progress(self) -> str:
         _remaining_time_seconds = (self.total_size - self.downloaded_size) / self.download_speed
         _less_than_one_minute = _remaining_time_seconds < 60
 
         progress_bar = get_progress_bar(self.downloaded_size, self.total_size)
-        remaining_time = (
-            _remaining_time_seconds if _less_than_one_minute else _remaining_time_seconds / 60
-        )
+        remaining_time = _remaining_time_seconds if _less_than_one_minute else _remaining_time_seconds / 60
         time_unit = "sec" if _less_than_one_minute else "min"
         speed_in_mb = self.download_speed / (1024 * 1024)
 
         return f"{progress_bar} [ETA {remaining_time:.0f} {time_unit} @ {speed_in_mb:.2f} MB/s]"
 
     def _decompress(self) -> None:
-        self.update_status(DownloadStatus.RUNNING, additional="Extraction in progress...")
+        self.update_status(DownloadStatus.RUNNING, description="Extraction in progress...")
 
         logger.info(f"{self.filename} extraction in progress...")
         unzipall.extract(archive_path=self.filepath, extract_to=self.destination_directory)

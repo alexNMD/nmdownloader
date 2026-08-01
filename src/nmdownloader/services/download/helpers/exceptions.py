@@ -14,15 +14,15 @@ class DownloadError(Exception):
         if isinstance(message, Exception):
             super().__init__(message)
             logger.error(message)
-            download.update_status(DownloadStatus.ERROR, str(message))
+            download.update_status(DownloadStatus.ERROR, description=str(message))
         else:
             super().__init__(message)
             logger.error(message)
-            download.update_status(DownloadStatus.ERROR, message)
+            download.update_status(DownloadStatus.ERROR, description=message)
 
 
 class DownloadRevokeException(Ignore):
     def __init__(self, download: DownloadBase, message: str = "Canceled by User") -> None:
         super().__init__(message)
         logger.info("Download Canceled")
-        download.update_status(DownloadStatus.CANCELED, str(message))
+        download.update_status(DownloadStatus.CANCELED, description=str(message))
