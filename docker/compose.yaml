@@ -1,7 +1,12 @@
+x-nmd-common: &nmd-common
+  image: ghcr.io/alexnmd/nmdownloader:latest
+  restart: unless-stopped
+  env_file:
+    - .env
+
 services:
   redis:
-    image: redis:latest
-    container_name: nmdredis
+    image: redis:8-trixie
     restart: unless-stopped
     volumes:
       - redis-data:/data
@@ -13,25 +18,19 @@ services:
 
 # Uncomment to activate Discord Notification. You have to set these env variables: DISCORD_TOKEN, DISCORD_DEFAULT_CHANNEL_ID
 #  discord:
+#    <<: *nmd-common
 #    depends_on:
 #      celery:
 #        condition: service_healthy
 #      redis:
 #        condition: service_healthy
-#    image: ghcr.io/alexnmd/nmdownloader:latest
-#    container_name: nmdiscord
-#    restart: unless-stopped
 #    command: "nmd-discord"
-#    env_file:
-#      - .env
 
   celery:
+    <<: *nmd-common
     depends_on:
       redis:
         condition: service_healthy
-    image: ghcr.io/alexnmd/nmdownloader:latest
-    container_name: nmdcelery
-    restart: unless-stopped
     command: "nmd-worker"
     volumes:
       - ${DOWNLOAD_PATH:-./data/download}:/media
@@ -42,20 +41,16 @@ services:
       interval: 10s
       timeout: 10s
       retries: 10
-    env_file:
-      - .env
 
   flower:
+    <<: *nmd-common
     depends_on:
       celery:
         condition: service_healthy
       redis:
         condition: service_healthy
-    image: ghcr.io/alexnmd/nmdownloader:latest
     environment:
       FLOWER_UNAUTHENTICATED_API: "true"
-    container_name: nmdflower
-    restart: unless-stopped
     ports:
       - "127.0.0.1:5555:5555"
     command: "nmd-flower"
@@ -64,18 +59,14 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-    env_file:
-      - .env
 
   flask:
+    <<: *nmd-common
     depends_on:
       celery:
         condition: service_healthy
       redis:
         condition: service_healthy
-    image: ghcr.io/alexnmd/nmdownloader:latest
-    container_name: nmdflask
-    restart: unless-stopped
     ports:
       - "127.0.0.1:8000:8000"
     command: "nmd-flask"
@@ -84,8 +75,6 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
-    env_file:
-      - .env
 
 volumes:
   redis-data:

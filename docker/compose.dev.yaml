@@ -1,13 +1,11 @@
 services:
   redis:
-    container_name: !reset null
     volumes: !reset []
 
 # Have to set a correct token to be started
   discord:
     depends_on: !reset null
     image: nmdownloader
-    container_name: !reset null
     build:
       context: ..
     command: "nmd-discord"
@@ -17,7 +15,6 @@ services:
   celery:
     depends_on: !reset null
     image: nmdownloader
-    container_name: !reset null
     build:
       context: ..
     volumes:
@@ -27,7 +24,6 @@ services:
 
   flower:
     depends_on: !reset null
-    container_name: !reset null
     image: nmdownloader
     build:
       context: ..
@@ -36,7 +32,6 @@ services:
 
   flask:
     depends_on: !reset null
-    container_name: !reset null
     image: nmdownloader
     build:
       context: ..
