@@ -1,3 +1,5 @@
+x-nmd-common: !reset null
+
 services:
   redis:
     volumes: !reset []
