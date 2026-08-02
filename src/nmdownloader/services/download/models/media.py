@@ -10,12 +10,14 @@ import unzipall
 from loguru import logger
 
 from nmdownloader.config import app_settings
-from nmdownloader.services.download.helpers import DownloadStatus
-from nmdownloader.services.download.helpers.exceptions import DownloadError
-from nmdownloader.services.download.helpers.files import get_relative_directory
-from nmdownloader.services.download.helpers.progressbar import get_progress_bar
+from nmdownloader.services.download.helpers import (
+    DownloadError,
+    DownloadStatus,
+    get_progress_bar,
+    get_relative_directory,
+)
 from nmdownloader.services.download.models import DownloadBase
-from nmdownloader.services.tmdb.models.api import TMDBApi
+from nmdownloader.services.tmdb import TMDBApi
 
 
 class ShowType(Enum):
@@ -56,10 +58,16 @@ class DownloadMedia(DownloadBase):
         return Path(self.filepath).suffix in unzipall.list_supported_formats()
 
     def _setup(self) -> None:
-        self.thumbnail = TMDBApi.get_thumbnail(query=self.filename)
-
-        self.update_status(DownloadStatus.STARTED, thumbnail=self.thumbnail)
+        self.update_status(DownloadStatus.STARTED, thumbnail=self._get_thumbnail())
         self.destination_directory.mkdir(parents=True, exist_ok=True)
+
+    def _get_thumbnail(self) -> str | None:
+        try:
+            return TMDBApi.get_thumbnail(query=self.filename)
+        except requests.exceptions.HTTPError as http_error:
+            logger.error(f"Unable to use TMDB api, got: {http_error.response.status_code}")
+        except requests.exceptions.RequestException as error:
+            logger.error(f"Unable to reach TMDB API: {error}")
 
     @classmethod
     def _extract_filename(cls, url: str) -> str:

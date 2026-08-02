@@ -18,12 +18,11 @@ class DownloadYoutube(DownloadBase):
         self.youtube_obj = YouTube(url=url)
         self.filename = secure_filename(str(Path(self.youtube_obj.title).with_suffix(".mp4")))
         self.base_download_path: Path = app_settings.media_path / "youtube"
-        self.thumbnail = self.youtube_obj.thumbnail_url
 
         super().__init__(filepath=(self.base_download_path / self.filename), **kwargs)
 
     def _setup(self) -> None:
-        self.update_status(DownloadStatus.STARTED, thumbnail=self.thumbnail)
+        self.update_status(DownloadStatus.STARTED, thumbnail=self.youtube_obj.thumbnail_url)
         self.base_download_path.mkdir(parents=True, exist_ok=True)
 
     def _download(self) -> None:

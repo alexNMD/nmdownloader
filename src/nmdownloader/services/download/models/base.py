@@ -21,7 +21,6 @@ class DownloadBase(ABC):
     channel_id: int | None = None
     message_id: int | None = None
     status_message_id: int | None = None
-    thumbnail: str | None = None
 
     def __init__(
         self,
@@ -82,7 +81,7 @@ class DownloadBase(ABC):
         logger.info(f"{title} => {status.name}")
 
         if not app_settings.discord.token:
-            logger.debug("DISCORD_TOKEN not set. Unable to send notification")
+            logger.error("DISCORD_TOKEN not set. Unable to send notification")
             return
 
         if not self.channel_id:
@@ -99,11 +98,9 @@ class DownloadBase(ABC):
                 return
 
             self.status_message_id = (
-                DiscordAPI.reply_with_embed(
-                    channel_id=self.channel_id, message_id=self.message_id, thumbnail=self.thumbnail, **embed_payload
-                )
+                DiscordAPI.reply_with_embed(channel_id=self.channel_id, message_id=self.message_id, **embed_payload)
                 if self.message_id
-                else DiscordAPI.send_embed(channel_id=self.channel_id, thumbnail=self.thumbnail, **embed_payload)
+                else DiscordAPI.send_embed(channel_id=self.channel_id, **embed_payload)
             )
         except requests.exceptions.HTTPError as http_error:
             if http_error.response.status_code == http.HTTPStatus.UNAUTHORIZED:
