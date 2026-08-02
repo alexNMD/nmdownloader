@@ -21,6 +21,7 @@ class DownloadBase(ABC):
     channel_id: int | None = None
     message_id: int | None = None
     status_message_id: int | None = None
+    thumbnail: str | None = None
 
     def __init__(
         self,
@@ -40,12 +41,16 @@ class DownloadBase(ABC):
     def start(self) -> None:
         self._setup()
         self._download()
+        self._terminate()
 
     @abstractmethod
     def _setup(self) -> None: ...
 
     @abstractmethod
     def _download(self) -> None: ...
+
+    @abstractmethod
+    def _terminate(self) -> None: ...
 
     def _remove(self) -> None:
         self.filepath.unlink(missing_ok=True)
@@ -80,17 +85,19 @@ class DownloadBase(ABC):
 
         logger.info(f"{title} => {status.name}")
 
-        if not app_settings.discord.token:
-            logger.error("DISCORD_TOKEN not set. Unable to send notification")
-            return
-
         if not self.channel_id:
             self.channel_id = app_settings.discord.default_channel_id
         if not self.channel_id:
             logger.error("DISCORD_DEFAULT_CHANNEL_ID not set. Unable to send notification")
             return
 
-        embed_payload = {"title": title, "color": status.value, "fields": fields, **kwargs}
+        embed_payload = {
+            "title": title,
+            "color": status.value,
+            "fields": fields,
+            "thumbnail": self.thumbnail,
+            **kwargs,
+        }
 
         try:
             if self.status_message_id:

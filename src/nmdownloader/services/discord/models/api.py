@@ -20,17 +20,18 @@ class EmbedPayload(TypedDict):
     footer: dict[str, str]
     fields: NotRequired[list[dict[str, str | bool]]]
     description: NotRequired[str]
-    image: NotRequired[dict[str, str]]
+    thumbnail: NotRequired[dict[str, str]]
 
 
 class DiscordAPI:
     TIMEOUT = 10
     BASE_URL = app_settings.discord.api_url
+    API_VERSION = app_settings.discord.api_version
     TOKEN = app_settings.discord.token
 
     @classmethod
     def _send_and_get_message_id(cls, endpoint: str, **kwargs) -> int:
-        url = f"{cls.BASE_URL}/{endpoint}"
+        url = f"{cls.BASE_URL}/{cls.API_VERSION}/{endpoint}"
         headers = {
             "Authorization": f"Bot {cls.TOKEN}",
             "Content-Type": "application/json",
@@ -69,7 +70,7 @@ class DiscordAPI:
                 {"name": field["name"], "value": field["value"], "inline": True} for field in fields
             ]
         if thumbnail:
-            embed_payload["image"] = {"url": thumbnail}
+            embed_payload["thumbnail"] = {"url": thumbnail}
 
         logger.info(f"embed sent: {embed_payload}")
 

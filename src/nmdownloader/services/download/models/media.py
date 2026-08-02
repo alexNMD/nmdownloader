@@ -37,6 +37,7 @@ class DownloadMedia(DownloadBase):
             raise DownloadError(self, "Unable to retrieve filename") from error
         except Exception as error:
             raise DownloadError(self, f"Unable to retrieve filename. Reason: {error}") from error
+        self.thumbnail = self._get_thumbnail()
         self.type_dl: str = kwargs.get("type_dl") or (
             ShowType.SERIES.value if re.search(self.REGEX_SEARCH_TYPE, self.filename) else ShowType.FILMS.value
         )
@@ -58,8 +59,13 @@ class DownloadMedia(DownloadBase):
         return Path(self.filepath).suffix in unzipall.list_supported_formats()
 
     def _setup(self) -> None:
-        self.update_status(DownloadStatus.STARTED, thumbnail=self._get_thumbnail())
+        self.update_status(DownloadStatus.STARTED)
         self.destination_directory.mkdir(parents=True, exist_ok=True)
+
+    def _terminate(self) -> None:
+        if self.is_compressed:
+            self._decompress()
+        self.update_status(DownloadStatus.DONE)
 
     def _get_thumbnail(self) -> str | None:
         try:
@@ -99,12 +105,6 @@ class DownloadMedia(DownloadBase):
                     ):
                         self._handle_chunks(cast(io.BufferedWriter, file_buffer), response)
                     # Close file
-
-                    if self.is_compressed:
-                        self._decompress()
-
-                    # Finish
-                    self.update_status(DownloadStatus.DONE)
         except (
             FileNotFoundError,
             NotImplementedError,
