@@ -34,7 +34,13 @@ class TestDownloadConcrete:
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
-            def start(self) -> None:
+            def _setup(self) -> None:
+                pass
+
+            def _download(self) -> None:
+                pass
+
+            def _terminate(self) -> None:
                 pass
 
         mock_task = MagicMock()
@@ -54,7 +60,13 @@ class TestDownloadConcrete:
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
-            def start(self) -> None:
+            def _setup(self) -> None:
+                pass
+
+            def _download(self) -> None:
+                pass
+
+            def _terminate(self) -> None:
                 pass
 
         mock_task = MagicMock()
@@ -69,7 +81,13 @@ class TestDownloadConcrete:
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
-            def start(self) -> None:
+            def _setup(self) -> None:
+                pass
+
+            def _download(self) -> None:
+                pass
+
+            def _terminate(self) -> None:
                 pass
 
         mock_task = MagicMock()
@@ -91,7 +109,13 @@ class TestDownloadConcrete:
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
-            def start(self) -> None:
+            def _setup(self) -> None:
+                pass
+
+            def _download(self) -> None:
+                pass
+
+            def _terminate(self) -> None:
                 pass
 
         mock_task = MagicMock()
@@ -117,7 +141,13 @@ class TestDownloadConcrete:
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
-            def start(self) -> None:
+            def _setup(self) -> None:
+                pass
+
+            def _download(self) -> None:
+                pass
+
+            def _terminate(self) -> None:
                 pass
 
         mock_task = MagicMock()
@@ -133,7 +163,13 @@ class TestDownloadConcrete:
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
-            def start(self) -> None:
+            def _setup(self) -> None:
+                pass
+
+            def _download(self) -> None:
+                pass
+
+            def _terminate(self) -> None:
                 pass
 
         mock_task = MagicMock()
@@ -159,7 +195,13 @@ class TestDownloadConcrete:
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
-            def start(self) -> None:
+            def _setup(self) -> None:
+                pass
+
+            def _download(self) -> None:
+                pass
+
+            def _terminate(self) -> None:
                 pass
 
         mock_task = MagicMock()
@@ -182,7 +224,13 @@ class TestDownloadConcrete:
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
-            def start(self) -> None:
+            def _setup(self) -> None:
+                pass
+
+            def _download(self) -> None:
+                pass
+
+            def _terminate(self) -> None:
                 pass
 
         mock_task = MagicMock()
@@ -201,7 +249,13 @@ class TestDownloadConcrete:
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
-            def start(self) -> None:
+            def _setup(self) -> None:
+                pass
+
+            def _download(self) -> None:
+                pass
+
+            def _terminate(self) -> None:
                 pass
 
         mock_task = MagicMock()
@@ -227,7 +281,13 @@ class TestDownloadConcrete:
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
-            def start(self) -> None:
+            def _setup(self) -> None:
+                pass
+
+            def _download(self) -> None:
+                pass
+
+            def _terminate(self) -> None:
                 pass
 
         mock_task = MagicMock()
@@ -252,7 +312,13 @@ class TestDownloadConcrete:
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
-            def start(self) -> None:
+            def _setup(self) -> None:
+                pass
+
+            def _download(self) -> None:
+                pass
+
+            def _terminate(self) -> None:
                 pass
 
         mock_task = MagicMock()
@@ -273,7 +339,13 @@ class TestDownloadConcrete:
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
-            def start(self) -> None:
+            def _setup(self) -> None:
+                pass
+
+            def _download(self) -> None:
+                pass
+
+            def _terminate(self) -> None:
                 pass
 
         mock_task = MagicMock()
