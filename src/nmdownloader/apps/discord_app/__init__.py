@@ -1,7 +1,8 @@
 from discord import Intents
 
 from nmdownloader.config import app_settings
-from nmdownloader.services.discord import DiscordBot
+
+from .bot import DiscordBot
 
 intents = Intents.default()
 intents.typing = False
