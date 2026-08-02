@@ -8,8 +8,10 @@ from nmdownloader.config import app_settings
 class TMDBApi:
     TIMEOUT = 10
     BASE_URL = app_settings.tmdb.api_url
+    IMAGE_URL = app_settings.tmdb.image_url
     API_KEY = app_settings.tmdb.api_key
     API_VERSION = app_settings.tmdb.api_version
+    POSTER_WIDTH = app_settings.tmdb.poster_width
 
     @classmethod
     def _call(cls, endpoint: str, **kwargs) -> dict[str, Any]:
@@ -38,4 +40,4 @@ class TMDBApi:
         if not (poster_path := results[0].get("poster_path")):
             return None
 
-        return poster_path
+        return f"{cls.IMAGE_URL}/t/p/w{cls.POSTER_WIDTH}{poster_path}"

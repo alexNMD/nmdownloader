@@ -13,6 +13,8 @@ from nmdownloader.config import app_settings
 from nmdownloader.services.download.helpers import (
     DownloadError,
     DownloadStatus,
+    extract_film_info,
+    extract_serie_info,
     get_progress_bar,
     get_relative_directory,
 )
@@ -37,7 +39,6 @@ class DownloadMedia(DownloadBase):
             raise DownloadError(self, "Unable to retrieve filename") from error
         except Exception as error:
             raise DownloadError(self, f"Unable to retrieve filename. Reason: {error}") from error
-        self.thumbnail = self._get_thumbnail()
         self.type_dl: str = kwargs.get("type_dl") or (
             ShowType.SERIES.value if re.search(self.REGEX_SEARCH_TYPE, self.filename) else ShowType.FILMS.value
         )
@@ -55,6 +56,10 @@ class DownloadMedia(DownloadBase):
         super().__init__(filepath=self.destination_directory / self.filename, **kwargs)
 
     @property
+    def thumbnail(self) -> str | None:
+        return self._get_thumbnail(media_name=self._get_media_name())
+
+    @property
     def is_compressed(self) -> bool:
         return Path(self.filepath).suffix in unzipall.list_supported_formats()
 
@@ -67,13 +72,23 @@ class DownloadMedia(DownloadBase):
             self._decompress()
         self.update_status(DownloadStatus.DONE)
 
-    def _get_thumbnail(self) -> str | None:
+    @classmethod
+    def _get_thumbnail(cls, media_name: str) -> str | None:
         try:
-            return TMDBApi.get_thumbnail(query=self.filename)
+            return TMDBApi.get_thumbnail(query=media_name)
         except requests.exceptions.HTTPError as http_error:
             logger.error(f"Unable to use TMDB api, got: {http_error.response.status_code}")
         except requests.exceptions.RequestException as error:
             logger.error(f"Unable to reach TMDB API: {error}")
+
+    def _get_media_name(self) -> str:
+        media_data = (
+            extract_serie_info(filename=self.filename)
+            if self.type_dl in [ShowType.SERIES.value, ShowType.ANIMES.value]
+            else extract_film_info(filename=self.filename)
+        )
+
+        return media_data["name"]
 
     @classmethod
     def _extract_filename(cls, url: str) -> str:
