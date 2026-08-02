@@ -10,8 +10,8 @@ import requests
 from loguru import logger
 
 from nmdownloader.config import app_settings
-from nmdownloader.services.discord import DiscordAPI
 from nmdownloader.services.download.helpers import DownloadRevokeException, DownloadStatus
+from nmdownloader.services.notification import DiscordAPI
 
 if TYPE_CHECKING:
     from celery import Task
@@ -84,6 +84,10 @@ class DownloadBase(ABC):
         fields = [{"name": "Status", "value": status.name}]
 
         logger.info(f"{title} => {status.name}")
+
+        if not app_settings.discord.token:
+            logger.error("DISCORD_TOKEN not set. Unable to send notification")
+            return
 
         if not self.channel_id:
             self.channel_id = app_settings.discord.default_channel_id

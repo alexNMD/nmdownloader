@@ -11,7 +11,8 @@ class TMDBConfig(BaseSettings):
         extra="ignore",
     )
     api_url: str = "https://api.themoviedb.org"
-    image_url: str = "https://image.tmdb.org"
     api_version: str = "3"
-    poster_width: Literal["200", "300", "400", "500"] = "200"
     api_key: str | None = None
+
+    image_url: str = "https://image.tmdb.org"
+    poster_width: Literal["200", "300", "400", "500"] = "200"

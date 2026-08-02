@@ -1,10 +1,11 @@
 from datetime import UTC, datetime
 from typing import NotRequired, TypedDict
 
-import requests
 from loguru import logger
 
 from nmdownloader.config import app_settings
+
+from ..models.base import BaseNotification
 
 
 class EmbedFieldPayload(TypedDict):
@@ -23,23 +24,18 @@ class EmbedPayload(TypedDict):
     thumbnail: NotRequired[dict[str, str]]
 
 
-class DiscordAPI:
-    TIMEOUT = 10
+class DiscordAPI(BaseNotification):
     BASE_URL = app_settings.discord.api_url
     API_VERSION = app_settings.discord.api_version
     TOKEN = app_settings.discord.token
 
     @classmethod
     def _send_and_get_message_id(cls, endpoint: str, **kwargs) -> int:
-        url = f"{cls.BASE_URL}/{cls.API_VERSION}/{endpoint}"
         headers = {
             "Authorization": f"Bot {cls.TOKEN}",
             "Content-Type": "application/json",
         }
-
-        response = requests.request(url=url, headers=headers, timeout=cls.TIMEOUT, **kwargs)
-        response.raise_for_status()
-        response_json = response.json()
+        response_json = cls._call_and_get_json(endpoint=endpoint, headers=headers, **kwargs)
 
         if not (message_id := response_json.get("id")):
             raise ValueError("Unable to retrieve message id from Discord API")

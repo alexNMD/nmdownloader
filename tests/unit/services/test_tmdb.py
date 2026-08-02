@@ -11,7 +11,7 @@ class TestTMDBApi:
     @patch("nmdownloader.services.tmdb.models.api.requests")
     def test_tmdb_api_call_success(self, mock_requests: MagicMock) -> None:
         """Test TMDBApi._call with successful response."""
-        from nmdownloader.services.tmdb.models.api import TMDBApi
+        from nmdownloader.services.notification.api.tmdb import TMDBApi
 
         # Setup mock response
         mock_response = MagicMock()
@@ -34,8 +34,7 @@ class TestTMDBApi:
     def test_tmdb_api_call_http_error(self, mock_requests: MagicMock) -> None:
         """Test TMDBApi._call with HTTP error."""
         import requests.exceptions
-
-        from nmdownloader.services.tmdb.models.api import TMDBApi
+        from nmdownloader.services.notification.api.tmdb import TMDBApi
 
         # Setup mock to raise HTTPError
         mock_response = MagicMock()
@@ -49,7 +48,7 @@ class TestTMDBApi:
     @patch("nmdownloader.services.tmdb.models.api.requests")
     def test_tmdb_api_search_movie(self, mock_requests: MagicMock) -> None:
         """Test TMDBApi.search_movie method."""
-        from nmdownloader.services.tmdb.models.api import TMDBApi
+        from nmdownloader.services.notification.api.tmdb import TMDBApi
 
         # Setup mock response
         mock_response = MagicMock()
@@ -70,7 +69,7 @@ class TestTMDBApi:
     @patch("nmdownloader.services.tmdb.models.api.TMDBApi._call")
     def test_tmdb_api_get_thumbnail_success(self, mock_call: MagicMock) -> None:
         """Test TMDBApi.get_thumbnail with successful response."""
-        from nmdownloader.services.tmdb.models.api import TMDBApi
+        from nmdownloader.services.notification.api.tmdb import TMDBApi
 
         # Setup mock response with poster_path
         mock_call.return_value = {"results": [{"id": 123, "title": "Test Movie", "poster_path": "/path/to/poster.jpg"}]}
@@ -87,7 +86,7 @@ class TestTMDBApi:
     @patch("nmdownloader.services.tmdb.models.api.TMDBApi._call")
     def test_tmdb_api_get_thumbnail_no_results(self, mock_call: MagicMock) -> None:
         """Test TMDBApi.get_thumbnail with no results."""
-        from nmdownloader.services.tmdb.models.api import TMDBApi
+        from nmdownloader.services.notification.api.tmdb import TMDBApi
 
         # Setup mock response with no results
         mock_call.return_value = {"results": []}
@@ -101,7 +100,7 @@ class TestTMDBApi:
     @patch("nmdownloader.services.tmdb.models.api.TMDBApi._call")
     def test_tmdb_api_get_thumbnail_no_poster_path(self, mock_call: MagicMock) -> None:
         """Test TMDBApi.get_thumbnail when result has no poster_path."""
-        from nmdownloader.services.tmdb.models.api import TMDBApi
+        from nmdownloader.services.notification.api.tmdb import TMDBApi
 
         # Setup mock response without poster_path
         mock_call.return_value = {"results": [{"id": 123, "title": "Test Movie"}]}
@@ -115,7 +114,7 @@ class TestTMDBApi:
     @patch("nmdownloader.services.tmdb.models.api.TMDBApi._call")
     def test_tmdb_api_get_thumbnail_invalid_results(self, mock_call: MagicMock) -> None:
         """Test TMDBApi.get_thumbnail with invalid results format."""
-        from nmdownloader.services.tmdb.models.api import TMDBApi
+        from nmdownloader.services.notification.api.tmdb import TMDBApi
 
         # Setup mock response with invalid results (not a list)
         mock_call.return_value = {"results": "invalid"}

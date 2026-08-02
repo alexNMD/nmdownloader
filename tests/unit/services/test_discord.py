@@ -9,7 +9,7 @@ class TestDiscordAPI:
     @patch("nmdownloader.services.discord.models.api.requests")
     def test_discord_api_build_embed_with_thumbnail(self, mock_requests: MagicMock) -> None:
         """Test _build_embed method with thumbnail parameter."""
-        from nmdownloader.services.discord.models.api import DiscordAPI
+        from nmdownloader.services.notification.api.discord.models import DiscordAPI
 
         result = DiscordAPI._build_embed(
             title="Test Title",
@@ -30,7 +30,7 @@ class TestDiscordAPI:
     @patch("nmdownloader.services.discord.models.api.requests")
     def test_discord_api_build_embed_without_thumbnail(self, mock_requests: MagicMock) -> None:
         """Test _build_embed method without thumbnail parameter."""
-        from nmdownloader.services.discord.models.api import DiscordAPI
+        from nmdownloader.services.notification.api.discord.models import DiscordAPI
 
         result = DiscordAPI._build_embed(title="Test Title", color=0x00FF00, description="Test Description")
 
@@ -43,7 +43,7 @@ class TestDiscordAPI:
     @patch("nmdownloader.services.discord.models.api.requests")
     def test_discord_api_build_embed_with_none_thumbnail(self, mock_requests: MagicMock) -> None:
         """Test _build_embed method with None thumbnail."""
-        from nmdownloader.services.discord.models.api import DiscordAPI
+        from nmdownloader.services.notification.api.discord.models import DiscordAPI
 
         result = DiscordAPI._build_embed(title="Test Title", color=0x00FF00, thumbnail=None)
 
@@ -52,7 +52,7 @@ class TestDiscordAPI:
     @patch("nmdownloader.services.discord.models.api.requests")
     def test_discord_api_build_embed_minimal(self, mock_requests: MagicMock) -> None:
         """Test _build_embed method with minimal parameters."""
-        from nmdownloader.services.discord.models.api import DiscordAPI
+        from nmdownloader.services.notification.api.discord.models import DiscordAPI
 
         result = DiscordAPI._build_embed(title="Test Title", color=0x00FF00)
 
@@ -65,7 +65,7 @@ class TestDiscordAPI:
     @patch("nmdownloader.services.discord.models.api.requests")
     def test_discord_api_send_embed_with_thumbnail(self, mock_requests: MagicMock) -> None:
         """Test send_embed method includes thumbnail in embed."""
-        from nmdownloader.services.discord.models.api import DiscordAPI
+        from nmdownloader.services.notification.api.discord.models import DiscordAPI
 
         mock_response = MagicMock()
         mock_response.json.return_value = {"id": 12345}
@@ -98,7 +98,7 @@ class TestDiscordAPI:
     @patch("nmdownloader.services.discord.models.api.requests")
     def test_discord_api_reply_with_embed_with_thumbnail(self, mock_requests: MagicMock) -> None:
         """Test reply_with_embed method includes thumbnail in embed."""
-        from nmdownloader.services.discord.models.api import DiscordAPI
+        from nmdownloader.services.notification.api.discord.models import DiscordAPI
 
         mock_response = MagicMock()
         mock_response.json.return_value = {"id": 12345}
@@ -135,7 +135,7 @@ class TestDiscordAPI:
     @patch("nmdownloader.services.discord.models.api.requests")
     def test_discord_api_edit_embed_with_thumbnail(self, mock_requests: MagicMock) -> None:
         """Test edit_embed method includes thumbnail in embed."""
-        from nmdownloader.services.discord.models.api import DiscordAPI
+        from nmdownloader.services.notification.api.discord.models import DiscordAPI
 
         mock_response = MagicMock()
         mock_response.json.return_value = {"id": 12345}

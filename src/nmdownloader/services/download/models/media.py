@@ -19,7 +19,7 @@ from nmdownloader.services.download.helpers import (
     get_relative_directory,
 )
 from nmdownloader.services.download.models import DownloadBase
-from nmdownloader.services.tmdb import TMDBApi
+from nmdownloader.services.notification import TMDBApi
 
 
 class ShowType(Enum):
