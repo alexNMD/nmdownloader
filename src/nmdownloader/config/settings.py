@@ -1,4 +1,3 @@
-from dataclasses import field
 from functools import lru_cache
 from importlib.metadata import version
 from pathlib import Path
@@ -53,7 +52,7 @@ class Settings(BaseSettings):
     celery: CeleryConfig = Field(default_factory=CeleryConfig)
     downloader: DownloaderConfig = Field(default_factory=DownloaderConfig)
     gunicorn: GunicornConfig = Field(default_factory=GunicornConfig)
-    tmdb: TMDBConfig = field(default_factory=TMDBConfig)
+    tmdb: TMDBConfig = Field(default_factory=TMDBConfig)
 
     media_path: Path = Field(default=Path("/media"))
     nmd_log_level: str = Field(default="INFO")

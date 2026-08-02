@@ -42,6 +42,7 @@ class DownloadMedia(DownloadBase):
         self.type_dl: str = kwargs.get("type_dl") or (
             ShowType.SERIES.value if re.search(self.REGEX_SEARCH_TYPE, self.filename) else ShowType.FILMS.value
         )
+        self.thumbnail = self._get_thumbnail(media_name=self._get_media_name())
         self.base_download_path: Path = app_settings.media_path / self.type_dl
         self.destination_directory: Path = (
             self.base_download_path / get_relative_directory(self.filename)
@@ -54,10 +55,6 @@ class DownloadMedia(DownloadBase):
         self.total_size: int = 0
 
         super().__init__(filepath=self.destination_directory / self.filename, **kwargs)
-
-    @property
-    def thumbnail(self) -> str | None:
-        return self._get_thumbnail(media_name=self._get_media_name())
 
     @property
     def is_compressed(self) -> bool:
