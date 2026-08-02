@@ -28,12 +28,14 @@ class TMDBApi:
         return response_json
 
     @classmethod
-    def search_movie(cls, query: str) -> dict[str, Any]:
-        return cls._call(method="GET", endpoint="search/movie", params={"page": "1", "query": query})
+    def search_multi(cls, query: str) -> dict[str, Any]:
+        return cls._call(
+            method="GET", endpoint="search/multi", params={"page": "1", "include_adult": True, "query": query}
+        )
 
     @classmethod
     def get_thumbnail(cls, query: str) -> str | None:
-        response = cls.search_movie(query=query)
+        response = cls.search_multi(query=query)
         results = response.get("results")
         if not isinstance(results, list) or not results:
             return None

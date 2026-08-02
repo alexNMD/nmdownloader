@@ -58,7 +58,7 @@ class TestTMDBApi:
         mock_requests.request.return_value = mock_response
 
         # Call the method
-        result = TMDBApi.search_movie(query="Test Movie")
+        result = TMDBApi.search_multi(query="Test Movie")
 
         # Assertions
         assert result == {"results": [{"id": 123, "title": "Test Movie"}]}
