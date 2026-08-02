@@ -63,7 +63,7 @@ class TestTMDBApi:
         # Assertions
         assert result == {"results": [{"id": 123, "title": "Test Movie"}]}
         call_args = mock_requests.request.call_args
-        assert "search/movie" in str(call_args)
+        assert "search/multi" in str(call_args)
         assert call_args[1]["params"]["query"] == "Test Movie"
         assert call_args[1]["params"]["page"] == "1"
 
@@ -81,7 +81,7 @@ class TestTMDBApi:
         # Assertions
         assert result == "https://image.tmdb.org/t/p/w200/path/to/poster.jpg"
         mock_call.assert_called_once_with(
-            endpoint="search/movie", method="GET", params={"page": "1", "query": "Test Movie"}
+            endpoint="search/multi", method="GET", params={"page": "1", "include_adult": True, "query": "Test Movie"}
         )
 
     @patch("nmdownloader.services.tmdb.models.api.TMDBApi._call")
