@@ -21,6 +21,7 @@ class DownloadBase(ABC):
     channel_id: int | None = None
     message_id: int | None = None
     status_message_id: int | None = None
+    thumbnail: str | None = None
 
     def __init__(
         self,
@@ -37,9 +38,19 @@ class DownloadBase(ABC):
         self.options: dict[str, Any] = kwargs
         self.status_message_id: int | None = None
 
-    @abstractmethod
     def start(self) -> None:
-        pass
+        self._setup()
+        self._download()
+        self._terminate()
+
+    @abstractmethod
+    def _setup(self) -> None: ...
+
+    @abstractmethod
+    def _download(self) -> None: ...
+
+    @abstractmethod
+    def _terminate(self) -> None: ...
 
     def _remove(self) -> None:
         self.filepath.unlink(missing_ok=True)
@@ -63,20 +74,16 @@ class DownloadBase(ABC):
                         pass
         return download_dict
 
-    def update_status(self, status: DownloadStatus, description: str | None = None) -> None:
+    def update_status(self, status: DownloadStatus, **kwargs) -> None:
         if hasattr(self, "task") and self.task is not None:
             self.task.update_state(meta=self.to_dict())
-        self._do_notification(status, description=description)
+        self._do_notification(status=status, **kwargs)
 
-    def _do_notification(self, status: DownloadStatus, description: str | None) -> None:
+    def _do_notification(self, status: DownloadStatus, **kwargs) -> None:
         title = self.filepath.name if hasattr(self, "filepath") else self.__class__.__name__
         fields = [{"name": "Status", "value": status.name}]
 
         logger.info(f"{title} => {status.name}")
-
-        if not app_settings.discord.token:
-            logger.debug("DISCORD_TOKEN not set. Unable to send notification")
-            return
 
         if not self.channel_id:
             self.channel_id = app_settings.discord.default_channel_id
@@ -86,9 +93,10 @@ class DownloadBase(ABC):
 
         embed_payload = {
             "title": title,
-            "description": description,
             "color": status.value,
             "fields": fields,
+            "thumbnail": self.thumbnail,
+            **kwargs,
         }
 
         try:

@@ -1,7 +1,8 @@
 from datetime import UTC, datetime
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 import requests
+from loguru import logger
 
 from nmdownloader.config import app_settings
 
@@ -13,21 +14,24 @@ class EmbedFieldPayload(TypedDict):
 
 
 class EmbedPayload(TypedDict):
-    title: str
-    description: str
-    color: int
-    fields: list[dict[str, str | bool]]
     timestamp: str
+    title: str
+    color: int
+    footer: dict[str, str]
+    fields: NotRequired[list[dict[str, str | bool]]]
+    description: NotRequired[str]
+    thumbnail: NotRequired[dict[str, str]]
 
 
 class DiscordAPI:
     TIMEOUT = 10
     BASE_URL = app_settings.discord.api_url
+    API_VERSION = app_settings.discord.api_version
     TOKEN = app_settings.discord.token
 
     @classmethod
     def _send_and_get_message_id(cls, endpoint: str, **kwargs) -> int:
-        url = f"{cls.BASE_URL}/{endpoint}"
+        url = f"{cls.BASE_URL}/{cls.API_VERSION}/{endpoint}"
         headers = {
             "Authorization": f"Bot {cls.TOKEN}",
             "Content-Type": "application/json",
@@ -44,20 +48,31 @@ class DiscordAPI:
 
     @classmethod
     def _build_embed(
-        cls, title: str, description: str, color: int, fields: list[dict[str, str]] | None
+        cls,
+        title: str,
+        color: int,
+        description: str | None = None,
+        fields: list[dict[str, str]] | None = None,
+        thumbnail: str | None = None,
     ) -> EmbedPayload:
         embed_payload: EmbedPayload = {
             "title": title,
-            "description": description,
             "color": color,
-            "fields": [],
             "timestamp": datetime.now(UTC).isoformat(),
+            "footer": {
+                "text": "NMDownloader",
+            },
         }
-
+        if description:
+            embed_payload["description"] = description
         if fields:
             embed_payload["fields"] = [
                 {"name": field["name"], "value": field["value"], "inline": True} for field in fields
             ]
+        if thumbnail:
+            embed_payload["thumbnail"] = {"url": thumbnail}
+
+        logger.info(f"embed sent: {embed_payload}")
 
         return embed_payload
 

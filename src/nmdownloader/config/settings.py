@@ -8,6 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from nmdownloader.config.plugins import (
     DiscordConfig,
+    TMDBConfig,
     UnFichierDownloaderConfig,
     YoutubeDownloaderConfig,
 )
@@ -51,6 +52,7 @@ class Settings(BaseSettings):
     celery: CeleryConfig = Field(default_factory=CeleryConfig)
     downloader: DownloaderConfig = Field(default_factory=DownloaderConfig)
     gunicorn: GunicornConfig = Field(default_factory=GunicornConfig)
+    tmdb: TMDBConfig = Field(default_factory=TMDBConfig)
 
     media_path: Path = Field(default=Path("/media"))
     nmd_log_level: str = Field(default="INFO")

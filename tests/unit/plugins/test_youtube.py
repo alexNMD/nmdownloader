@@ -39,6 +39,7 @@ class TestDownloadYoutube:
         # Setup mocks
         mock_youtube_instance = MagicMock()
         mock_youtube_instance.title = "Test Video Title"
+        mock_youtube_instance.thumbnail_url = "https://example.com/thumbnail.jpg"
         mock_youtube.return_value = mock_youtube_instance
 
         mock_secure_filename.return_value = "Test_Video_Title.mp4"
@@ -66,6 +67,7 @@ class TestDownloadYoutube:
         """Test that filename is properly sanitized."""
         mock_youtube_instance = MagicMock()
         mock_youtube_instance.title = "Test/Video:With*Special|Chars?.mp4"
+        mock_youtube_instance.thumbnail_url = "https://example.com/thumbnail.jpg"
         mock_youtube.return_value = mock_youtube_instance
 
         mock_secure_filename.return_value = "Test_Video_With_Special_Chars_.mp4"
@@ -86,6 +88,7 @@ class TestDownloadYoutube:
         """Test DownloadYoutube filepath construction."""
         mock_youtube_instance = MagicMock()
         mock_youtube_instance.title = "Test Video"
+        mock_youtube_instance.thumbnail_url = "https://example.com/thumbnail.jpg"
         mock_youtube.return_value = mock_youtube_instance
 
         mock_secure_filename.return_value = "Test_Video.mp4"
@@ -98,14 +101,16 @@ class TestDownloadYoutube:
         expected_path = Path("/media") / "youtube" / "Test_Video.mp4"
         assert download.filepath == expected_path
 
-    @patch("nmdownloader.services.download.plugins.youtube.YouTube")
+    @patch("pathlib.Path.mkdir")
     @patch("nmdownloader.services.download.plugins.youtube.secure_filename")
+    @patch("nmdownloader.services.download.plugins.youtube.YouTube")
     def test_download_youtube_start_no_audio_stream(
-        self, mock_secure_filename: MagicMock, mock_youtube: MagicMock
+        self, mock_youtube: MagicMock, mock_secure_filename: MagicMock, mock_mkdir: MagicMock
     ) -> None:
         """Test DownloadYoutube start with no audio stream."""
         mock_youtube_instance = MagicMock()
         mock_youtube_instance.title = "Test Video"
+        mock_youtube_instance.thumbnail_url = "https://example.com/thumbnail.jpg"
 
         mock_video_stream = MagicMock()
         mock_youtube_instance.streams.get_highest_resolution.return_value = mock_video_stream

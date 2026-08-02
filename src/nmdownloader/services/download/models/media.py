@@ -10,11 +10,16 @@ import unzipall
 from loguru import logger
 
 from nmdownloader.config import app_settings
-from nmdownloader.services.download.helpers import DownloadStatus
-from nmdownloader.services.download.helpers.exceptions import DownloadError
-from nmdownloader.services.download.helpers.files import get_relative_directory
-from nmdownloader.services.download.helpers.progressbar import get_progress_bar
+from nmdownloader.services.download.helpers import (
+    DownloadError,
+    DownloadStatus,
+    extract_film_info,
+    extract_serie_info,
+    get_progress_bar,
+    get_relative_directory,
+)
 from nmdownloader.services.download.models import DownloadBase
+from nmdownloader.services.tmdb import TMDBApi
 
 
 class ShowType(Enum):
@@ -37,6 +42,7 @@ class DownloadMedia(DownloadBase):
         self.type_dl: str = kwargs.get("type_dl") or (
             ShowType.SERIES.value if re.search(self.REGEX_SEARCH_TYPE, self.filename) else ShowType.FILMS.value
         )
+        self.thumbnail = self._get_thumbnail(media_name=self._get_media_name())
         self.base_download_path: Path = app_settings.media_path / self.type_dl
         self.destination_directory: Path = (
             self.base_download_path / get_relative_directory(self.filename)
@@ -54,6 +60,33 @@ class DownloadMedia(DownloadBase):
     def is_compressed(self) -> bool:
         return Path(self.filepath).suffix in unzipall.list_supported_formats()
 
+    def _setup(self) -> None:
+        self.update_status(DownloadStatus.STARTED)
+        self.destination_directory.mkdir(parents=True, exist_ok=True)
+
+    def _terminate(self) -> None:
+        if self.is_compressed:
+            self._decompress()
+        self.update_status(DownloadStatus.DONE)
+
+    @classmethod
+    def _get_thumbnail(cls, media_name: str) -> str | None:
+        try:
+            return TMDBApi.get_thumbnail(query=media_name)
+        except requests.exceptions.HTTPError as http_error:
+            logger.error(f"Unable to use TMDB api, got: {http_error.response.status_code}")
+        except requests.exceptions.RequestException as error:
+            logger.error(f"Unable to reach TMDB API: {error}")
+
+    def _get_media_name(self) -> str:
+        media_data = (
+            extract_serie_info(filename=self.filename)
+            if self.type_dl in [ShowType.SERIES.value, ShowType.ANIMES.value]
+            else extract_film_info(filename=self.filename)
+        )
+
+        return media_data["name"]
+
     @classmethod
     def _extract_filename(cls, url: str) -> str:
         _content_disposition = requests.head(url, timeout=10).headers.get("Content-Disposition", "")
@@ -68,15 +101,12 @@ class DownloadMedia(DownloadBase):
 
         return filename.replace(" ", ".")
 
-    def start(self) -> None:
+    def _download(self) -> None:
         try:
-            self.destination_directory.mkdir(parents=True, exist_ok=True)
             with requests.get(self.url, stream=True, timeout=3600) as response:
                 if response.ok:
-                    self.update_status(DownloadStatus.STARTED)
                     self.total_size = int(response.headers.get("Content-Length", 0))
                     self.download_start_time = time.time()
-
                     # Start reading file
                     with (
                         open(self.filepath, "wb") as file,
@@ -87,12 +117,6 @@ class DownloadMedia(DownloadBase):
                     ):
                         self._handle_chunks(cast(io.BufferedWriter, file_buffer), response)
                     # Close file
-
-                    if self.is_compressed:
-                        self._decompress()
-
-                    # Finish
-                    self.update_status(DownloadStatus.DONE)
         except (
             FileNotFoundError,
             NotImplementedError,
