@@ -1,26 +1,26 @@
 import http
-from abc import ABC
 from typing import Any
 
 import requests
 from loguru import logger
 
+from ..helpers.constants import HttpVerb
 from ..helpers.exceptions import NotificationError
 
 
-class BaseNotification(ABC):
+class BaseNotification:
     TIMEOUT: int = 10
     BASE_URL: str
     HEADERS_AUTHORIZATION: str
     API_VERSION: str | None = None
 
     @classmethod
-    def _call_and_get_json(cls, endpoint: str, **kwargs) -> dict[str, Any]:
+    def _call_and_get_json(cls, method: HttpVerb, endpoint: str, **kwargs) -> dict[str, Any]:
         url = f"{cls.BASE_URL}/{cls.API_VERSION}/{endpoint}" if cls.API_VERSION else f"{cls.BASE_URL}/{endpoint}"
         headers = {"Authorization": cls.HEADERS_AUTHORIZATION, "Content-Type": "application/json"}
 
         try:
-            response = requests.request(url=url, headers=headers, timeout=cls.TIMEOUT, **kwargs)
+            response = requests.request(method=method, url=url, headers=headers, timeout=cls.TIMEOUT, **kwargs)
             response.raise_for_status()
         except requests.exceptions.HTTPError as http_error:
             if http_error.response.status_code == http.HTTPStatus.UNAUTHORIZED:
