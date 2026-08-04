@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Any
 import requests
 from loguru import logger
 
-from nmdownloader.config import app_settings
 from nmdownloader.services.download.helpers import DownloadRevokeException, DownloadStatus
 from nmdownloader.services.notification import DiscordAPI
 
@@ -34,7 +33,7 @@ class DownloadBase(ABC):
         self.task = task
         self.filepath = filepath
         self.message_id = message_id
-        self.channel_id = channel_id or app_settings.discord.default_channel_id
+        self.channel_id = channel_id
         self.options: dict[str, Any] = kwargs
         self.status_message_id: int | None = None
 
@@ -85,16 +84,6 @@ class DownloadBase(ABC):
 
         logger.info(f"{title} => {status.name}")
 
-        if not app_settings.discord.token:
-            logger.error("DISCORD_TOKEN not set. Unable to send notification")
-            return
-
-        if not self.channel_id:
-            self.channel_id = app_settings.discord.default_channel_id
-        if not self.channel_id:
-            logger.error("DISCORD_DEFAULT_CHANNEL_ID not set. Unable to send notification")
-            return
-
         embed_payload = {
             "title": title,
             "color": status.value,
@@ -105,11 +94,11 @@ class DownloadBase(ABC):
 
         try:
             if self.status_message_id:
-                DiscordAPI.edit_embed(channel_id=self.channel_id, message_id=self.status_message_id, **embed_payload)
+                DiscordAPI.edit_embed(message_id=self.status_message_id, channel_id=self.channel_id, **embed_payload)
                 return
 
             self.status_message_id = (
-                DiscordAPI.reply_with_embed(channel_id=self.channel_id, message_id=self.message_id, **embed_payload)
+                DiscordAPI.reply_with_embed(message_id=self.message_id, channel_id=self.channel_id, **embed_payload)
                 if self.message_id
                 else DiscordAPI.send_embed(channel_id=self.channel_id, **embed_payload)
             )
