@@ -16,3 +16,4 @@ class TMDBConfig(BaseSettings):
 
     image_url: str = "https://image.tmdb.org"
     poster_width: Literal["200", "300", "400", "500"] = "200"
+    languages_iso639_1: list[str] = ["fr", "en"]

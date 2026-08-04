@@ -11,15 +11,16 @@ from ..helpers.exceptions import NotificationError
 class BaseNotification(ABC):
     TIMEOUT: int = 10
     BASE_URL: str
+    HEADERS_AUTHORIZATION: str
     API_VERSION: str | None = None
-    API_KEY: str | None = None
 
     @classmethod
     def _call_and_get_json(cls, endpoint: str, **kwargs) -> dict[str, Any]:
         url = f"{cls.BASE_URL}/{cls.API_VERSION}/{endpoint}" if cls.API_VERSION else f"{cls.BASE_URL}/{endpoint}"
+        headers = {"Authorization": cls.HEADERS_AUTHORIZATION, "Content-Type": "application/json"}
 
         try:
-            response = requests.request(url=url, timeout=cls.TIMEOUT, **kwargs)
+            response = requests.request(url=url, headers=headers, timeout=cls.TIMEOUT, **kwargs)
             response.raise_for_status()
         except requests.exceptions.HTTPError as http_error:
             if http_error.response.status_code == http.HTTPStatus.UNAUTHORIZED:

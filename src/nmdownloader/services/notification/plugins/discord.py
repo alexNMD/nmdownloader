@@ -26,16 +26,12 @@ class EmbedPayload(TypedDict):
 
 class DiscordAPI(BaseNotification):
     BASE_URL = app_settings.discord.api_url
+    HEADERS_AUTHORIZATION = f"Bot {app_settings.discord.token}"
     API_VERSION = app_settings.discord.api_version
-    TOKEN = app_settings.discord.token
 
     @classmethod
     def _send_and_get_message_id(cls, endpoint: str, **kwargs) -> int:
-        headers = {
-            "Authorization": f"Bot {cls.TOKEN}",
-            "Content-Type": "application/json",
-        }
-        response_json = cls._call_and_get_json(endpoint=endpoint, headers=headers, **kwargs)
+        response_json = cls._call_and_get_json(endpoint=endpoint, **kwargs)
 
         if not (message_id := response_json.get("id")):
             raise ValueError("Unable to retrieve message id from Discord API")

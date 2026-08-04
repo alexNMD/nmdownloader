@@ -7,18 +7,14 @@ from ..models.base import BaseNotification
 
 class TMDBApi(BaseNotification):
     BASE_URL = app_settings.tmdb.api_url
+    HEADERS_AUTHORIZATION = f"Bearer {app_settings.tmdb.api_key}"
     IMAGE_URL = app_settings.tmdb.image_url
-    API_KEY = app_settings.tmdb.api_key
     API_VERSION = app_settings.tmdb.api_version
     POSTER_WIDTH = app_settings.tmdb.poster_width
 
     @classmethod
     def get_results(cls, **kwargs) -> list[dict[str, Any]] | None:
-        headers = {
-            "Authorization": f"Bearer {cls.API_KEY}",
-            "Content-Type": "application/json",
-        }
-        response_json = cls._call_and_get_json(method="GET", headers=headers, **kwargs)
+        response_json = cls._call_and_get_json(method="GET", **kwargs)
         results = response_json.get("results")
 
         if not isinstance(results, list) or not results:
@@ -28,11 +24,18 @@ class TMDBApi(BaseNotification):
 
     @classmethod
     def get_thumbnail(cls, query: str) -> str | None:
-        params = {"page": "1", "include_adult": True, "query": query}
-        if not (results := cls.get_results(endpoint="search/multi", params=params)):
+        _default_params = {"page": "1", "include_adult": True, "query": query}
+        results = []
+        # TODO: refacto when python3.15 release (unpacking in list comprehension)
+        for language in app_settings.tmdb.languages_iso639_1:
+            params = {**_default_params, **{"language": language}}
+            if result := cls.get_results(endpoint="search/multi", params=params):
+                results.append(*result)
+
+        if not (most_popular := max(results, key=lambda x: x.get("popularity", 0), default=None)):
             return None
 
-        if not (poster_path := results[0].get("poster_path")):
+        if not (poster_path := most_popular.get("poster_path")):
             return None
 
         return f"{cls.IMAGE_URL}/t/p/w{cls.POSTER_WIDTH}{poster_path}"
