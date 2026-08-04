@@ -11,13 +11,18 @@ from ..helpers.exceptions import NotificationError
 class BaseNotification:
     TIMEOUT: int = 10
     BASE_URL: str
-    HEADERS_AUTHORIZATION: str
     API_VERSION: str | None = None
+    BEARER_SCHEMA: str = "Bearer"
+    API_TOKEN: str | None = None
 
     @classmethod
     def _call_and_get_json(cls, method: HttpVerb, endpoint: str, **kwargs) -> dict[str, Any]:
+        if not cls.API_TOKEN:
+            raise NotificationError(f"Auth for {cls.__class__.__name__} not set. Unable to use api.")
+
+        authorization = f"{cls.BEARER_SCHEMA} {cls.API_TOKEN}"
         url = f"{cls.BASE_URL}/{cls.API_VERSION}/{endpoint}" if cls.API_VERSION else f"{cls.BASE_URL}/{endpoint}"
-        headers = {"Authorization": cls.HEADERS_AUTHORIZATION, "Content-Type": "application/json"}
+        headers = {"Authorization": authorization, "Content-Type": "application/json"}
 
         try:
             response = requests.request(method=method, url=url, headers=headers, timeout=cls.TIMEOUT, **kwargs)

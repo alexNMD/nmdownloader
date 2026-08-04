@@ -27,8 +27,9 @@ class EmbedPayload(TypedDict):
 
 class DiscordAPI(BaseNotification):
     BASE_URL = app_settings.discord.api_url
-    HEADERS_AUTHORIZATION = f"Bot {app_settings.discord.token}"
     API_VERSION = app_settings.discord.api_version
+    BEARER_SCHEMA = "Bot"
+    API_TOKEN = app_settings.discord.token
 
     @classmethod
     def _send_and_get_message_id(cls, endpoint: str, **kwargs) -> int:

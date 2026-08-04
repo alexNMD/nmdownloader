@@ -8,9 +8,9 @@ from ..models.base import BaseNotification
 
 class TMDBApi(BaseNotification):
     BASE_URL = app_settings.tmdb.api_url
-    HEADERS_AUTHORIZATION = f"Bearer {app_settings.tmdb.api_key}"
-    IMAGE_URL = app_settings.tmdb.image_url
     API_VERSION = app_settings.tmdb.api_version
+    API_TOKEN = app_settings.tmdb.api_key
+    IMAGE_URL = app_settings.tmdb.image_url
     POSTER_WIDTH = app_settings.tmdb.poster_width
 
     @classmethod

@@ -16,3 +16,4 @@ class DiscordConfig(BaseSettings):
     refresh_rate: int = Field(default=10)
     api_url: str = "https://discord.com/api"
     api_version: str = "v10"
+    bearer_schema: str = "bot"
