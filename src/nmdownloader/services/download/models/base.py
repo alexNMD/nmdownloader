@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-import http
 import json
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-import requests
 from loguru import logger
 
 from nmdownloader.services.download.helpers import DownloadRevokeException, DownloadStatus
-from nmdownloader.services.notification import DiscordAPI
+from nmdownloader.services.notification import DiscordAPI, NotificationError
 
 if TYPE_CHECKING:
     from celery import Task
@@ -102,12 +100,6 @@ class DownloadBase(ABC):
                 if self.message_id
                 else DiscordAPI.send_embed(channel_id=self.channel_id, **embed_payload)
             )
-        except requests.exceptions.HTTPError as http_error:
-            if http_error.response.status_code == http.HTTPStatus.UNAUTHORIZED:
-                logger.error("DISCORD_TOKEN invalid. Unable to send notification")
-                return
-            logger.error(f"Unable to use discord api, got: {http_error.response.status_code}")
-        except requests.exceptions.RequestException as error:
-            logger.error(f"Unable to reach Discord API: {error}")
-        except ValueError as error:
-            logger.error(f"Unable to read data from Discord API: {error}")
+        except NotificationError:
+            logger.error("Notification Failed")
+            return
