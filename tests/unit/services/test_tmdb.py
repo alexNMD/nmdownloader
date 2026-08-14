@@ -4,6 +4,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from nmdownloader.services.notification import NotificationError
+
 
 class TestTMDBApi:
     """Tests for TMDBApi class."""
@@ -49,7 +51,7 @@ class TestTMDBApi:
         mock_request.return_value = mock_response
 
         # Should raise NotificationError (wrapped HTTPError)
-        with pytest.raises(Exception):  # NotificationError wraps HTTPError
+        with pytest.raises(NotificationError):  # NotificationError wraps HTTPError
             TMDBApi._call_and_get_json(endpoint="test/endpoint", method="GET")
 
     @patch("requests.request")

@@ -266,7 +266,7 @@ class TestDownloadMedia:
                 download.destination_directory = mock_path.return_value
 
                 # Call _setup
-                with patch("loguru.logger") as mock_logger:
+                with patch("loguru.logger"):
                     download._setup()
 
                 # Check that update_status was called with STARTED
@@ -306,7 +306,7 @@ class TestDownloadMedia:
                 assert download.is_compressed is False
 
                 # Call _terminate - mock logger to avoid side effects
-                with patch("loguru.logger") as mock_logger:
+                with patch("loguru.logger"):
                     download._terminate()
 
                 # Check that update_status was called

@@ -2,7 +2,6 @@ from typing import Any
 
 from nmdownloader.config import app_settings
 
-from ..helpers.constants import HttpVerb
 from ..models.base import BaseNotification
 
 
@@ -15,7 +14,7 @@ class TMDBApi(BaseNotification):
 
     @classmethod
     def get_results(cls, **kwargs) -> list[dict[str, Any]] | None:
-        response_json = cls._call_and_get_json(method=HttpVerb.GET, **kwargs)
+        response_json = cls._call_and_get_json(method="GET", **kwargs)
         results = response_json.get("results")
 
         if not isinstance(results, list) or not results:

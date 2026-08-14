@@ -1,10 +1,9 @@
 import http
-from typing import Any
+from typing import Any, Literal
 
 import requests
 from loguru import logger
 
-from ..helpers.constants import HttpVerb
 from ..helpers.exceptions import NotificationError
 
 
@@ -16,7 +15,9 @@ class BaseNotification:
     API_TOKEN: str | None = None
 
     @classmethod
-    def _call_and_get_json(cls, method: HttpVerb, endpoint: str, **kwargs) -> dict[str, Any]:
+    def _call_and_get_json(
+        cls, method: Literal["GET", "POST", "PATCH", "DELETE"], endpoint: str, **kwargs
+    ) -> dict[str, Any]:
         if not cls.API_TOKEN:
             raise NotificationError(f"Auth for {cls.__class__.__name__} not set. Unable to use api.")
 

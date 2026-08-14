@@ -5,7 +5,6 @@ from loguru import logger
 
 from nmdownloader.config import app_settings
 
-from ..helpers.constants import HttpVerb
 from ..helpers.exceptions import NotificationError
 from ..models.base import BaseNotification
 
@@ -87,7 +86,7 @@ class DiscordAPI(BaseNotification):
         :return: La réponse de l'API Discord.
         """
         return cls._send_and_get_message_id(
-            method=HttpVerb.POST,
+            method="POST",
             channel_id=channel_id,
             endpoint="messages",
             json={"embeds": [cls._build_embed(**kwargs)], "message_reference": {"message_id": message_id}},
@@ -104,7 +103,7 @@ class DiscordAPI(BaseNotification):
         :return: La réponse de l'API Discord.
         """
         return cls._send_and_get_message_id(
-            method=HttpVerb.POST,
+            method="POST",
             channel_id=channel_id,
             endpoint="messages",
             json={"embeds": [cls._build_embed(**kwargs)]},
@@ -122,7 +121,7 @@ class DiscordAPI(BaseNotification):
         :return: La réponse de l'API Discord.
         """
         return cls._send_and_get_message_id(
-            method=HttpVerb.PATCH,
+            method="PATCH",
             channel_id=channel_id,
             endpoint=f"messages/{message_id}",
             json={"embeds": [cls._build_embed(**kwargs)]},
