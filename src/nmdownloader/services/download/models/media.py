@@ -2,6 +2,7 @@ import io
 import re
 import time
 from enum import Enum
+from functools import cached_property
 from pathlib import Path
 from typing import cast
 
@@ -42,7 +43,6 @@ class DownloadMedia(DownloadBase):
         self.type_dl: str = kwargs.get("type_dl") or (
             ShowType.SERIES.value if re.search(self.REGEX_SEARCH_TYPE, self.filename) else ShowType.FILMS.value
         )
-        self.thumbnail = self._get_thumbnail(media_name=self._get_media_name())
         self.base_download_path: Path = app_settings.media_path / self.type_dl
         self.destination_directory: Path = (
             self.base_download_path / get_relative_directory(self.filename)
@@ -69,10 +69,10 @@ class DownloadMedia(DownloadBase):
             self._decompress()
         self.update_status(DownloadStatus.DONE)
 
-    @classmethod
-    def _get_thumbnail(cls, media_name: str) -> str | None:
+    @cached_property
+    def thumbnail(self) -> str | None:
         try:
-            return TMDBApi.get_thumbnail(query=media_name)
+            return TMDBApi.get_thumbnail(query=self._get_media_name())
         except requests.exceptions.HTTPError as http_error:
             logger.error(f"Unable to use TMDB api, got: {http_error.response.status_code}")
         except requests.exceptions.RequestException as error:

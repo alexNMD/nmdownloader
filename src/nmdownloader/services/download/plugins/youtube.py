@@ -1,3 +1,4 @@
+from functools import cached_property
 from pathlib import Path
 
 import ffmpeg
@@ -6,10 +7,11 @@ from pytubefix import YouTube
 from werkzeug.utils import secure_filename
 
 from nmdownloader.config import app_settings
-from nmdownloader.services.download.helpers import DownloadStatus
-from nmdownloader.services.download.helpers.exceptions import DownloadError
-from nmdownloader.services.download.helpers.plugins import register_downloader
-from nmdownloader.services.download.models import DownloadBase
+
+from ..helpers import DownloadStatus
+from ..helpers.exceptions import DownloadError
+from ..helpers.plugins import register_downloader
+from ..models import DownloadBase
 
 
 @register_downloader("www.youtube.com", "youtube.com", "youtu.be")
@@ -23,7 +25,7 @@ class DownloadYoutube(DownloadBase):
 
         super().__init__(filepath=(self.base_download_path / self.filename), **kwargs)
 
-    @property
+    @cached_property
     def thumbnail(self) -> str:
         return self.youtube_obj.thumbnail_url
 
