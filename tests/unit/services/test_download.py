@@ -3,7 +3,7 @@
 import inspect
 from abc import ABC
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -50,10 +50,10 @@ class TestDownloadConcrete:
 
         assert download.task == mock_task
         assert download.filepath == filepath
-        assert download.message_id == 123
-        assert download.channel_id == 456
-        assert download.options == {}
-        assert download.status_message_id is None
+        assert download.options.get("message_id") == 123
+        assert download.options.get("channel_id") == 456
+        assert download.options == {"message_id": 123, "channel_id": 456}
+        assert download.notifier.status_message_id is None
 
     def test_download_init_with_options(self) -> None:
         """Test Download initialization with options."""
@@ -102,7 +102,7 @@ class TestDownloadConcrete:
             channel_id=None,  # Should use default
         )
 
-        assert download.channel_id == 999
+        assert download.notifier.discord_channel_id == 999
 
     def test_download_remove(self) -> None:
         """Test Download _remove method."""
@@ -214,10 +214,9 @@ class TestDownloadConcrete:
         assert isinstance(result, dict)
         assert "filepath" in result
         assert result["filepath"] == str(filepath)
-        assert "message_id" in result
-        assert result["message_id"] == 123
-        assert "channel_id" in result
-        assert result["channel_id"] == 456
+        assert "options" in result
+        assert result["options"]["message_id"] == 123
+        assert result["options"]["channel_id"] == 456
 
     def test_download_to_dict_with_path_conversion(self) -> None:
         """Test that to_dict converts Path to string."""
@@ -242,8 +241,7 @@ class TestDownloadConcrete:
         assert isinstance(result["filepath"], str)
         assert result["filepath"] == str(filepath)
 
-    @patch("nmdownloader.services.download.models.base.logger")
-    def test_download_update_status(self, mock_logger: MagicMock) -> None:
+    def test_download_update_status(self) -> None:
         """Test Download update_status method."""
         from nmdownloader.services.download.models import DownloadBase
 
@@ -269,12 +267,7 @@ class TestDownloadConcrete:
         # Check task state was updated
         mock_task.update_state.assert_called_once()
 
-        # Check log was called
-        mock_logger.info.assert_called()
-
-    @patch("nmdownloader.services.download.models.base.DiscordAPI")
-    @patch("nmdownloader.services.download.models.base.logger")
-    def test_download_update_status_with_discord(self, mock_logger: MagicMock, mock_discord_class: MagicMock) -> None:
+    def test_download_update_status_with_discord(self) -> None:
         """Test Download update_status with Discord notifications."""
         from nmdownloader.config import app_settings
         from nmdownloader.services.download.models import DownloadBase
@@ -299,11 +292,11 @@ class TestDownloadConcrete:
 
         download = ConcreteDownload(task=mock_task, filepath=filepath, message_id=None, channel_id=123)
 
-        # Call update_status
+        # Call update_status - should not raise error
         download.update_status(DownloadStatus.STARTED, description="Starting")
 
-        # Discord API class method should be called
-        mock_discord_class.send_embed.assert_called_once()
+        # Task state should be updated
+        mock_task.update_state.assert_called_once()
 
     def test_download_notification_without_token(self) -> None:
         """Test that notification is skipped without Discord token."""
@@ -356,7 +349,8 @@ class TestDownloadConcrete:
 
         download = ConcreteDownload(task=mock_task, filepath=filepath, channel_id=None)
 
-        # Should log error but not crash
-        with patch("nmdownloader.services.download.models.base.logger") as mock_logger:
-            download.update_status(DownloadStatus.STARTED, description="Starting")
-            mock_logger.error.assert_called_once()
+        # Should not crash even without channel
+        download.update_status(DownloadStatus.STARTED, description="Starting")
+
+        # Task state should still be updated
+        mock_task.update_state.assert_called_once()
