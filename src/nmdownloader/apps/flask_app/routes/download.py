@@ -3,7 +3,8 @@ from loguru import logger
 
 from nmdownloader.apps.celery_app.tasks.download import download_task
 from nmdownloader.config import app_settings
-from nmdownloader.services.download.helpers.task import get_task_result
+
+from ..helpers.task import get_task_result
 
 download_bp = Blueprint(
     name="download",
