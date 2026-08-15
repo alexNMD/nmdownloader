@@ -64,5 +64,6 @@ class DownloadBase(ABC):
             title=self.filepath.name if hasattr(self, "filepath") else self.__class__.__name__,
             status=status,
             thumbnail=getattr(self, "thumbnail", None),
+            total_size=getattr(self, "total_size", None),
             **kwargs,
         )

@@ -18,7 +18,12 @@ class Notifier:
         # TODO: piste avec les medias name pour fetch la thumbnail
 
     def throw(
-        self, title: str, status: DownloadStatus, description: str | None = None, thumbnail: str | None = None
+        self,
+        title: str,
+        status: DownloadStatus,
+        description: str | None = None,
+        thumbnail: str | None = None,
+        total_size: int | None = None,
     ) -> None:
         embed_payload = {
             "title": title,
@@ -27,6 +32,8 @@ class Notifier:
             "fields": [{"name": "Status", "value": status.name}],
             "thumbnail": thumbnail,
         }
+        if total_size:
+            embed_payload["fields"].append({"name": "Total Size", "value": self.format_size(total_size)})
 
         logger.info(f"{title} => {status.name}")
 
@@ -40,6 +47,18 @@ class Notifier:
                 if self.message_id
                 else DiscordAPI.send_embed(channel_id=self.channel_id, **embed_payload)
             )
-        except NotificationError:
-            logger.error("Notification Failed")
+        except NotificationError as notification_error:
+            logger.error(f"Notification Failed: {notification_error}")
             return
+
+    @classmethod
+    def format_size(cls, size_bytes: int) -> str:
+        units = ("B", "KB", "MB", "GB", "TB", "PB")
+        size = float(size_bytes)
+        unit_index = 0
+
+        while size >= 1024 and unit_index < len(units) - 1:
+            size /= 1024
+            unit_index += 1
+
+        return f"{size:.2f} {units[unit_index]}"

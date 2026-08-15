@@ -22,6 +22,7 @@ class DownloadYoutube(DownloadBase):
         self.base_download_path: Path = app_settings.media_path / "youtube"
         self.video_path: str | None = None
         self.audio_path: str | None = None
+        self.total_size: int = 0
 
         super().__init__(filepath=(self.base_download_path / self.filename), **kwargs)
 
@@ -47,6 +48,7 @@ class DownloadYoutube(DownloadBase):
             if not (audio_streams := self.youtube_obj.streams.get_audio_only()):
                 raise AttributeError("No suitable audio stream found.")
 
+            self.total_size = video_stream.filesize
             self.update_status(DownloadStatus.RUNNING)
 
             self.video_path = video_stream.download(output_path=str(self.base_download_path))

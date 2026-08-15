@@ -30,7 +30,7 @@ class TMDBApi(BaseNotification):
         for language in app_settings.tmdb.languages_iso639_1:
             params = {**_default_params, **{"language": language}}
             if result := cls.get_results(endpoint="search/multi", params=params):
-                results.append(*result)
+                results.extend(result)
 
         if not (most_popular := max(results, key=lambda x: x.get("popularity", 0), default=None)):
             return None
