@@ -102,7 +102,7 @@ class TestDownloadConcrete:
             channel_id=None,  # Should use default
         )
 
-        assert download.notifier.discord_channel_id == 999
+        assert download.notifier.channel_id == 999
 
     def test_download_remove(self) -> None:
         """Test Download _remove method."""

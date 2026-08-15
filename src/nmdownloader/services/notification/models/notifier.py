@@ -8,14 +8,10 @@ from ..plugins.discord import DiscordAPI
 
 
 class Notifier:
-    channel_id: int | None = None
-    message_id: int | None = None
-    thumbnail_url: str | None = None
-
     def __init__(
         self, channel_id: int | None = None, thumbnail_url: str | None = None, message_id: int | None = None
     ) -> None:
-        self.discord_channel_id = channel_id or app_settings.discord.default_channel_id
+        self.channel_id = channel_id or app_settings.discord.default_channel_id
         self.message_id = message_id
         self.thumbnail_url = thumbnail_url
         self.status_message_id = None

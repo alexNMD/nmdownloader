@@ -63,6 +63,9 @@ class TestDiscordAPI:
         """Test send_embed method includes thumbnail in embed."""
         from nmdownloader.services.notification.plugins.discord import DiscordAPI
 
+        # Mock API_TOKEN to avoid auth error
+        DiscordAPI.API_TOKEN = "test_token"
+
         mock_response = MagicMock()
         mock_response.json.return_value = {"id": 12345}
         mock_response.raise_for_status.return_value = None
@@ -95,6 +98,9 @@ class TestDiscordAPI:
     def test_discord_api_reply_with_embed_with_thumbnail(self, mock_request: MagicMock) -> None:
         """Test reply_with_embed method includes thumbnail in embed."""
         from nmdownloader.services.notification.plugins.discord import DiscordAPI
+
+        # Mock API_TOKEN to avoid auth error
+        DiscordAPI.API_TOKEN = "test_token"
 
         mock_response = MagicMock()
         mock_response.json.return_value = {"id": 12345}
@@ -132,6 +138,9 @@ class TestDiscordAPI:
     def test_discord_api_edit_embed_with_thumbnail(self, mock_request: MagicMock) -> None:
         """Test edit_embed method includes thumbnail in embed."""
         from nmdownloader.services.notification.plugins.discord import DiscordAPI
+
+        # Mock API_TOKEN to avoid auth error
+        DiscordAPI.API_TOKEN = "test_token"
 
         mock_response = MagicMock()
         mock_response.json.return_value = {"id": 12345}

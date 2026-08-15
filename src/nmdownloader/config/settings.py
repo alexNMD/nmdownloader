@@ -16,9 +16,9 @@ from nmdownloader.config.plugins import (
 
 class CeleryConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="CELERY_", env_file=".env", env_file_encoding="utf-8", extra="ignore")
-    concurrency: int = Field(default=5)
-    broker_url: str = Field(default="redis://redis:6379/0")
-    backend_url: str = Field(default="redis://redis:6379/0")
+    concurrency: int = 5
+    broker_url: str = "redis://redis:6379/0"
+    backend_url: str = "redis://redis:6379/0"
 
 
 class DownloaderPluginConfig(BaseSettings):
@@ -41,8 +41,8 @@ class GunicornConfig(BaseSettings):
         extra="ignore",
     )
 
-    port: int = Field(default=8000)
-    workers_count: int = Field(default=4)
+    port: int = 8000
+    workers_count: int = 4
 
 
 class Settings(BaseSettings):
