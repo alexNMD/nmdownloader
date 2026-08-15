@@ -4,6 +4,7 @@ from nmdownloader.config import app_settings
 from nmdownloader.services.download.helpers import DownloadStatus
 
 from ..helpers.exceptions import NotificationError
+from ..helpers.format_size import format_size
 from ..plugins.discord import DiscordAPI
 
 
@@ -33,7 +34,7 @@ class Notifier:
             "thumbnail": thumbnail,
         }
         if total_size:
-            embed_payload["fields"].append({"name": "Total Size", "value": self.format_size(total_size)})
+            embed_payload["fields"].append({"name": "Total Size", "value": format_size(total_size)})
 
         logger.info(f"{title} => {status.name}")
 
@@ -50,15 +51,3 @@ class Notifier:
         except NotificationError as notification_error:
             logger.error(f"Notification Failed: {notification_error}")
             return
-
-    @classmethod
-    def format_size(cls, size_bytes: int) -> str:
-        units = ("B", "KB", "MB", "GB", "TB", "PB")
-        size = float(size_bytes)
-        unit_index = 0
-
-        while size >= 1024 and unit_index < len(units) - 1:
-            size /= 1024
-            unit_index += 1
-
-        return f"{size:.2f} {units[unit_index]}"
