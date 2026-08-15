@@ -1,7 +1,10 @@
 from typing import Any
 
+from loguru import logger
+
 from nmdownloader.config import app_settings
 
+from ..helpers.exceptions import NotificationError
 from ..models.base import BaseNotification
 
 
@@ -27,10 +30,14 @@ class TMDBApi(BaseNotification):
         _default_params = {"page": "1", "include_adult": True, "query": query}
         results = []
         # TODO: refacto when python3.15 release (unpacking in list comprehension)
-        for language in app_settings.tmdb.languages_iso639_1:
-            params = {**_default_params, **{"language": language}}
-            if result := cls.get_results(endpoint="search/multi", params=params):
-                results.extend(result)
+        try:
+            for language in app_settings.tmdb.languages_iso639_1:
+                params = {**_default_params, **{"language": language}}
+                if result := cls.get_results(endpoint="search/multi", params=params):
+                    results.extend(result)
+        except NotificationError as notification_error:
+            logger.error(f"Unable to fetch thumbnail for: {query}. Reason: {notification_error}")
+            return None
 
         if not (most_popular := max(results, key=lambda x: x.get("popularity", 0), default=None)):
             return None

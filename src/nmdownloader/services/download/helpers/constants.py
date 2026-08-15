@@ -7,3 +7,9 @@ class DownloadStatus(Enum):
     DONE = int("0dba2f", 16)
     ERROR = int("f63106", 16)
     CANCELED = int("510666", 16)
+
+
+class ShowType(Enum):
+    SERIES = "series"
+    FILMS = "films"
+    ANIMES = "animes"

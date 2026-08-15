@@ -1,8 +1,6 @@
 import io
 import re
 import time
-from enum import Enum
-from functools import cached_property
 from pathlib import Path
 from typing import cast
 
@@ -11,22 +9,11 @@ import unzipall
 from loguru import logger
 
 from nmdownloader.config import app_settings
-from nmdownloader.services.download.helpers import (
-    DownloadError,
-    DownloadStatus,
-    extract_film_info,
-    extract_serie_info,
-    get_progress_bar,
-    get_relative_directory,
-)
-from nmdownloader.services.download.models import DownloadBase
 from nmdownloader.services.notification import TMDBApi
 
-
-class ShowType(Enum):
-    SERIES = "series"
-    FILMS = "films"
-    ANIMES = "animes"
+from ..helpers import DownloadError, DownloadStatus, get_media_name, get_progress_bar, get_relative_directory
+from ..helpers.constants import ShowType
+from ..models import DownloadBase
 
 
 class DownloadMedia(DownloadBase):
@@ -43,6 +30,7 @@ class DownloadMedia(DownloadBase):
         self.type_dl: str = kwargs.get("type_dl") or (
             ShowType.SERIES.value if re.search(self.REGEX_SEARCH_TYPE, self.filename) else ShowType.FILMS.value
         )
+        self.thumbnail = TMDBApi.get_thumbnail(query=get_media_name(filename=self.filename, type_dl=self.type_dl))
         self.base_download_path: Path = app_settings.media_path / self.type_dl
         self.destination_directory: Path = (
             self.base_download_path / get_relative_directory(self.filename)
@@ -68,29 +56,6 @@ class DownloadMedia(DownloadBase):
         if self.is_compressed:
             self._decompress()
         self.update_status(DownloadStatus.DONE)
-
-    @classmethod
-    def _get_thumbnail(cls, media_name: str) -> str | None:
-        try:
-            return TMDBApi.get_thumbnail(query=media_name)
-        except requests.exceptions.HTTPError as http_error:
-            logger.error(f"Unable to use TMDB api, got: {http_error.response.status_code}")
-        except requests.exceptions.RequestException as error:
-            logger.error(f"Unable to reach TMDB API: {error}")
-        return None
-
-    @cached_property
-    def thumbnail(self) -> str | None:
-        return self._get_thumbnail(self._get_media_name())
-
-    def _get_media_name(self) -> str:
-        media_data = (
-            extract_serie_info(filename=self.filename)
-            if self.type_dl in [ShowType.SERIES.value, ShowType.ANIMES.value]
-            else extract_film_info(filename=self.filename)
-        )
-
-        return media_data["name"]
 
     @classmethod
     def _extract_filename(cls, url: str) -> str:
