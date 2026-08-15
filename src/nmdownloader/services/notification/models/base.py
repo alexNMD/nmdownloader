@@ -1,5 +1,4 @@
-import http
-from typing import Any, Literal
+from typing import Any, Literal, NoReturn
 
 import requests
 from loguru import logger
@@ -19,7 +18,7 @@ class BaseNotification:
         cls, method: Literal["GET", "POST", "PATCH", "DELETE"], endpoint: str, **kwargs
     ) -> dict[str, Any]:
         if not cls.API_TOKEN:
-            raise NotificationError(f"Auth for {cls.__class__.__name__} not set. Unable to use api.")
+            raise NotificationError(f"Auth for {cls.__name__} not set. Unable to use api.")
 
         authorization = f"{cls.BEARER_SCHEMA} {cls.API_TOKEN}"
         url = f"{cls.BASE_URL}/{cls.API_VERSION}/{endpoint}" if cls.API_VERSION else f"{cls.BASE_URL}/{endpoint}"
@@ -29,16 +28,19 @@ class BaseNotification:
             response = requests.request(method=method, url=url, headers=headers, timeout=cls.TIMEOUT, **kwargs)
             response.raise_for_status()
         except requests.exceptions.HTTPError as http_error:
-            if http_error.response and http_error.response.status_code == http.HTTPStatus.UNAUTHORIZED:
-                logger.error(f"Auth for {cls.__class__.__name__} invalid. Unable to use api.")
-                raise NotificationError from http_error
-            logger.error(
-                f"Unable to use {cls.__class__.__name__}, "
-                f"got: {http_error.response.status_code if http_error.response else 'Unknown error'}"
-            )
-            raise NotificationError from http_error
+            cls._handle_http_error(http_error)
         except requests.exceptions.RequestException as error:
-            logger.error(f"Unable to reach {cls.__class__.__name__}: {error}")
-            raise NotificationError from error
+            logger.error(f"Unable to reach {cls.__name__}: {error}")
+            raise NotificationError(f"Unable to reach {cls.__name__}: {error}") from error
 
         return response.json()
+
+    @classmethod
+    def _handle_http_error(cls, http_error: requests.exceptions.HTTPError) -> NoReturn:
+        response = http_error.response
+        status_code = response.status_code if response is not None else None
+        error_message = f"Unable to use {cls.__name__}, got: {status_code or 'Unknown error'}"
+
+        logger.error(error_message)
+
+        raise NotificationError(error_message) from http_error

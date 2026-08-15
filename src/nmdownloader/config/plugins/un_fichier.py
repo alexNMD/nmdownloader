@@ -8,5 +8,6 @@ class UnFichierDownloaderConfig(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
-    api_url: str = "https://api.1fichier.com/v1"
+    api_url: str = "https://api.1fichier.com"
+    api_version: str = "v1"
     api_token: str | None = None
