@@ -48,7 +48,7 @@ class DownloadYoutube(DownloadBase):
             if not (audio_streams := self.youtube_obj.streams.get_audio_only()):
                 raise AttributeError("No suitable audio stream found.")
 
-            self.total_size = video_stream.filesize
+            self.total_size = video_stream.filesize + audio_streams.filesize
             self.update_status(DownloadStatus.RUNNING)
 
             self.video_path = video_stream.download(output_path=str(self.base_download_path))
