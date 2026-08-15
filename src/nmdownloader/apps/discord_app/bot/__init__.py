@@ -8,7 +8,7 @@ class DiscordBot(commands.Bot):
         self.bot_channel = bot_channel
 
     async def setup_hook(self) -> None:
-        await self.load_extension("nmdownloader.apps.discord_app.commands.download")
+        await self.load_extension("..commands.download", package=__name__)
 
     async def on_ready(self) -> None:
         logger.info(f"Logged in as {self.user}")
