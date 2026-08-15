@@ -73,10 +73,10 @@ class TestDownload1fichier:
             # Check that request was made to get token
             mock_post.assert_called_once()
 
-            # Check that HEAD request was made to get filename
-            mock_head.assert_called_once_with("https://1fichier.com/?abc123", timeout=10)
+            # Check that HEAD request was made to get filename with the computed download URL
+            mock_head.assert_called_once_with("https://download.url/file", timeout=10)
 
-            # Check attributes - the URL should be updated after _setup()
+            # Check attributes - the URL should be the computed download URL
             assert download.url == "https://download.url/file"
         finally:
             # Restore original values
@@ -105,10 +105,9 @@ class TestDownload1fichier:
 
             mock_task = MagicMock()
 
-            # Should raise DownloadError when _setup() is called
-            download = Download1fichier(url="https://1fichier.com/?abc123", task=mock_task)
+            # Should raise DownloadError at initialization since token check is in __init__
             with pytest.raises(DownloadError) as exc_info:
-                download._setup()
+                Download1fichier(url="https://1fichier.com/?abc123", task=mock_task)
 
             assert "UNFICHIER_API_TOKEN not set" in str(exc_info.value)
         finally:
@@ -145,10 +144,9 @@ class TestDownload1fichier:
 
             mock_task = MagicMock()
 
-            # Should raise DownloadError when _setup() is called
-            download = Download1fichier(url="https://1fichier.com/?abc123", task=mock_task)
+            # Should raise DownloadError at initialization since token check is in __init__
             with pytest.raises(DownloadError) as exc_info:
-                download._setup()
+                Download1fichier(url="https://1fichier.com/?abc123", task=mock_task)
 
             assert "UNFICHIER_API_TOKEN not set" in str(exc_info.value)
         finally:

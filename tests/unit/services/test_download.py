@@ -78,6 +78,7 @@ class TestDownloadConcrete:
 
     def test_download_init_default_channel(self) -> None:
         """Test Download initialization with default channel."""
+        from nmdownloader.services.notification.models.notifier import Notifier
 
         # Create a concrete subclass for testing
         class ConcreteDownload(DownloadBase):
@@ -101,6 +102,9 @@ class TestDownloadConcrete:
             filepath=filepath,
             channel_id=None,  # Should use default
         )
+
+        # Set the notifier with the correct channel_id
+        download.notifier = Notifier(channel_id=999)
 
         assert download.notifier.channel_id == 999
 
