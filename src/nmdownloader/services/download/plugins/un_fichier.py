@@ -10,15 +10,18 @@ from nmdownloader.services.download.models import DownloadMedia
 @register_downloader("1fichier.com")
 class Download1fichier(DownloadMedia):
     def __init__(self, url: str, **kwargs) -> None:
+        super().__init__(url=url, **kwargs)
+
+    def _setup(self) -> None:
         if not (bearer_token := app_settings.downloader.un_fichier.api_token):
             raise DownloadError(self, "UNFICHIER_API_TOKEN not set")
 
         try:
-            download_1fichier_url = compute_url_from_1fichier(link=url, token=bearer_token)
+            self.url = compute_url_from_1fichier(link=self.url, token=bearer_token)
         except Exception as error:
             raise DownloadError(self, str(error)) from error
 
-        super().__init__(url=download_1fichier_url, **kwargs)
+        super()._setup()
 
 
 def compute_url_from_1fichier(link: str, token: str) -> str:

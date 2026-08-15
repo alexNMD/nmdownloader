@@ -15,12 +15,11 @@ if TYPE_CHECKING:
 
 
 class DownloadBase(ABC):
-    notifier = Notifier()
-
     def __init__(self, task: Task[Any, Any] | None, filepath: Path, **kwargs) -> None:
         self.task = task
         self.filepath = filepath
         self.options: dict[str, Any] = kwargs
+        self.notifier = Notifier()
 
     def start(self) -> None:
         self._setup()

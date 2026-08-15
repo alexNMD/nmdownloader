@@ -34,7 +34,7 @@ class TestDownload1fichier:
         result = get_downloader("https://1fichier.com/?abc123")
         assert result is Download1fichier
 
-    @patch("nmdownloader.services.download.plugins.un_fichier.requests.head")
+    @patch("nmdownloader.services.download.models.media.requests.head")
     @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
     def test_download_1fichier_init_with_token(self, mock_post: MagicMock, mock_head: MagicMock) -> None:
         """Test Download1fichier initialization with API token."""
@@ -67,13 +67,16 @@ class TestDownload1fichier:
             # Create Download1fichier instance
             download = Download1fichier(url="https://1fichier.com/?abc123", task=mock_task)
 
+            # _setup() is called by start(), not in __init__, so we need to call it
+            download._setup()
+
             # Check that request was made to get token
             mock_post.assert_called_once()
 
             # Check that HEAD request was made to get filename
-            mock_head.assert_called_once_with("https://download.url/file", timeout=10)
+            mock_head.assert_called_once_with("https://1fichier.com/?abc123", timeout=10)
 
-            # Check attributes - the DownloadMedia __init__ was called with the download URL
+            # Check attributes - the URL should be updated after _setup()
             assert download.url == "https://download.url/file"
         finally:
             # Restore original values
@@ -81,8 +84,8 @@ class TestDownload1fichier:
             app_settings.downloader.un_fichier.api_url = original_api_url
             app_settings.media_path = original_media_path
 
-    @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
-    def test_download_1fichier_init_without_token(self, mock_post: MagicMock) -> None:
+    @patch("nmdownloader.services.download.models.media.requests.head")
+    def test_download_1fichier_init_without_token(self, mock_head: MagicMock) -> None:
         """Test Download1fichier initialization without API token."""
         from nmdownloader.config import app_settings
 
@@ -95,11 +98,17 @@ class TestDownload1fichier:
             app_settings.downloader.un_fichier.api_token = None
             app_settings.downloader.un_fichier.api_url = "https://api.1fichier.com"
 
+            # Mock the HEAD request for filename extraction
+            mock_head_response = MagicMock()
+            mock_head_response.headers = {}
+            mock_head.return_value = mock_head_response
+
             mock_task = MagicMock()
 
-            # Should raise DownloadError
+            # Should raise DownloadError when _setup() is called
+            download = Download1fichier(url="https://1fichier.com/?abc123", task=mock_task)
             with pytest.raises(DownloadError) as exc_info:
-                Download1fichier(url="https://1fichier.com/?abc123", task=mock_task)
+                download._setup()
 
             assert "UNFICHIER_API_TOKEN not set" in str(exc_info.value)
         finally:
@@ -107,10 +116,10 @@ class TestDownload1fichier:
             app_settings.downloader.un_fichier.api_token = original_api_token
             app_settings.downloader.un_fichier.api_url = original_api_url
 
-    @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
+    @patch("nmdownloader.services.download.models.media.requests.head")
     def test_download_1fichier_init_without_token_with_discord_set(
         self,
-        mock_post: MagicMock,
+        mock_head: MagicMock,
     ) -> None:
         """Test Download1fichier raises error when DISCORD_TOKEN is set."""
         from nmdownloader.config import app_settings
@@ -129,11 +138,17 @@ class TestDownload1fichier:
             app_settings.discord.token = "test_discord_token"
             app_settings.discord.default_channel_id = 123456789
 
+            # Mock the HEAD request for filename extraction
+            mock_head_response = MagicMock()
+            mock_head_response.headers = {}
+            mock_head.return_value = mock_head_response
+
             mock_task = MagicMock()
 
-            # Should raise DownloadError
+            # Should raise DownloadError when _setup() is called
+            download = Download1fichier(url="https://1fichier.com/?abc123", task=mock_task)
             with pytest.raises(DownloadError) as exc_info:
-                Download1fichier(url="https://1fichier.com/?abc123", task=mock_task)
+                download._setup()
 
             assert "UNFICHIER_API_TOKEN not set" in str(exc_info.value)
         finally:
@@ -143,7 +158,7 @@ class TestDownload1fichier:
             app_settings.discord.token = original_discord_token
             app_settings.discord.default_channel_id = original_discord_channel
 
-    @patch("nmdownloader.services.download.plugins.un_fichier.requests.head")
+    @patch("nmdownloader.services.download.models.media.requests.head")
     @patch("nmdownloader.services.download.plugins.un_fichier.requests.post")
     def test_download_1fichier_init_with_url_splitting(self, mock_post: MagicMock, mock_head: MagicMock) -> None:
         """Test Download1fichier initialization with URL containing ampersand."""
@@ -173,7 +188,8 @@ class TestDownload1fichier:
             # URL with ampersand - should be split
             url = "https://1fichier.com/?abc123&param=value"
 
-            Download1fichier(url=url, task=mock_task)
+            download = Download1fichier(url=url, task=mock_task)
+            download._setup()
 
             # Check that the URL was split correctly
             # The compute_url_from_1fichier function splits on '&'

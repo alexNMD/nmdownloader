@@ -29,10 +29,13 @@ class BaseNotification:
             response = requests.request(method=method, url=url, headers=headers, timeout=cls.TIMEOUT, **kwargs)
             response.raise_for_status()
         except requests.exceptions.HTTPError as http_error:
-            if http_error.response.status_code == http.HTTPStatus.UNAUTHORIZED:
+            if http_error.response and http_error.response.status_code == http.HTTPStatus.UNAUTHORIZED:
                 logger.error(f"Auth for {cls.__class__.__name__} invalid. Unable to use api.")
                 raise NotificationError from http_error
-            logger.error(f"Unable to use {cls.__class__.__name__}, got: {http_error.response.status_code}")
+            logger.error(
+                f"Unable to use {cls.__class__.__name__}, "
+                f"got: {http_error.response.status_code if http_error.response else 'Unknown error'}"
+            )
             raise NotificationError from http_error
         except requests.exceptions.RequestException as error:
             logger.error(f"Unable to reach {cls.__class__.__name__}: {error}")
