@@ -1,42 +1,26 @@
 from __future__ import annotations
 
-import http
 import json
 from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-import requests
 from loguru import logger
 
-from nmdownloader.config import app_settings
-from nmdownloader.services.discord import DiscordAPI
 from nmdownloader.services.download.helpers import DownloadRevokeException, DownloadStatus
+from nmdownloader.services.notification import Notifier
 
 if TYPE_CHECKING:
     from celery import Task
 
 
 class DownloadBase(ABC):
-    channel_id: int | None = None
-    message_id: int | None = None
-    status_message_id: int | None = None
-    thumbnail: str | None = None
+    notifier = Notifier()
 
-    def __init__(
-        self,
-        task: Task[Any, Any] | None,
-        filepath: Path,
-        message_id: int | None = None,
-        channel_id: int | None = None,
-        **kwargs,
-    ) -> None:
+    def __init__(self, task: Task[Any, Any] | None, filepath: Path, **kwargs) -> None:
         self.task = task
         self.filepath = filepath
-        self.message_id = message_id
-        self.channel_id = channel_id or app_settings.discord.default_channel_id
         self.options: dict[str, Any] = kwargs
-        self.status_message_id: int | None = None
 
     def start(self) -> None:
         self._setup()
@@ -77,44 +61,10 @@ class DownloadBase(ABC):
     def update_status(self, status: DownloadStatus, **kwargs) -> None:
         if hasattr(self, "task") and self.task is not None:
             self.task.update_state(meta=self.to_dict())
-        self._do_notification(status=status, **kwargs)
-
-    def _do_notification(self, status: DownloadStatus, **kwargs) -> None:
-        title = self.filepath.name if hasattr(self, "filepath") else self.__class__.__name__
-        fields = [{"name": "Status", "value": status.name}]
-
-        logger.info(f"{title} => {status.name}")
-
-        if not self.channel_id:
-            self.channel_id = app_settings.discord.default_channel_id
-        if not self.channel_id:
-            logger.error("DISCORD_DEFAULT_CHANNEL_ID not set. Unable to send notification")
-            return
-
-        embed_payload = {
-            "title": title,
-            "color": status.value,
-            "fields": fields,
-            "thumbnail": self.thumbnail,
+        self.notifier.throw(
+            title=self.filepath.name if hasattr(self, "filepath") else self.__class__.__name__,
+            status=status,
+            thumbnail=getattr(self, "thumbnail", None),
+            total_size=getattr(self, "total_size", None),
             **kwargs,
-        }
-
-        try:
-            if self.status_message_id:
-                DiscordAPI.edit_embed(channel_id=self.channel_id, message_id=self.status_message_id, **embed_payload)
-                return
-
-            self.status_message_id = (
-                DiscordAPI.reply_with_embed(channel_id=self.channel_id, message_id=self.message_id, **embed_payload)
-                if self.message_id
-                else DiscordAPI.send_embed(channel_id=self.channel_id, **embed_payload)
-            )
-        except requests.exceptions.HTTPError as http_error:
-            if http_error.response.status_code == http.HTTPStatus.UNAUTHORIZED:
-                logger.error("DISCORD_TOKEN invalid. Unable to send notification")
-                return
-            logger.error(f"Unable to use discord api, got: {http_error.response.status_code}")
-        except requests.exceptions.RequestException as error:
-            logger.error(f"Unable to reach Discord API: {error}")
-        except ValueError as error:
-            logger.error(f"Unable to read data from Discord API: {error}")
+        )

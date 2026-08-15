@@ -1,4 +1,3 @@
-from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,8 +10,9 @@ class DiscordConfig(BaseSettings):
     )
     token: str | None = None
     admins: list[int] | None = None
-    default_channel_id: int = Field(default=0)
+    default_channel_id: int = 0
     command_prefix: str = "!"
-    refresh_rate: int = Field(default=10)
+    refresh_rate: int = 10
     api_url: str = "https://discord.com/api"
     api_version: str = "v10"
+    bearer_schema: str = "bot"

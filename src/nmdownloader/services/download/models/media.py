@@ -2,6 +2,7 @@ import io
 import re
 import time
 from enum import Enum
+from functools import cached_property
 from pathlib import Path
 from typing import cast
 
@@ -19,7 +20,7 @@ from nmdownloader.services.download.helpers import (
     get_relative_directory,
 )
 from nmdownloader.services.download.models import DownloadBase
-from nmdownloader.services.tmdb import TMDBApi
+from nmdownloader.services.notification import TMDBApi
 
 
 class ShowType(Enum):
@@ -42,7 +43,6 @@ class DownloadMedia(DownloadBase):
         self.type_dl: str = kwargs.get("type_dl") or (
             ShowType.SERIES.value if re.search(self.REGEX_SEARCH_TYPE, self.filename) else ShowType.FILMS.value
         )
-        self.thumbnail = self._get_thumbnail(media_name=self._get_media_name())
         self.base_download_path: Path = app_settings.media_path / self.type_dl
         self.destination_directory: Path = (
             self.base_download_path / get_relative_directory(self.filename)
@@ -77,6 +77,11 @@ class DownloadMedia(DownloadBase):
             logger.error(f"Unable to use TMDB api, got: {http_error.response.status_code}")
         except requests.exceptions.RequestException as error:
             logger.error(f"Unable to reach TMDB API: {error}")
+        return None
+
+    @cached_property
+    def thumbnail(self) -> str | None:
+        return self._get_thumbnail(self._get_media_name())
 
     def _get_media_name(self) -> str:
         media_data = (

@@ -1,10 +1,12 @@
 from datetime import UTC, datetime
 from typing import NotRequired, TypedDict
 
-import requests
 from loguru import logger
 
 from nmdownloader.config import app_settings
+
+from ..helpers.exceptions import NotificationError
+from ..models.base import BaseNotification
 
 
 class EmbedFieldPayload(TypedDict):
@@ -23,26 +25,22 @@ class EmbedPayload(TypedDict):
     thumbnail: NotRequired[dict[str, str]]
 
 
-class DiscordAPI:
-    TIMEOUT = 10
+class DiscordAPI(BaseNotification):
     BASE_URL = app_settings.discord.api_url
     API_VERSION = app_settings.discord.api_version
-    TOKEN = app_settings.discord.token
+    BEARER_SCHEMA = "Bot"
+    API_TOKEN = app_settings.discord.token
 
     @classmethod
-    def _send_and_get_message_id(cls, endpoint: str, **kwargs) -> int:
-        url = f"{cls.BASE_URL}/{cls.API_VERSION}/{endpoint}"
-        headers = {
-            "Authorization": f"Bot {cls.TOKEN}",
-            "Content-Type": "application/json",
-        }
+    def _send_and_get_message_id(cls, endpoint: str, channel_id: int | None, **kwargs) -> int:
+        if not channel_id:
+            raise NotificationError("DISCORD_DEFAULT_CHANNEL_ID not set. Unable to send notification")
 
-        response = requests.request(url=url, headers=headers, timeout=cls.TIMEOUT, **kwargs)
-        response.raise_for_status()
-        response_json = response.json()
+        _channel_id = channel_id or app_settings.discord.default_channel_id
+        response_json = cls._call_and_get_json(endpoint=f"channels/{_channel_id}/{endpoint}", **kwargs)
 
         if not (message_id := response_json.get("id")):
-            raise ValueError("Unable to retrieve message id from Discord API")
+            raise NotificationError("Unable to retrieve message id from Discord API")
 
         return message_id
 
@@ -77,7 +75,7 @@ class DiscordAPI:
         return embed_payload
 
     @classmethod
-    def reply_with_embed(cls, channel_id: int, message_id: int, **kwargs) -> int:
+    def reply_with_embed(cls, message_id: int, channel_id: int | None, **kwargs) -> int:
         """
         Répond à un message dans un canal Discord avec un embed.
         :param channel_id: ID du canal où le message a été envoyé.
@@ -89,12 +87,13 @@ class DiscordAPI:
         """
         return cls._send_and_get_message_id(
             method="POST",
-            endpoint=f"channels/{channel_id}/messages",
+            channel_id=channel_id,
+            endpoint="messages",
             json={"embeds": [cls._build_embed(**kwargs)], "message_reference": {"message_id": message_id}},
         )
 
     @classmethod
-    def send_embed(cls, channel_id: int, **kwargs) -> int:
+    def send_embed(cls, channel_id: int | None = None, **kwargs) -> int:
         """
         Envoie un message dans un canal Discord avec un embed (sans répondre à un autre message).
         :param channel_id: ID du canal où envoyer le message.
@@ -104,11 +103,14 @@ class DiscordAPI:
         :return: La réponse de l'API Discord.
         """
         return cls._send_and_get_message_id(
-            method="POST", endpoint=f"channels/{channel_id}/messages", json={"embeds": [cls._build_embed(**kwargs)]}
+            method="POST",
+            channel_id=channel_id,
+            endpoint="messages",
+            json={"embeds": [cls._build_embed(**kwargs)]},
         )
 
     @classmethod
-    def edit_embed(cls, channel_id: int, message_id: int, **kwargs) -> int:
+    def edit_embed(cls, message_id: int, channel_id: int | None = None, **kwargs) -> int:
         """
         Modifie un embed dans un message existant dans un canal Discord.
         :param channel_id: ID du canal.
@@ -120,6 +122,7 @@ class DiscordAPI:
         """
         return cls._send_and_get_message_id(
             method="PATCH",
-            endpoint=f"channels/{channel_id}/messages/{message_id}",
+            channel_id=channel_id,
+            endpoint=f"messages/{message_id}",
             json={"embeds": [cls._build_embed(**kwargs)]},
         )

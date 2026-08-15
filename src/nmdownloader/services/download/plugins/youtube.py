@@ -1,3 +1,4 @@
+from functools import cached_property
 from pathlib import Path
 
 import ffmpeg
@@ -6,10 +7,11 @@ from pytubefix import YouTube
 from werkzeug.utils import secure_filename
 
 from nmdownloader.config import app_settings
-from nmdownloader.services.download.helpers import DownloadStatus
-from nmdownloader.services.download.helpers.exceptions import DownloadError
-from nmdownloader.services.download.helpers.plugins import register_downloader
-from nmdownloader.services.download.models import DownloadBase
+
+from ..helpers import DownloadStatus
+from ..helpers.exceptions import DownloadError
+from ..helpers.plugins import register_downloader
+from ..models import DownloadBase
 
 
 @register_downloader("www.youtube.com", "youtube.com", "youtu.be")
@@ -20,10 +22,11 @@ class DownloadYoutube(DownloadBase):
         self.base_download_path: Path = app_settings.media_path / "youtube"
         self.video_path: str | None = None
         self.audio_path: str | None = None
+        self.total_size: int = 0
 
         super().__init__(filepath=(self.base_download_path / self.filename), **kwargs)
 
-    @property
+    @cached_property
     def thumbnail(self) -> str:
         return self.youtube_obj.thumbnail_url
 
@@ -45,6 +48,7 @@ class DownloadYoutube(DownloadBase):
             if not (audio_streams := self.youtube_obj.streams.get_audio_only()):
                 raise AttributeError("No suitable audio stream found.")
 
+            self.total_size = video_stream.filesize + audio_streams.filesize
             self.update_status(DownloadStatus.RUNNING)
 
             self.video_path = video_stream.download(output_path=str(self.base_download_path))

@@ -9,16 +9,14 @@ from nmdownloader.services.download.models import DownloadMedia
 class TestDownloadMedia:
     """Tests for DownloadMedia class."""
 
-    @patch("nmdownloader.services.download.models.media.app_settings")
-    @patch("nmdownloader.services.download.models.media.TMDBApi.get_thumbnail")
-    @patch("nmdownloader.services.download.models.media.requests.head")
+    @patch("nmdownloader.config.app_settings")
+    @patch("nmdownloader.services.notification.plugins.tmdb.TMDBApi.get_thumbnail")
+    @patch("requests.head")
     def test_download_media_init_with_thumbnail(
         self, mock_head: MagicMock, mock_get_thumbnail: MagicMock, mock_app_settings: MagicMock
     ) -> None:
         """Test DownloadMedia initialization sets thumbnail from TMDB."""
         # Setup mocks
-        mock_app_settings.media_path = Path("/tmp/media")
-
         mock_head_response = MagicMock()
         mock_head_response.headers = {"Content-Disposition": 'attachment; filename="Test.Series.S01E01.mkv"'}
         mock_head.return_value = mock_head_response
@@ -34,21 +32,19 @@ class TestDownloadMedia:
         assert download.filename == "Test.Series.S01E01.mkv"
         assert download.thumbnail == "https://image.tmdb.org/t/p/w200/test_poster.jpg"
         assert download.type_dl == "series"
-        assert download.base_download_path == Path("/tmp/media/series")
+        assert download.base_download_path == Path("/media/series")
 
         # Check that TMDBApi.get_thumbnail was called
         mock_get_thumbnail.assert_called_once()
 
-    @patch("nmdownloader.services.download.models.media.app_settings")
-    @patch("nmdownloader.services.download.models.media.TMDBApi.get_thumbnail")
-    @patch("nmdownloader.services.download.models.media.requests.head")
+    @patch("nmdownloader.config.app_settings")
+    @patch("nmdownloader.services.notification.plugins.tmdb.TMDBApi.get_thumbnail")
+    @patch("requests.head")
     def test_download_media_init_film_thumbnail(
         self, mock_head: MagicMock, mock_get_thumbnail: MagicMock, mock_app_settings: MagicMock
     ) -> None:
         """Test DownloadMedia initialization for film sets correct type and thumbnail."""
         # Setup mocks
-        mock_app_settings.media_path = Path("/tmp/media")
-
         mock_head_response = MagicMock()
         mock_head_response.headers = {"Content-Disposition": 'attachment; filename="Test.Movie.2024.mkv"'}
         mock_head.return_value = mock_head_response
@@ -64,11 +60,11 @@ class TestDownloadMedia:
         assert download.filename == "Test.Movie.2024.mkv"
         assert download.thumbnail == "https://image.tmdb.org/t/p/w200/movie_poster.jpg"
         assert download.type_dl == "films"
-        assert download.base_download_path == Path("/tmp/media/films")
+        assert download.base_download_path == Path("/media/films")
 
-    @patch("nmdownloader.services.download.models.media.app_settings")
-    @patch("nmdownloader.services.download.models.media.TMDBApi.get_thumbnail")
-    @patch("nmdownloader.services.download.models.media.requests.head")
+    @patch("nmdownloader.config.app_settings")
+    @patch("nmdownloader.services.notification.plugins.tmdb.TMDBApi.get_thumbnail")
+    @patch("requests.head")
     def test_download_media_init_no_thumbnail(
         self, mock_head: MagicMock, mock_get_thumbnail: MagicMock, mock_app_settings: MagicMock
     ) -> None:
@@ -92,9 +88,9 @@ class TestDownloadMedia:
         assert download.thumbnail is None
         assert download.type_dl == "series"
 
-    @patch("nmdownloader.services.download.models.media.app_settings")
-    @patch("nmdownloader.services.download.models.media.TMDBApi.get_thumbnail")
-    @patch("nmdownloader.services.download.models.media.requests.head")
+    @patch("nmdownloader.config.app_settings")
+    @patch("nmdownloader.services.notification.plugins.tmdb.TMDBApi.get_thumbnail")
+    @patch("requests.head")
     def test_download_media_init_thumbnail_error(
         self, mock_head: MagicMock, mock_get_thumbnail: MagicMock, mock_app_settings: MagicMock
     ) -> None:
@@ -120,8 +116,8 @@ class TestDownloadMedia:
         assert download.thumbnail is None
         assert download.type_dl == "series"
 
-    @patch("nmdownloader.services.download.models.media.app_settings")
-    @patch("nmdownloader.services.download.models.media.requests.head")
+    @patch("nmdownloader.config.app_settings")
+    @patch("requests.head")
     def test_download_media_get_media_name_series(self, mock_head: MagicMock, mock_app_settings: MagicMock) -> None:
         """Test _get_media_name for series filename."""
         # Setup mocks
@@ -142,8 +138,8 @@ class TestDownloadMedia:
         # Assertions
         assert result == "My.Series"
 
-    @patch("nmdownloader.services.download.models.media.app_settings")
-    @patch("nmdownloader.services.download.models.media.requests.head")
+    @patch("nmdownloader.config.app_settings")
+    @patch("requests.head")
     def test_download_media_get_media_name_film(self, mock_head: MagicMock, mock_app_settings: MagicMock) -> None:
         """Test _get_media_name for film filename."""
         # Setup mocks
@@ -164,8 +160,8 @@ class TestDownloadMedia:
         # Assertions
         assert result == "My.Movie"
 
-    @patch("nmdownloader.services.download.models.media.app_settings")
-    @patch("nmdownloader.services.download.models.media.requests.head")
+    @patch("nmdownloader.config.app_settings")
+    @patch("requests.head")
     def test_download_media_get_media_name_simple(self, mock_head: MagicMock, mock_app_settings: MagicMock) -> None:
         """Test _get_media_name for simple filename."""
         # Setup mocks
@@ -186,7 +182,7 @@ class TestDownloadMedia:
         # Assertions - should fall back to filename without extension
         assert result == "simple_file"
 
-    @patch("nmdownloader.services.download.models.media.TMDBApi.get_thumbnail")
+    @patch("nmdownloader.services.notification.plugins.tmdb.TMDBApi.get_thumbnail")
     def test_download_media_get_thumbnail_static_method(self, mock_get_thumbnail: MagicMock) -> None:
         """Test _get_thumbnail class method."""
         from nmdownloader.services.download.models.media import DownloadMedia
@@ -200,7 +196,7 @@ class TestDownloadMedia:
         assert result == "https://image.tmdb.org/t/p/w200/test.jpg"
         mock_get_thumbnail.assert_called_once_with(query="Test Movie")
 
-    @patch("nmdownloader.services.download.models.media.TMDBApi.get_thumbnail")
+    @patch("nmdownloader.services.notification.plugins.tmdb.TMDBApi.get_thumbnail")
     def test_download_media_get_thumbnail_error_handling(self, mock_get_thumbnail: MagicMock) -> None:
         """Test _get_thumbnail class method error handling."""
         import requests.exceptions
@@ -215,7 +211,7 @@ class TestDownloadMedia:
         # Assertions
         assert result is None
 
-    @patch("nmdownloader.services.download.models.media.TMDBApi.get_thumbnail")
+    @patch("nmdownloader.services.notification.plugins.tmdb.TMDBApi.get_thumbnail")
     @patch("nmdownloader.services.download.models.media.logger")
     def test_download_media_get_thumbnail_http_error(
         self, mock_logger: MagicMock, mock_get_thumbnail: MagicMock
@@ -240,8 +236,8 @@ class TestDownloadMedia:
         assert result is None
         mock_logger.error.assert_called_once()
 
-    @patch("nmdownloader.services.download.models.media.app_settings")
-    @patch("nmdownloader.services.download.models.media.Path")
+    @patch("nmdownloader.config.app_settings")
+    @patch("pathlib.Path")
     def test_download_media_setup_creates_directory(self, mock_path: MagicMock, mock_app_settings: MagicMock) -> None:
         """Test _setup method creates destination directory."""
 
@@ -270,10 +266,7 @@ class TestDownloadMedia:
                 download.destination_directory = mock_path.return_value
 
                 # Call _setup
-                with (
-                    patch("nmdownloader.services.download.models.base.DiscordAPI"),
-                    patch("nmdownloader.services.download.models.base.logger"),
-                ):
+                with patch("loguru.logger"):
                     download._setup()
 
                 # Check that update_status was called with STARTED
@@ -281,8 +274,8 @@ class TestDownloadMedia:
                 # Check that mkdir was called on the destination directory
                 mock_dir.mkdir.assert_called_once_with(parents=True, exist_ok=True)
 
-    @patch("nmdownloader.services.download.models.media.app_settings")
-    @patch("nmdownloader.services.download.models.media.Path")
+    @patch("nmdownloader.config.app_settings")
+    @patch("pathlib.Path")
     def test_download_media_terminate_calls_update_status(
         self, mock_path: MagicMock, mock_app_settings: MagicMock
     ) -> None:
@@ -312,11 +305,8 @@ class TestDownloadMedia:
                 # Verify is_compressed is False for .mp4 files
                 assert download.is_compressed is False
 
-                # Call _terminate - mock DiscordAPI and logger to avoid side effects
-                with (
-                    patch("nmdownloader.services.download.models.base.DiscordAPI"),
-                    patch("nmdownloader.services.download.models.base.logger"),
-                ):
+                # Call _terminate - mock logger to avoid side effects
+                with patch("loguru.logger"):
                     download._terminate()
 
                 # Check that update_status was called
