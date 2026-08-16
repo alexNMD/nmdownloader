@@ -1,3 +1,5 @@
+from typing import TYPE_CHECKING, Any
+
 from loguru import logger
 
 from nmdownloader.config import app_settings
@@ -7,6 +9,9 @@ from ..helpers.exceptions import NotificationError
 from ..helpers.format_size import format_size
 from ..plugins.discord import DiscordAPI
 
+if TYPE_CHECKING:
+    from nmdownloader.services.download.models import DownloadBase
+
 
 class Notifier:
     def __init__(
@@ -15,28 +20,12 @@ class Notifier:
         self.channel_id = channel_id or app_settings.discord.default_channel_id
         self.message_id = message_id
         self.thumbnail_url = thumbnail_url
-        self.status_message_id = None
         # TODO: piste avec les medias name pour fetch la thumbnail
+        self.status_message_id = None
 
-    def throw(
-        self,
-        title: str,
-        status: DownloadStatus,
-        description: str | None = None,
-        thumbnail: str | None = None,
-        total_size: int | None = None,
-    ) -> None:
-        embed_payload = {
-            "title": title,
-            "description": description,
-            "color": status.value,
-            "fields": [{"name": "Status", "value": status.name}],
-            "thumbnail": thumbnail,
-        }
-        if total_size:
-            embed_payload["fields"].append({"name": "Total Size", "value": format_size(total_size)})
-
-        logger.info(f"{title} => {status.name}")
+    def throw(self, status: DownloadStatus, download: DownloadBase, **kwargs) -> None:
+        embed_payload = self._build_embed(download=download, status=status, **kwargs)
+        logger.info(embed_payload)
 
         try:
             if self.status_message_id:
@@ -51,3 +40,17 @@ class Notifier:
         except NotificationError as notification_error:
             logger.error(f"Notification Failed: {notification_error}")
             return
+
+    @classmethod
+    def _build_embed(cls, download: DownloadBase, status: DownloadStatus, **kwargs) -> dict[str, Any]:
+        embed_payload = {
+            "title": download.filepath.name if hasattr(download, "filepath") else download.__class__.__name__,
+            "color": status.value,
+            "fields": [{"name": "Status", "value": status.name}],
+            "thumbnail": getattr(download, "thumbnail", None),
+        }
+
+        if total_size := getattr(download, "total_size", None) is not None:
+            embed_payload["fields"].append({"name": "Total Size", "value": format_size(total_size)})
+
+        return {**embed_payload, **kwargs}

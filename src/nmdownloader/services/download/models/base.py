@@ -61,10 +61,4 @@ class DownloadBase(ABC):
     def update_status(self, status: DownloadStatus, **kwargs) -> None:
         if hasattr(self, "task") and self.task is not None:
             self.task.update_state(meta=self.to_dict())
-        self.notifier.throw(
-            title=self.filepath.name if hasattr(self, "filepath") else self.__class__.__name__,
-            status=status,
-            thumbnail=getattr(self, "thumbnail", None),
-            total_size=getattr(self, "total_size", None),
-            **kwargs,
-        )
+        self.notifier.throw(status=status, download=self, **kwargs)
