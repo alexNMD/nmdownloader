@@ -19,7 +19,7 @@ class TestDownloadMedia:
         # Setup mocks
         mock_head_response = MagicMock()
         mock_head_response.headers = {"Content-Disposition": 'attachment; filename="Test.Series.S01E01.mkv"'}
-        mock_head.return_value = mock_head_response
+        mock_head.return_value.__enter__.return_value = mock_head_response
 
         mock_get_thumbnail.return_value = "https://image.tmdb.org/t/p/w200/test_poster.jpg"
 
@@ -47,7 +47,7 @@ class TestDownloadMedia:
         # Setup mocks
         mock_head_response = MagicMock()
         mock_head_response.headers = {"Content-Disposition": 'attachment; filename="Test.Movie.2024.mkv"'}
-        mock_head.return_value = mock_head_response
+        mock_head.return_value.__enter__.return_value = mock_head_response
 
         mock_get_thumbnail.return_value = "https://image.tmdb.org/t/p/w200/movie_poster.jpg"
 
@@ -74,7 +74,7 @@ class TestDownloadMedia:
 
         mock_head_response = MagicMock()
         mock_head_response.headers = {"Content-Disposition": 'attachment; filename="Test.Series.S01E01.mkv"'}
-        mock_head.return_value = mock_head_response
+        mock_head.return_value.__enter__.return_value = mock_head_response
 
         mock_get_thumbnail.return_value = None
 
