@@ -50,7 +50,8 @@ class Notifier:
             "thumbnail": getattr(download, "thumbnail", None),
         }
 
-        if total_size := getattr(download, "total_size", None) is not None:
+        total_size = getattr(download, "total_size", None)
+        if total_size is not None:
             embed_payload["fields"].append({"name": "Total Size", "value": format_size(total_size)})
 
         return {**embed_payload, **kwargs}

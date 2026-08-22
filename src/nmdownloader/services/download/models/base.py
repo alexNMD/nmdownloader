@@ -47,6 +47,8 @@ class DownloadBase(ABC):
     def to_dict(self) -> dict[str, Any]:
         download_dict = {}
         for key, value in self.__dict__.items():
+            if key.startswith("_"):
+                continue
             match value:
                 case Path():
                     download_dict[key] = str(value)
