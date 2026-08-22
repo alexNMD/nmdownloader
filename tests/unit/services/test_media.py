@@ -46,7 +46,10 @@ class TestDownloadMedia:
         """Test DownloadMedia initialization for film sets correct type and thumbnail."""
         # Setup mocks
         mock_head_response = MagicMock()
-        mock_head_response.headers = {"Content-Disposition": 'attachment; filename="Test.Movie.2024.mkv"'}
+        mock_head_response.headers = {
+            "Content-Disposition": 'attachment; filename="Test.Movie.2024.mkv"',
+            "Content-Length": 5000000000,  # 5 gb
+        }
         mock_head.return_value.__enter__.return_value = mock_head_response
 
         mock_get_thumbnail.return_value = "https://image.tmdb.org/t/p/w200/movie_poster.jpg"
@@ -58,6 +61,7 @@ class TestDownloadMedia:
 
         # Assertions
         assert download.filename == "Test.Movie.2024.mkv"
+        assert download.total_size == 5000000000
         assert download.thumbnail == "https://image.tmdb.org/t/p/w200/movie_poster.jpg"
         assert download.type_dl == "films"
         assert download.base_download_path == Path("/media/films")
@@ -73,7 +77,10 @@ class TestDownloadMedia:
         mock_app_settings.media_path = Path("/tmp/media")
 
         mock_head_response = MagicMock()
-        mock_head_response.headers = {"Content-Disposition": 'attachment; filename="Test.Series.S01E01.mkv"'}
+        mock_head_response.headers = {
+            "Content-Disposition": 'attachment; filename="Test.Series.S01E01.mkv"',
+            "Content-Length": 10000000000,  # 10 Gb
+        }
         mock_head.return_value.__enter__.return_value = mock_head_response
 
         mock_get_thumbnail.return_value = None
@@ -85,6 +92,7 @@ class TestDownloadMedia:
 
         # Assertions
         assert download.filename == "Test.Series.S01E01.mkv"
+        assert download.total_size == 10000000000
         assert download.thumbnail is None
         assert download.type_dl == "series"
 
