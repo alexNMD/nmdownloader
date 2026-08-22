@@ -1,7 +1,6 @@
 import io
 import re
 import time
-from enum import Enum
 from functools import cached_property
 from pathlib import Path
 from typing import cast
@@ -11,22 +10,11 @@ import unzipall
 from loguru import logger
 
 from nmdownloader.config import app_settings
-from nmdownloader.services.download.helpers import (
-    DownloadError,
-    DownloadStatus,
-    extract_film_info,
-    extract_serie_info,
-    get_progress_bar,
-    get_relative_directory,
-)
-from nmdownloader.services.download.models import DownloadBase
 from nmdownloader.services.notification import TMDBApi
 
-
-class ShowType(Enum):
-    SERIES = "series"
-    FILMS = "films"
-    ANIMES = "animes"
+from ..helpers import DownloadError, DownloadStatus, get_media_name, get_progress_bar, get_relative_directory
+from ..helpers.constants import ShowType
+from ..models import DownloadBase
 
 
 class DownloadMedia(DownloadBase):
@@ -34,15 +22,10 @@ class DownloadMedia(DownloadBase):
 
     def __init__(self, url: str, **kwargs) -> None:
         self.url: str = url
-        try:
-            self.filename: str = self._extract_filename(url=self.url)
-        except ValueError as error:
-            raise DownloadError(self, "Unable to retrieve filename") from error
-        except Exception as error:
-            raise DownloadError(self, f"Unable to retrieve filename. Reason: {error}") from error
         self.type_dl: str = kwargs.get("type_dl") or (
             ShowType.SERIES.value if re.search(self.REGEX_SEARCH_TYPE, self.filename) else ShowType.FILMS.value
         )
+        self.thumbnail = TMDBApi.get_thumbnail(query=get_media_name(filename=self.filename, type_dl=self.type_dl))
         self.base_download_path: Path = app_settings.media_path / self.type_dl
         self.destination_directory: Path = (
             self.base_download_path / get_relative_directory(self.filename)
@@ -52,13 +35,33 @@ class DownloadMedia(DownloadBase):
         self.downloaded_size: int = 0
         self.download_start_time: float = 0.0
         self.download_speed: float
-        self.total_size: int = 0
 
         super().__init__(filepath=self.destination_directory / self.filename, **kwargs)
 
     @property
     def is_compressed(self) -> bool:
         return Path(self.filepath).suffix in unzipall.list_supported_formats()
+
+    @cached_property
+    def _get_headers(self) -> dict[str, str | int]:
+        try:
+            with requests.head(url=self.url, timeout=10) as response:
+                return dict(**response.headers)
+        except Exception as error:
+            raise DownloadError(self, f"Unable to fetch headers. Reason: {error}") from error
+
+    @cached_property
+    def filename(self) -> str:
+        try:
+            return self._extract_filename()
+        except ValueError as error:
+            raise DownloadError(self, "Unable to retrieve filename") from error
+        except Exception as error:
+            raise DownloadError(self, f"Unable to retrieve filename. Reason: {error}") from error
+
+    @cached_property
+    def total_size(self) -> int:
+        return int(self._get_headers.get("Content-Length", 0))
 
     def _setup(self) -> None:
         self.update_status(DownloadStatus.STARTED)
@@ -69,38 +72,14 @@ class DownloadMedia(DownloadBase):
             self._decompress()
         self.update_status(DownloadStatus.DONE)
 
-    @classmethod
-    def _get_thumbnail(cls, media_name: str) -> str | None:
-        try:
-            return TMDBApi.get_thumbnail(query=media_name)
-        except requests.exceptions.HTTPError as http_error:
-            logger.error(f"Unable to use TMDB api, got: {http_error.response.status_code}")
-        except requests.exceptions.RequestException as error:
-            logger.error(f"Unable to reach TMDB API: {error}")
-        return None
-
-    @cached_property
-    def thumbnail(self) -> str | None:
-        return self._get_thumbnail(self._get_media_name())
-
-    def _get_media_name(self) -> str:
-        media_data = (
-            extract_serie_info(filename=self.filename)
-            if self.type_dl in [ShowType.SERIES.value, ShowType.ANIMES.value]
-            else extract_film_info(filename=self.filename)
-        )
-
-        return media_data["name"]
-
-    @classmethod
-    def _extract_filename(cls, url: str) -> str:
-        _content_disposition = requests.head(url, timeout=10).headers.get("Content-Disposition", "")
+    def _extract_filename(self) -> str:
+        _content_disposition = self._get_headers.get("Content-Disposition", "")
         _filename_regex = r'filename\*?=(?:UTF-8\'\')?"?([^;\n"]+)"?'
 
-        if _match := re.search(_filename_regex, _content_disposition):
+        if _match := re.search(_filename_regex, str(_content_disposition)):
             return _match.group(1).replace(" ", ".")
 
-        *_, filename = url.split("/")
+        *_, filename = self.url.split("/")
         if not filename:
             raise ValueError
 
@@ -110,7 +89,6 @@ class DownloadMedia(DownloadBase):
         try:
             with requests.get(self.url, stream=True, timeout=3600) as response:
                 if response.ok:
-                    self.total_size = int(response.headers.get("Content-Length", 0))
                     self.download_start_time = time.time()
                     # Start reading file
                     with (

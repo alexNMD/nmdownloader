@@ -33,10 +33,9 @@ class DiscordAPI(BaseNotification):
 
     @classmethod
     def _send_and_get_message_id(cls, endpoint: str, channel_id: int | None, **kwargs) -> int:
-        if not channel_id:
+        if not (_channel_id := (channel_id or app_settings.discord.default_channel_id)):
             raise NotificationError("DISCORD_DEFAULT_CHANNEL_ID not set. Unable to send notification")
 
-        _channel_id = channel_id or app_settings.discord.default_channel_id
         response_json = cls._call_and_get_json(endpoint=f"channels/{_channel_id}/{endpoint}", **kwargs)
 
         if not (message_id := response_json.get("id")):
@@ -70,7 +69,7 @@ class DiscordAPI(BaseNotification):
         if thumbnail:
             embed_payload["thumbnail"] = {"url": thumbnail}
 
-        logger.info(f"embed sent: {embed_payload}")
+        logger.debug(f"embed sent: {embed_payload}")
 
         return embed_payload
 

@@ -1,3 +1,5 @@
 """Tasks"""
 
-__import__("nmdownloader.apps.celery_app.tasks.download")
+from .download import download_task
+
+__all__ = ["download_task"]

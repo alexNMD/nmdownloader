@@ -1,6 +1,8 @@
 import re
 from pathlib import Path
 
+from .constants import ShowType
+
 SERIE_REGEX = r"^(?P<name>.+?)[\s._]*[Ss](?P<season>\d+)(?:[Ee](?P<episode>\d+))?"
 SERIE_REGEX_FALLBACK = r"^(?P<name>(?:[A-Z][a-z]*\.?)+[A-Z][a-z]*)"
 
@@ -32,3 +34,13 @@ def get_relative_directory(filename: str) -> Path:
         return serie_name / f"Saison.{season}"
 
     return serie_name
+
+
+def get_media_name(filename: str, type_dl: str) -> str:
+    media_data = (
+        extract_serie_info(filename=filename)
+        if type_dl in [ShowType.SERIES.value, ShowType.ANIMES.value]
+        else extract_film_info(filename=filename)
+    )
+
+    return media_data["name"]
