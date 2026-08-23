@@ -43,8 +43,13 @@ class Notifier:
 
     @classmethod
     def _build_embed(cls, download: DownloadBase, status: DownloadStatus, **kwargs) -> dict[str, Any]:
+        try:
+            title = download.filepath.name
+        except Exception:
+            title = download.__class__.__name__
+
         embed_payload = {
-            "title": download.filepath.name if hasattr(download, "filepath") else download.__class__.__name__,
+            "title": title,
             "color": status.value,
             "fields": [{"name": "Status", "value": status.name}],
             "thumbnail": getattr(download, "thumbnail", None),

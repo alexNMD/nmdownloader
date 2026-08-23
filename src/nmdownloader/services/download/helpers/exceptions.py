@@ -11,14 +11,15 @@ if TYPE_CHECKING:
 
 class DownloadError(Exception):
     def __init__(self, download: "DownloadBase", message: Exception | str) -> None:
-        if isinstance(message, Exception):
-            super().__init__(message)
-            logger.error(message)
-            download.update_status(DownloadStatus.ERROR, description=str(message))
-        else:
-            super().__init__(message)
-            logger.error(message)
-            download.update_status(DownloadStatus.ERROR, description=message)
+        match message:
+            case Exception():
+                super().__init__(message)
+                logger.error(message)
+                download.update_status(DownloadStatus.ERROR, description=str(message))
+            case str():
+                super().__init__(message)
+                logger.error(message)
+                download.update_status(DownloadStatus.ERROR, description=message)
 
 
 class DownloadRevokeException(Ignore):

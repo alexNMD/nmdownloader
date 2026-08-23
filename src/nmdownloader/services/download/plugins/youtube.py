@@ -1,3 +1,4 @@
+from functools import cached_property
 from pathlib import Path
 
 import ffmpeg
@@ -19,7 +20,6 @@ class DownloadYoutube(DownloadBase):
         super().__init__(**kwargs)
 
         self.youtube_obj = YouTube(url=url)
-        self.filename = secure_filename(str(Path(self.youtube_obj.title).with_suffix(".mp4")))
         self.thumbnail = self.youtube_obj.thumbnail_url
         self.base_download_path: Path = app_settings.media_path / "youtube"
         self.video_path: str | None = None
@@ -29,6 +29,13 @@ class DownloadYoutube(DownloadBase):
     @property
     def filepath(self) -> Path:
         return self.base_download_path / self.filename
+
+    @cached_property
+    def filename(self) -> str:
+        try:
+            return secure_filename(str(Path(self.youtube_obj.title).with_suffix(".mp4")))
+        except Exception as error:
+            raise DownloadError(self, error) from error
 
     def _setup(self) -> None:
         self.update_status(DownloadStatus.STARTED)
