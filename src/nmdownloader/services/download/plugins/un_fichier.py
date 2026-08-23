@@ -12,7 +12,7 @@ class Download1fichier(DownloadMedia):
         super().__init__(**kwargs)
 
     @cached_property
-    def url(self) -> str:
+    def download_url(self) -> str:
         try:
             _url_to_compute, *_ = self.url.split("&")
             if not (download_1fichier_url := UnFichierAPI.compute_url(url=_url_to_compute)):

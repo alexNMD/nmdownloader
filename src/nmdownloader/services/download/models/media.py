@@ -1,6 +1,7 @@
 import io
 import re
 import time
+from abc import abstractmethod
 from functools import cached_property
 from pathlib import Path
 from typing import cast
@@ -39,6 +40,10 @@ class DownloadMedia(DownloadBase):
         self.download_speed: float
 
     @property
+    @abstractmethod
+    def download_url(self) -> str: ...
+
+    @property
     def filepath(self) -> Path:
         return self.destination_directory / self.filename
 
@@ -49,7 +54,7 @@ class DownloadMedia(DownloadBase):
     @cached_property
     def _get_headers(self) -> dict[str, str | int]:
         try:
-            with requests.head(url=self.url, timeout=10) as response:
+            with requests.head(url=self.download_url, timeout=10) as response:
                 return dict(**response.headers)
         except Exception as error:
             raise DownloadError(self, f"Unable to fetch headers. Reason: {error}") from error
@@ -91,7 +96,7 @@ class DownloadMedia(DownloadBase):
 
     def _download(self) -> None:
         try:
-            with requests.get(self.url, stream=True, timeout=3600) as response:
+            with requests.get(self.download_url, stream=True, timeout=3600) as response:
                 if response.ok:
                     self.download_start_time = time.time()
                     # Start reading file
