@@ -21,6 +21,8 @@ class DownloadMedia(DownloadBase):
     REGEX_SEARCH_TYPE = r"[Ss]\d{1,2}([Ee]\d{1,2})?"
 
     def __init__(self, url: str, **kwargs) -> None:
+        super().__init__(**kwargs)
+
         self.url: str = url
         self.type_dl: str = kwargs.get("type_dl") or (
             ShowType.SERIES.value if re.search(self.REGEX_SEARCH_TYPE, self.filename) else ShowType.FILMS.value
@@ -36,7 +38,9 @@ class DownloadMedia(DownloadBase):
         self.download_start_time: float = 0.0
         self.download_speed: float
 
-        super().__init__(filepath=self.destination_directory / self.filename, **kwargs)
+    @property
+    def filepath(self) -> Path:
+        return self.destination_directory / self.filename
 
     @property
     def is_compressed(self) -> bool:

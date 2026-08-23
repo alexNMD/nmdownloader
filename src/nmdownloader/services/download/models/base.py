@@ -15,17 +15,14 @@ if TYPE_CHECKING:
 
 
 class DownloadBase(ABC):
-    notifier = Notifier()
-
-    def __init__(self, task: Task[Any, Any] | None, filepath: Path, **kwargs) -> None:
+    def __init__(self, task: Task[Any, Any] | None, **kwargs) -> None:
         self.task = task
-        self.filepath = filepath
+        self.notifier = Notifier()
         self.options: dict[str, Any] = kwargs
 
-    def start(self) -> None:
-        self._setup()
-        self._download()
-        self._terminate()
+    @property
+    @abstractmethod
+    def filepath(self) -> Path: ...
 
     @abstractmethod
     def _setup(self) -> None: ...
@@ -35,6 +32,11 @@ class DownloadBase(ABC):
 
     @abstractmethod
     def _terminate(self) -> None: ...
+
+    def start(self) -> None:
+        self._setup()
+        self._download()
+        self._terminate()
 
     def _remove(self) -> None:
         self.filepath.unlink(missing_ok=True)

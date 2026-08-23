@@ -345,13 +345,15 @@ class TestDownloadConcrete:
             def _terminate(self) -> None:
                 pass
 
+            def filepath(self) -> Path:
+                return Path("/tmp/test.mkv")
+
         mock_task = MagicMock()
-        filepath = Path("/tmp/test.mkv")
 
         # Set token but no default channel
         app_settings.discord.token = "test_token"
 
-        download = ConcreteDownload(task=mock_task, filepath=filepath, channel_id=None)
+        download = ConcreteDownload(task=mock_task, channel_id=None)
 
         # Should not crash even without channel
         download.update_status(DownloadStatus.STARTED, description="Starting")
