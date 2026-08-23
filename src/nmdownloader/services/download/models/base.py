@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class DownloadBase(ABC):
-    def __init__(self, task: Task[Any, Any] | None, **kwargs) -> None:
+    def __init__(self, task: Task[Any, Any], **kwargs) -> None:
         self.task = task
         self.notifier = Notifier()
         self.options: dict[str, Any] = kwargs
@@ -63,6 +63,5 @@ class DownloadBase(ABC):
         return download_dict
 
     def update_status(self, status: DownloadStatus, **kwargs) -> None:
-        if hasattr(self, "task") and self.task is not None:
-            self.task.update_state(meta=self.to_dict())
+        self.task.update_state(meta=self.to_dict())
         self.notifier.throw(status=status, download=self, **kwargs)

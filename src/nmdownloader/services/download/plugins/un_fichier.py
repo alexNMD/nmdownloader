@@ -19,4 +19,4 @@ class Download1fichier(DownloadMedia):
                 raise DownloadError(self, "Unable to get download url")
             return download_1fichier_url
         except Exception as error:
-            raise DownloadError(self, str(error)) from error
+            raise DownloadError(self, error) from error
