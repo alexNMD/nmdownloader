@@ -15,10 +15,9 @@ if TYPE_CHECKING:
 
 
 class DownloadBase(ABC):
-    def __init__(self, task: Task[Any, Any], **kwargs) -> None:
+    def __init__(self, task: Task[Any, Any]) -> None:
         self.task = task
         self.notifier = Notifier()
-        self.options: dict[str, Any] = kwargs
 
     @property
     @abstractmethod
